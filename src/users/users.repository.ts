@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { User, UserSqlJoinedType } from './types/users.types';
+import { UserData, UserSqlJoinedType } from './types/users.types';
 import { OutputSuperAdminUserDto } from '../superadmin/users/dto/output.super-admin.user.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -8,7 +8,7 @@ import { sqlUserJoinQuery } from '../application-helpers/sql.user.join.query';
 @Injectable()
 export class UsersRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
-  async getUserById(id: string): Promise<User> {
+  async getUserById(id: string): Promise<UserData> {
     try {
       const result = await this.dataSource.query(
         sqlUserJoinQuery +
@@ -25,7 +25,7 @@ export class UsersRepository {
       return null;
     }
   }
-  async createUser(newUser: User): Promise<OutputSuperAdminUserDto> {
+  async createUser(newUser: UserData): Promise<OutputSuperAdminUserDto> {
     const insertedIdResult = await this.dataSource.query(
       `
         INSERT INTO "USERS"
@@ -174,7 +174,7 @@ WHERE u."id" = $1;
       return false;
     }
   }
-  async findByLoginOrEmail(loginOrEmail: string): Promise<User> {
+  async findByLoginOrEmail(loginOrEmail: string): Promise<UserData> {
     try {
       const result = await this.dataSource.query(
         sqlUserJoinQuery +
@@ -191,7 +191,9 @@ WHERE u."id" = $1;
       return;
     }
   }
-  async findByConfirmationCode(emailConfirmationCode: string): Promise<User> {
+  async findByConfirmationCode(
+    emailConfirmationCode: string,
+  ): Promise<UserData> {
     try {
       const result = await this.dataSource.query(
         sqlUserJoinQuery +
@@ -208,7 +210,7 @@ WHERE u."id" = $1;
       return;
     }
   }
-  async findByRecoveryCode(recoveryCode: string): Promise<User> {
+  async findByRecoveryCode(recoveryCode: string): Promise<UserData> {
     try {
       const result = await this.dataSource.query(
         sqlUserJoinQuery +
@@ -331,7 +333,7 @@ WHERE "userId" = $2
     }
     return;
   }
-  private _mapUserSqlJoinedTypeToUserType(user: UserSqlJoinedType): User {
+  private _mapUserSqlJoinedTypeToUserType(user: UserSqlJoinedType): UserData {
     return {
       id: user.id,
       accountData: {

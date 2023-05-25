@@ -1,6 +1,6 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { DevicesRepository } from '../devices.repository';
-import { Device } from '../types/devices.types';
+import { DeviceData } from '../types/devices.types';
 import { TokenBanService } from '../../tokens/token.ban.service';
 
 export class StartNewSessionCommand {
@@ -24,7 +24,7 @@ export class StartNewSessionUseCase {
     const refreshTokenMeta = this.tokenBanService.createMeta(
       command.refreshToken,
     );
-    const newSession = new Device(
+    const newSession = new DeviceData(
       command.deviceId,
       command.userId,
       command.ip,

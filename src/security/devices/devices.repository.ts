@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Device } from './types/devices.types';
+import { DeviceData } from './types/devices.types';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class DevicesRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
-  async findSessionByDeviceId(deviceId: string): Promise<Device> {
+  async findSessionByDeviceId(deviceId: string): Promise<DeviceData> {
     try {
       const result = await this.dataSource.query(
         `
@@ -22,7 +22,7 @@ export class DevicesRepository {
       return null;
     }
   }
-  async getAllSessionsForUser(userId: string): Promise<Device[]> {
+  async getAllSessionsForUser(userId: string): Promise<DeviceData[]> {
     try {
       return await this.dataSource.query(
         `
@@ -36,7 +36,7 @@ export class DevicesRepository {
       return null;
     }
   }
-  async addSessionToDb(newSession: Device): Promise<void> {
+  async addSessionToDb(newSession: DeviceData): Promise<void> {
     await this.dataSource.query(
       `
 INSERT INTO "DEVICES"
