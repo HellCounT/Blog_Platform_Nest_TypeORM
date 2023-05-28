@@ -1,35 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { ExpiredTokenType } from './types/expired.token.type';
 import { v4 as uuidv4 } from 'uuid';
+import { ExpiredToken } from './entities/expired-token.entity';
+import { isNil } from '@nestjs/common/utils/shared.utils';
 
 @Injectable()
 export class ExpiredTokensRepository {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(ExpiredToken)
+    protected expiredTokensRepo: Repository<ExpiredToken>,
+  ) {}
   async addTokenToDb(refreshTokenMeta: string, userId: string) {
     const id: string = uuidv4();
-    await this.dataSource.query(
-      `
-INSERT INTO "EXPIRED_TOKENS"
-("id", "userId", "refreshTokenMeta")
-VALUES ($1, $2, $3)
-      `,
-      [id, userId, refreshTokenMeta],
-    );
+    const token = new ExpiredToken();
+    token.refreshTokenMeta = refreshTokenMeta;
+    token.userId = userId;
+    token.id = id;
+    await this.expiredTokensRepo.save(token);
     return;
   }
   async findToken(tokenMeta: string): Promise<ExpiredTokenType | null> {
     try {
-      const result = await this.dataSource.query(
-        `
-      SELECT * FROM "EXPIRED_TOKENS"
-      WHERE "refreshTokenMeta" = $1
-      `,
-        [tokenMeta],
-      );
-      if (result.length < 1) return null;
-      return result[0];
+      const token = await this.expiredTokensRepo.findOneBy({
+        refreshTokenMeta: tokenMeta,
+      });
+      if (isNil(token)) return null;
+      return token;
     } catch (e) {
       console.log(e);
       return null;
