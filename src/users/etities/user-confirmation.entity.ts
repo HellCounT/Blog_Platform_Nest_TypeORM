@@ -3,7 +3,7 @@ import { User } from './user.entity';
 
 @Entity()
 export class UserConfirmation {
-  @OneToOne(() => User, (u) => u.userConfirmation)
+  @OneToOne(() => User, (u) => u.userConfirmation, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
   @PrimaryColumn('uuid')

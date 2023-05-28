@@ -13,7 +13,7 @@ export type UserPaginatorType = {
   items: UserViewModelType[];
 };
 
-export class UserData {
+export class UserCollectedData {
   constructor(
     public id: string,
     public accountData: {

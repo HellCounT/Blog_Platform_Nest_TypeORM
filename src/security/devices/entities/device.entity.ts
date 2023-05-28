@@ -5,7 +5,7 @@ import { User } from '../../../users/etities/user.entity';
 export class Device {
   @PrimaryColumn('uuid')
   id: string;
-  @ManyToOne(() => User, (u) => u.devices)
+  @ManyToOne(() => User, (u) => u.devices, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
   @Column('uuid')
@@ -14,7 +14,7 @@ export class Device {
   ip: string;
   @Column('varchar')
   deviceName: string;
-  @Column('timestamptz')
+  @Column('timestamp')
   issuedAt: Date;
   @Column('timestamptz')
   expirationDate: Date;

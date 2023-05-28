@@ -2,7 +2,10 @@ import { InputRegistrationUserDto } from '../dto/input.registration.user.dto';
 import { CommandHandler } from '@nestjs/cqrs';
 import { UsersRepository } from '../../users/users.repository';
 import { EmailManager } from '../../email/email-manager';
-import { UserData, UserViewModelType } from '../../users/types/users.types';
+import {
+  UserCollectedData,
+  UserViewModelType,
+} from '../../users/types/users.types';
 import add from 'date-fns/add';
 import { ServiceUnavailableException } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
@@ -25,7 +28,7 @@ export class RegisterUserUseCase {
       command.registrationUserDto.password,
     );
     const currentDate = new Date();
-    const newUser = new UserData(
+    const newUser = new UserCollectedData(
       uuidv4(),
       {
         login: command.registrationUserDto.login,

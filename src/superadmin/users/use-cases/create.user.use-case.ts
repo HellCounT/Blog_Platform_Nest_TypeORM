@@ -1,6 +1,9 @@
 import { InputCreateUserDto } from '../dto/input.create-user.dto';
 import { UsersRepository } from '../../../users/users.repository';
-import { UserData, UserViewModelType } from '../../../users/types/users.types';
+import {
+  UserCollectedData,
+  UserViewModelType,
+} from '../../../users/types/users.types';
 import { CommandHandler } from '@nestjs/cqrs';
 import { generateHash } from '../../../application-helpers/generate.hash';
 import { v4 as uuidv4 } from 'uuid';
@@ -16,7 +19,7 @@ export class CreateUserUseCase {
   async execute(command: CreateUserCommand): Promise<UserViewModelType | null> {
     const passwordHash = await generateHash(command.userCreateDto.password);
     const currentDate = new Date();
-    const newUser = new UserData(
+    const newUser = new UserCollectedData(
       uuidv4(),
       {
         login: command.userCreateDto.login,

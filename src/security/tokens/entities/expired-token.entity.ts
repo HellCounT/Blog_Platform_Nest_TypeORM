@@ -5,7 +5,7 @@ import { User } from '../../../users/etities/user.entity';
 export class ExpiredToken {
   @PrimaryColumn('uuid')
   id: string;
-  @ManyToOne(() => User, (u) => u.expiredTokens)
+  @ManyToOne(() => User, (u) => u.expiredTokens, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
   @Column('uuid')

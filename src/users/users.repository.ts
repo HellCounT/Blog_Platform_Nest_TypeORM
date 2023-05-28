@@ -1,191 +1,109 @@
 import { Injectable } from '@nestjs/common';
-import { UserData, UserSqlJoinedType } from './types/users.types';
+import { UserCollectedData } from './types/users.types';
 import { OutputSuperAdminUserDto } from '../superadmin/users/dto/output.super-admin.user.dto';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import { sqlUserJoinQuery } from '../application-helpers/sql.user.join.query';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './etities/user.entity';
+import { UserGlobalBan } from './etities/user-global-ban.entity';
+import { UserConfirmation } from './etities/user-confirmation.entity';
+import { UserRecovery } from './etities/user-recovery.entity';
 
 @Injectable()
 export class UsersRepository {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
-  async getUserById(id: string): Promise<UserData> {
+  constructor(
+    @InjectRepository(User) protected usersRepo: Repository<User>,
+    @InjectRepository(UserGlobalBan)
+    protected usersBansRepo: Repository<UserGlobalBan>,
+    @InjectRepository(UserConfirmation)
+    protected usersConfirmationsRepo: Repository<UserConfirmation>,
+    @InjectRepository(UserRecovery)
+    protected usersRecoveryRepo: Repository<UserRecovery>,
+  ) {}
+  async getUserById(id: string): Promise<UserCollectedData> {
     try {
-      const result = await this.dataSource.query(
-        sqlUserJoinQuery +
-          `
-        WHERE u."id" = $1
-    `,
-        [id],
+      const user = await this.usersRepo.findOneBy({ id: id });
+      if (!user) return null;
+      const userBanData = await this.usersBansRepo.findOneBy({ userId: id });
+      const userConfirmationData = await this.usersConfirmationsRepo.findOneBy({
+        userId: id,
+      });
+      const userRecoveryData = await this.usersRecoveryRepo.findOneBy({
+        userId: id,
+      });
+      return this._mapUserSqlJoinedTypeToUserType(
+        user,
+        userConfirmationData,
+        userRecoveryData,
+        userBanData,
       );
-      if (result.length < 1) return null;
-      const foundUser: UserSqlJoinedType = result[0];
-      return this._mapUserSqlJoinedTypeToUserType(foundUser);
     } catch (e) {
       console.log(e);
       return null;
     }
   }
-  async createUser(newUser: UserData): Promise<OutputSuperAdminUserDto> {
-    const insertedIdResult = await this.dataSource.query(
-      `
-        INSERT INTO "USERS"
-        ("id", "login", "email", "createdAt", "hash")
-        VALUES ($1, $2, $3, $4, $5)
-        RETURNING id
-            `,
-      [
-        newUser.id,
-        newUser.accountData.login,
-        newUser.accountData.email,
-        newUser.accountData.createdAt,
-        newUser.accountData.hash,
-      ],
-    );
-    const insertedId = insertedIdResult[0].id;
-    await this.dataSource.query(
-      `
-      INSERT INTO "USERS_GLOBAL_BAN"
-      ("userId", "isBanned", "banReason")
-      VALUES ($1, $2, $3)
-            `,
-      [
-        insertedId,
-        newUser.globalBanInfo.isBanned,
-        newUser.globalBanInfo.banReason,
-      ],
-    );
-    await this.dataSource.query(
-      `
-      INSERT INTO "USERS_CONFIRMATIONS"
-      ("userId", "confirmationCode", "confirmationExpirationDate", "isConfirmed")
-      VALUES ($1, $2, $3, $4)
-            `,
-      [
-        insertedId,
-        newUser.emailConfirmationData.confirmationCode,
-        newUser.emailConfirmationData.expirationDate,
-        newUser.emailConfirmationData.isConfirmed,
-      ],
-    );
-    await this.dataSource.query(
-      `
-      INSERT INTO "USERS_RECOVERY"
-      ("userId", "recoveryCode", "recoveryExpirationDate")
-      VALUES ($1, $2, $3)
-            `,
-      [
-        insertedId,
-        newUser.recoveryCodeData.recoveryCode,
-        newUser.recoveryCodeData.expirationDate,
-      ],
-    );
-
-    // const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
-    // await queryRunner.connect();
-    // await queryRunner.startTransaction();
-    // try {
-    //   const insertedIdResult = await queryRunner.query(
-    //     `
-    //   INSERT INTO "USERS"
-    //   ("id", "login", "email", "createdAt", "hash")
-    //   VALUES ($1, $2, $3, $4, $5)
-    //   RETURNING id
-    //       `,
-    //     [
-    //       newUser.id,
-    //       newUser.accountData.login,
-    //       newUser.accountData.email,
-    //       newUser.accountData.createdAt,
-    //       newUser.accountData.hash,
-    //     ],
-    //   );
-    //   const insertedId = insertedIdResult[0].id;
-    //   await this.dataSource.query(
-    //     `
-    //   INSERT INTO "USERS_GLOBAL_BAN"
-    //   ("userId", "isBanned", "banReason")
-    //   VALUES ($1, $2, $3)
-    //         `,
-    //     [
-    //       insertedId,
-    //       newUser.globalBanInfo.isBanned,
-    //       newUser.globalBanInfo.banReason,
-    //     ],
-    //   );
-    //   await queryRunner.query(
-    //     `
-    //   INSERT INTO "USERS_CONFIRMATIONS"
-    //   ("userId", "confirmationCode", "confirmationExpirationDate", "isConfirmed")
-    //   VALUES ($1, $2, $3, $4)
-    //         `,
-    //     [
-    //       insertedId,
-    //       newUser.emailConfirmationData.confirmationCode,
-    //       newUser.emailConfirmationData.expirationDate,
-    //       newUser.emailConfirmationData.isConfirmed,
-    //     ],
-    //   );
-    //   await queryRunner.query(
-    //     `
-    //   INSERT INTO "USERS_RECOVERY"
-    //   ("userId", "recoveryCode", "recoveryExpirationDate")
-    //   VALUES ($1, $2, $3)
-    //         `,
-    //     [
-    //       insertedId,
-    //       newUser.recoveryCodeData.recoveryCode,
-    //       newUser.recoveryCodeData.expirationDate,
-    //     ],
-    //   );
-    //   await queryRunner.commitTransaction();
-    const user = await this.getUserById(newUser.id);
+  async createUser(
+    newUser: UserCollectedData,
+  ): Promise<OutputSuperAdminUserDto> {
+    const user = new User();
+    user.id = newUser.id;
+    user.login = newUser.accountData.login;
+    user.createdAt = newUser.accountData.createdAt;
+    user.hash = newUser.accountData.hash;
+    await this.usersRepo.save(user);
+    const userBanData = new UserGlobalBan();
+    userBanData.userId = user.id;
+    userBanData.isBanned = newUser.globalBanInfo.isBanned;
+    userBanData.banReason = newUser.globalBanInfo.banReason;
+    userBanData.banDate = newUser.globalBanInfo.banDate;
+    await this.usersBansRepo.save(userBanData);
+    const userConfirmationData = new UserConfirmation();
+    userConfirmationData.userId = user.id;
+    userConfirmationData.confirmationCode =
+      newUser.emailConfirmationData.confirmationCode;
+    userConfirmationData.confirmationExpirationDate =
+      newUser.emailConfirmationData.expirationDate;
+    userConfirmationData.isConfirmed =
+      newUser.emailConfirmationData.isConfirmed;
+    await this.usersConfirmationsRepo.save(userConfirmationData);
+    const userRecoveryData = new UserRecovery();
+    userRecoveryData.userId = user.id;
+    userRecoveryData.recoveryCode = newUser.recoveryCodeData.recoveryCode;
+    userRecoveryData.recoveryExpirationDate =
+      newUser.recoveryCodeData.expirationDate;
+    await this.usersRecoveryRepo.save(userRecoveryData);
+    const createdUser = await this.getUserById(newUser.id);
     return {
-      id: user.id,
-      login: user.accountData.login,
-      email: user.accountData.email,
-      createdAt: user.accountData.createdAt,
+      id: createdUser.id,
+      login: createdUser.accountData.login,
+      email: createdUser.accountData.email,
+      createdAt: createdUser.accountData.createdAt,
       banInfo: {
-        isBanned: user.globalBanInfo.isBanned,
+        isBanned: createdUser.globalBanInfo.isBanned,
         banDate: null,
-        banReason: user.globalBanInfo.banReason,
+        banReason: createdUser.globalBanInfo.banReason,
       },
     };
   }
   catch(e) {
     console.log(e);
-    // await queryRunner.rollbackTransaction();
     return null;
   }
-  //finally {
-  // await queryRunner.release();
-  //}
   async deleteUser(id: string): Promise<boolean> {
     try {
-      const result = await this.dataSource.query(
-        `
-DELETE FROM "USERS" AS u
-WHERE u."id" = $1;
-        `,
-        [id],
-      );
-      return result[1] > 0;
+      const result = await this.usersRepo.delete(id);
+      return result.affected === 1;
     } catch (e) {
       console.log(e);
       return false;
     }
   }
-  async findByLoginOrEmail(loginOrEmail: string): Promise<UserData> {
+  async findByLoginOrEmail(loginOrEmail: string): Promise<UserCollectedData> {
     try {
-      const result = await this.dataSource.query(
-        sqlUserJoinQuery +
-          `
-        WHERE u."login" = $1 OR u."email" = $1
-      `,
-        [loginOrEmail],
-      );
-      if (result.length < 1) return null;
-      const foundUser: UserSqlJoinedType = result[0];
-      return this._mapUserSqlJoinedTypeToUserType(foundUser);
+      const user = await this.usersRepo.findOne({
+        where: [{ login: loginOrEmail }, { email: loginOrEmail }],
+      });
+      if (!user) return null;
+      return await this.getUserById(user.id);
     } catch (e) {
       console.log(e);
       return;
@@ -193,35 +111,29 @@ WHERE u."id" = $1;
   }
   async findByConfirmationCode(
     emailConfirmationCode: string,
-  ): Promise<UserData> {
+  ): Promise<UserCollectedData> {
     try {
-      const result = await this.dataSource.query(
-        sqlUserJoinQuery +
-          `
-        WHERE c."confirmationCode" = $1
-      `,
-        [emailConfirmationCode],
-      );
-      if (result.length < 1) return null;
-      const foundUser: UserSqlJoinedType = result[0];
-      return this._mapUserSqlJoinedTypeToUserType(foundUser);
+      const result = await this.usersConfirmationsRepo.findOneBy({
+        confirmationCode: emailConfirmationCode,
+      });
+      if (!result) return null;
+      const foundUser = this.getUserById(result.userId);
+      if (!foundUser) return null;
+      return foundUser;
     } catch (e) {
       console.log(e);
       return;
     }
   }
-  async findByRecoveryCode(recoveryCode: string): Promise<UserData> {
+  async findByRecoveryCode(recoveryCode: string): Promise<UserCollectedData> {
     try {
-      const result = await this.dataSource.query(
-        sqlUserJoinQuery +
-          `
-        WHERE r."recoveryCode" = $1
-      `,
-        [recoveryCode],
-      );
-      if (result.length < 1) return null;
-      const foundUser: UserSqlJoinedType = result[0];
-      return this._mapUserSqlJoinedTypeToUserType(foundUser);
+      const result = await this.usersRecoveryRepo.findOneBy({
+        recoveryCode: recoveryCode,
+      });
+      if (!result) return null;
+      const foundUser = this.getUserById(result.userId);
+      if (!foundUser) return null;
+      return foundUser;
     } catch (e) {
       console.log(e);
       return;
@@ -229,81 +141,51 @@ WHERE u."id" = $1;
   }
   async confirmationSetUser(userId: string): Promise<boolean> {
     try {
-      await this.dataSource.query(
-        `
-UPDATE "USERS_CONFIRMATIONS"
-SET "isConfirmed" = true
-WHERE "userId" = $1
-      `,
-        [userId],
+      await this.usersConfirmationsRepo.update(
+        { userId: userId },
+        { isConfirmed: true },
       );
+      return true;
     } catch (e) {
       return false;
     }
-    return true;
   }
   async updateConfirmationCode(userId: string, newCode: string): Promise<void> {
-    const userSearchResult = await this.dataSource.query(
-      `
-SELECT * FROM "USERS"
-WHERE "id" = $1
-    `,
-      [userId],
-    );
-    if (userSearchResult.length < 1) {
-      return;
-    } else {
-      await this.dataSource.query(
-        `
-UPDATE "USERS_CONFIRMATIONS"
-SET "confirmationCode" = $1
-WHERE "userId" = $2
-      `,
-        [newCode, userId],
+    try {
+      await this.usersConfirmationsRepo.update(
+        { userId: userId },
+        {
+          confirmationCode: newCode,
+        },
       );
+      return;
+    } catch (e) {
+      return;
     }
   }
-  async updateRecoveryCode(id: string, newRecoveryCode: string): Promise<void> {
-    const userSearchResult = await this.dataSource.query(
-      `
-SELECT * FROM "USERS"
-WHERE "id" = $1
-    `,
-      [id],
-    );
-    if (userSearchResult.length < 1) {
-      return;
-    } else {
-      await this.dataSource.query(
-        `
-UPDATE "USERS_RECOVERY"
-SET "recoveryCode" = $1, "recoveryExpirationDate" = $2
-WHERE "userId" = $3
-      `,
-        [newRecoveryCode, new Date(), id],
+  async updateRecoveryCode(
+    userId: string,
+    newRecoveryCode: string,
+  ): Promise<void> {
+    try {
+      await this.usersRecoveryRepo.update(
+        { userId: userId },
+        {
+          recoveryCode: newRecoveryCode,
+        },
       );
+      return;
+    } catch (e) {
       return;
     }
   }
   async updateHashByRecoveryCode(id: string, newHash: string): Promise<void> {
-    const userSearchResult = await this.dataSource.query(
-      `
-SELECT * FROM "USERS"
-WHERE "id" = $1
-    `,
-      [id],
-    );
-    if (userSearchResult.length < 1) {
+    try {
+      await this.usersRepo.update(id, {
+        hash: newHash,
+      });
       return;
-    } else {
-      await this.dataSource.query(
-        `
-UPDATE "USERS"
-SET "hash" = $1
-WHERE "id" = $2
-      `,
-        [newHash, id],
-      );
+    } catch (e) {
       return;
     }
   }
@@ -313,27 +195,32 @@ WHERE "id" = $2
     banReason: string,
   ): Promise<void> {
     if (isBanned) {
-      await this.dataSource.query(
-        `
-UPDATE "USERS_GLOBAL_BAN"
-SET "isBanned" = $1, "banDate" = $2, "banReason" = $3
-WHERE "userId" = $4
-        `,
-        [isBanned, new Date(), banReason, userId],
+      await this.usersBansRepo.update(
+        { userId: userId },
+        {
+          isBanned: isBanned,
+          banDate: new Date(),
+          banReason: banReason,
+        },
       );
     } else {
-      await this.dataSource.query(
-        `
-UPDATE "USERS_GLOBAL_BAN"
-SET "isBanned" = $1, "banDate" = null, "banReason" = null
-WHERE "userId" = $2
-        `,
-        [isBanned, userId],
+      await this.usersBansRepo.update(
+        { userId: userId },
+        {
+          isBanned: isBanned,
+          banDate: null,
+          banReason: null,
+        },
       );
     }
     return;
   }
-  private _mapUserSqlJoinedTypeToUserType(user: UserSqlJoinedType): UserData {
+  private _mapUserSqlJoinedTypeToUserType(
+    user: User,
+    userConfirmationData: UserConfirmation,
+    userRecoveryData: UserRecovery,
+    userBanData: UserGlobalBan,
+  ): UserCollectedData {
     return {
       id: user.id,
       accountData: {
@@ -343,18 +230,18 @@ WHERE "userId" = $2
         createdAt: user.createdAt,
       },
       emailConfirmationData: {
-        confirmationCode: user.confirmationCode,
-        expirationDate: user.confirmationExpirationDate,
-        isConfirmed: user.isConfirmed,
+        confirmationCode: userConfirmationData.confirmationCode,
+        expirationDate: userConfirmationData.confirmationExpirationDate,
+        isConfirmed: userConfirmationData.isConfirmed,
       },
       recoveryCodeData: {
-        recoveryCode: user.recoveryCode,
-        expirationDate: user.recoveryExpirationDate,
+        recoveryCode: userRecoveryData.recoveryCode,
+        expirationDate: userRecoveryData.recoveryExpirationDate,
       },
       globalBanInfo: {
-        isBanned: user.isBanned,
-        banDate: user.banDate,
-        banReason: user.banReason,
+        isBanned: userBanData.isBanned,
+        banDate: userBanData.banDate,
+        banReason: userBanData.banReason,
       },
     };
   }
