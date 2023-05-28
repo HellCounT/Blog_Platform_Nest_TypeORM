@@ -1,6 +1,5 @@
-import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { User } from '../../../users/etities/user.entity';
-import { JoinColumn } from 'typeorm/browser';
 
 @Entity()
 export class Device {

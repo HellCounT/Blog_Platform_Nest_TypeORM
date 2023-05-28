@@ -1,6 +1,5 @@
-import { Column, Entity, OneToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryColumn, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
-import { JoinColumn } from 'typeorm/browser';
 
 @Entity()
 export class UserGlobalBan {
