@@ -77,6 +77,21 @@ import { UpdateCommentUseCase } from './comments/use-cases/update.comment.use-ca
 import { DeleteCommentUseCase } from './comments/use-cases/delete.comment.use-case';
 import { UpdateCommentLikeStatusUseCase } from './comments/use-cases/update.comment.likestatus.use-case';
 import { UpdatePostLikeStatusUseCase } from './posts/use-cases/update.post.likestatus.use-case';
+import { User } from './users/etities/user.entity';
+import { UserConfirmation } from './users/etities/user-confirmation.entity';
+import { UserGlobalBan } from './users/etities/user-global-ban.entity';
+import { UserRecovery } from './users/etities/user-recovery.entity';
+import { Device } from './security/devices/entities/device.entity';
+import { ExpiredToken } from './security/tokens/entities/expired-token.entity';
+
+const entities = [
+  User,
+  UserConfirmation,
+  UserGlobalBan,
+  UserRecovery,
+  Device,
+  ExpiredToken,
+];
 
 const controllers = [
   AppController,
@@ -180,6 +195,7 @@ const adapters = [JwtAdapter, EmailManager];
       autoLoadEntities: false,
       synchronize: false,
     }),
+    TypeOrmModule.forFeature([...entities]),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'swagger-static'),
       serveRoot: process.env.NODE_ENV === 'development' ? '/' : '/swagger',
