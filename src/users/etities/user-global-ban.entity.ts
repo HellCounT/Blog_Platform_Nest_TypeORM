@@ -1,7 +1,12 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToOne, PrimaryColumn } from 'typeorm';
+import { User } from './user.entity';
+import { JoinColumn } from 'typeorm/browser';
 
 @Entity()
 export class UserGlobalBan {
+  @OneToOne(() => User, (u) => u.userGlobalBan)
+  @JoinColumn()
+  user: User;
   @PrimaryColumn('uuid')
   userId: string;
   @Column('boolean')
