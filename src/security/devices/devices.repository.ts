@@ -84,7 +84,8 @@ export class DevicesRepository {
       .where(`userId = :userId AND deviceId != :deviceId`, {
         userId: userId,
         deviceId: deviceId,
-      });
+      })
+      .execute();
     return;
   }
   async killAllSessionsForUser(userId: string): Promise<void> {
