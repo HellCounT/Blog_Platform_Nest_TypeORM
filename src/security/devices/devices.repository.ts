@@ -1,22 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { DeviceData } from './types/devices.types';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Device } from './entities/device.entity';
+import { isNil } from '@nestjs/common/utils/shared.utils';
 
 @Injectable()
 export class DevicesRepository {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(Device) protected devicesRepo: Repository<Device>,
+  ) {}
   async findSessionByDeviceId(deviceId: string): Promise<DeviceData> {
     try {
-      const result = await this.dataSource.query(
-        `
-      SELECT * FROM "DEVICES"
-      WHERE "id" = $1
-      `,
-        [deviceId],
-      );
-      if (result.length < 1) return null;
-      return result[0];
+      const device = await this.devicesRepo.findOneBy({ id: deviceId });
+      if (isNil(device)) return null;
+      return device;
     } catch (e) {
       console.log(e);
       return null;
@@ -24,35 +22,22 @@ export class DevicesRepository {
   }
   async getAllSessionsForUser(userId: string): Promise<DeviceData[]> {
     try {
-      return await this.dataSource.query(
-        `
-      SELECT * FROM "DEVICES"
-      WHERE "userId" = $1
-      `,
-        [userId],
-      );
+      return this.devicesRepo.findBy({ userId: userId });
     } catch (e) {
       console.log(e);
       return null;
     }
   }
   async addSessionToDb(newSession: DeviceData): Promise<void> {
-    await this.dataSource.query(
-      `
-INSERT INTO "DEVICES"
-("id", "userId", "ip", "deviceName", "issuedAt", "expirationDate", "refreshTokenMeta")
-VALUES ($1, $2, $3, $4, $5, $6, $7)
-      `,
-      [
-        newSession.id,
-        newSession.userId,
-        newSession.ip,
-        newSession.deviceName,
-        newSession.issuedAt,
-        newSession.expirationDate,
-        newSession.refreshTokenMeta,
-      ],
-    );
+    const device = new Device();
+    device.id = newSession.id;
+    device.userId = newSession.userId;
+    device.ip = newSession.ip;
+    device.deviceName = newSession.deviceName;
+    device.issuedAt = newSession.issuedAt;
+    device.expirationDate = newSession.expirationDate;
+    device.refreshTokenMeta = newSession.refreshTokenMeta;
+    await this.devicesRepo.save(device);
     return;
   }
   async updateSessionWithDeviceId(
@@ -62,22 +47,13 @@ VALUES ($1, $2, $3, $4, $5, $6, $7)
     expDate: Date,
   ): Promise<boolean> {
     try {
-      const activeSessionResult = await this.dataSource.query(
-        `
-SELECT * FROM "DEVICES"
-WHERE "id" = $1
-      `,
-        [deviceId],
-      );
-      if (activeSessionResult.length > 0) {
-        await this.dataSource.query(
-          `
-UPDATE "DEVICES"
-SET "issuedAt" = $1, "expirationDate" = $2, "refreshTokenMeta" = $3
-WHERE "id" = $4
-          `,
-          [issueDate, expDate, newRefreshTokenMeta, deviceId],
-        );
+      const activeSession = await this.findSessionByDeviceId(deviceId);
+      if (activeSession) {
+        await this.devicesRepo.update(deviceId, {
+          issuedAt: issueDate,
+          expirationDate: expDate,
+          refreshTokenMeta: newRefreshTokenMeta,
+        });
         return true;
       } else return false;
     } catch (e) {
@@ -87,21 +63,9 @@ WHERE "id" = $4
   }
   async deleteSessionById(deviceId: string): Promise<boolean> {
     try {
-      const activeSessionResult = await this.dataSource.query(
-        `
-SELECT * FROM "DEVICES"
-WHERE "id" = $1
-      `,
-        [deviceId],
-      );
-      if (activeSessionResult.length > 0) {
-        await this.dataSource.query(
-          `
-DELETE FROM "DEVICES"
-WHERE "id" = $1
-          `,
-          [deviceId],
-        );
+      const activeSession = await this.findSessionByDeviceId(deviceId);
+      if (activeSession) {
+        await this.devicesRepo.delete(deviceId);
         return true;
       } else return false;
     } catch (e) {
@@ -113,23 +77,18 @@ WHERE "id" = $1
     userId: string,
     deviceId: string,
   ): Promise<void> {
-    await this.dataSource.query(
-      `
-DELETE FROM "DEVICES"
-WHERE "userId" = $1 AND "id" != $2
-          `,
-      [userId, deviceId],
-    );
+    await this.devicesRepo
+      .createQueryBuilder()
+      .delete()
+      .from(Device)
+      .where(`userId = :userId AND deviceId != :deviceId`, {
+        userId: userId,
+        deviceId: deviceId,
+      });
     return;
   }
   async killAllSessionsForUser(userId: string): Promise<void> {
-    await this.dataSource.query(
-      `
-DELETE FROM "DEVICES"
-WHERE "userId" = $1
-          `,
-      [userId],
-    );
+    await this.devicesRepo.delete({ userId: userId });
     return;
   }
 }
