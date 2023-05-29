@@ -3,7 +3,7 @@ import { DeviceData } from './types/devices.types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Device } from './entities/device.entity';
-import { isNil } from '@nestjs/common/utils/shared.utils';
+import { isVoid } from '../../application-helpers/void.check.helper';
 
 @Injectable()
 export class DevicesRepository {
@@ -13,7 +13,7 @@ export class DevicesRepository {
   async findSessionByDeviceId(deviceId: string): Promise<DeviceData> {
     try {
       const device = await this.devicesRepo.findOneBy({ id: deviceId });
-      if (isNil(device)) return null;
+      if (isVoid(device)) return null;
       return device;
     } catch (e) {
       console.log(e);

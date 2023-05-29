@@ -1,25 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { UserQueryType } from './types/users.types';
 import { OutputDeviceDto } from '../security/devices/dto/output.device.dto';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import { DeviceData } from '../security/devices/types/devices.types';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './etities/user.entity';
+import { isVoid } from '../application-helpers/void.check.helper';
+import { Device } from '../security/devices/entities/device.entity';
 
 @Injectable()
 export class UsersQuery {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
-
+  constructor(
+    @InjectRepository(User) protected usersRepo: Repository<User>,
+    @InjectRepository(Device) protected devicesRepo: Repository<Device>,
+  ) {}
   async findUserById(userId: string): Promise<UserQueryType> {
     try {
-      const result = await this.dataSource.query(
-        `
-SELECT * FROM "USERS"
-WHERE "id" = $1
-        `,
-        [userId],
-      );
-      if (result.length < 1) return null;
-      return result[0];
+      const user = await this.usersRepo.findOneBy({ id: userId });
+      if (isVoid(user)) return null;
+      return { id: user.id, login: user.login, email: user.email };
     } catch (e) {
       console.log(e);
       return null;
@@ -28,16 +26,12 @@ WHERE "id" = $1
   async getAllSessionsForCurrentUser(
     userId: string,
   ): Promise<Array<OutputDeviceDto>> {
-    const sessions: Array<DeviceData> = await this.dataSource.query(
-      `
-SELECT * FROM "DEVICES"
-WHERE "userId" = $1
-      `,
-      [userId],
-    );
+    const sessions = await this.devicesRepo.findBy({
+      userId: userId,
+    });
     return sessions.map((e) => this._mapDevicesToViewType(e));
   }
-  private _mapDevicesToViewType(device: DeviceData): OutputDeviceDto {
+  private _mapDevicesToViewType(device: Device): OutputDeviceDto {
     return {
       deviceId: device.id,
       ip: device.ip,

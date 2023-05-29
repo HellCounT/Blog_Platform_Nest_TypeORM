@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { ExpiredTokenType } from './types/expired.token.type';
 import { v4 as uuidv4 } from 'uuid';
 import { ExpiredToken } from './entities/expired-token.entity';
-import { isNil } from '@nestjs/common/utils/shared.utils';
+import { isVoid } from '../../application-helpers/void.check.helper';
 
 @Injectable()
 export class ExpiredTokensRepository {
@@ -26,7 +26,7 @@ export class ExpiredTokensRepository {
       const token = await this.expiredTokensRepo.findOneBy({
         refreshTokenMeta: tokenMeta,
       });
-      if (isNil(token)) return null;
+      if (isVoid(token)) return null;
       return token;
     } catch (e) {
       console.log(e);

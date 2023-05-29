@@ -7,6 +7,7 @@ import { User } from './etities/user.entity';
 import { UserGlobalBan } from './etities/user-global-ban.entity';
 import { UserConfirmation } from './etities/user-confirmation.entity';
 import { UserRecovery } from './etities/user-recovery.entity';
+import { isVoid } from '../application-helpers/void.check.helper';
 
 @Injectable()
 export class UsersRepository {
@@ -22,7 +23,7 @@ export class UsersRepository {
   async getUserById(id: string): Promise<UserCollectedData> {
     try {
       const user = await this.usersRepo.findOneBy({ id: id });
-      if (!user) return null;
+      if (isVoid(user)) return null;
       const userBanData = await this.usersBansRepo.findOneBy({ userId: id });
       const userConfirmationData = await this.usersConfirmationsRepo.findOneBy({
         userId: id,
@@ -116,7 +117,7 @@ export class UsersRepository {
       const result = await this.usersConfirmationsRepo.findOneBy({
         confirmationCode: emailConfirmationCode,
       });
-      if (!result) return null;
+      if (isVoid(result)) return null;
       const foundUser = this.getUserById(result.userId);
       if (!foundUser) return null;
       return foundUser;
@@ -130,7 +131,7 @@ export class UsersRepository {
       const result = await this.usersRecoveryRepo.findOneBy({
         recoveryCode: recoveryCode,
       });
-      if (!result) return null;
+      if (isVoid(result)) return null;
       const foundUser = this.getUserById(result.userId);
       if (!foundUser) return null;
       return foundUser;
