@@ -18,7 +18,7 @@ export class AppController {
   @HttpCode(204)
   async deleteAllData() {
     await Promise.allSettled([
-      this.dataSource.query(`DELETE FROM "USERS"`),
+      this.dataSource.query(`DELETE FROM "user"`),
       this.dataSource.query(`DELETE FROM "POSTS"`),
       this.dataSource.query(`DELETE FROM "BLOGS"`),
       this.dataSource.query(`DELETE FROM "COMMENTS"`),

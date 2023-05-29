@@ -29,6 +29,7 @@ describe('Auth Controller (e2e)', () => {
 
       await request(app)
         .post(authLoginPath)
+        .set('user-agent', 'Test Device')
         .send({
           loginOrEmail: user.login,
           password: 'bad_password',

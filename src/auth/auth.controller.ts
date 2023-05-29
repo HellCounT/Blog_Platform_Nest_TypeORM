@@ -38,6 +38,7 @@ import { JwtAdapter } from './jwt.adapter';
 import { StartNewSessionCommand } from '../security/devices/use-cases/start.new.session.use-case';
 import { LogoutSessionCommand } from '../security/devices/use-cases/logout.session.use-case';
 import { UpdateSessionWithDeviceIdCommand } from '../security/devices/use-cases/update.session.with.device.id.use-case';
+import { isVoid } from '../application-helpers/void.check.helper';
 
 const refreshTokenCookieOptions = {
   httpOnly: true,
@@ -61,6 +62,7 @@ export class AuthController {
     @Headers('user-agent') deviceName: string,
     @Res({ passthrough: true }) response: Response,
   ): Promise<OutputAccessTokenDto> {
+    if (isVoid(deviceName)) deviceName = '';
     const checkResult = await this.commandBus.execute(
       new ValidateUserCommand(userLoginDto),
     );

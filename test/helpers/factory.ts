@@ -65,7 +65,7 @@ export const usersFactory = {
   async loginAndGetTokenPair(app: any, user: InputCreateUserDto) {
     const response = await request(app)
       .post(authLoginPath)
-      .set('user-agent', 'test')
+      .set('user-agent', 'Test Device')
       .send({
         loginOrEmail: user.login,
         password: user.password,
