@@ -1,7 +1,6 @@
 import * as process from 'process';
 
 export type ConfigurationType = {
-  MONGO_URL: string;
   PGHOST: string;
   PGDATABASE: string;
   PGUSER: string;
@@ -20,7 +19,6 @@ export type ConfigurationType = {
 };
 
 export default (): ConfigurationType => ({
-  MONGO_URL: process.env.MONGO_URL || 'mongodb://127.0.0.1:27017',
   PGHOST: process.env.PGHOST,
   PGDATABASE: process.env.PGDATABASE,
   PGUSER: process.env.PGUSER,
