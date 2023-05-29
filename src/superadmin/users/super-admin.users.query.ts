@@ -26,7 +26,8 @@ export class SuperAdminUsersQuery {
   async viewAllUsers(q: UserQueryParser): Promise<UserPaginatorType> {
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
     const [reqPageUsers, allUsersCount] = await this.usersRepo
-      .createQueryBuilder()
+      .createQueryBuilder('u')
+      .leftJoinAndSelect('u.userGlobalBan', 'b')
       .where(
         `${getBanStatusForQuery(q.banStatus)} (
         u."login" ILIKE '%' || COALESCE(:searchLoginTerm, '') || '%'
