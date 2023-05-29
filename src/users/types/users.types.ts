@@ -55,15 +55,15 @@ export type UserSqlJoinedType = {
   banReason?: string | null;
 };
 
-export type UserAndBanInfoSqlType = {
-  id: string;
-  login: string;
-  email: string;
-  createdAt: string;
-  isBanned: boolean;
-  banDate?: Date | null;
-  banReason?: string | null;
-};
+// export type UserAndBanInfoSqlType = {
+//   id: string;
+//   login: string;
+//   email: string;
+//   createdAt: string;
+//   isBanned: boolean;
+//   banDate?: Date | null;
+//   banReason?: string | null;
+// };
 
 export type UserQueryType = {
   id: string;

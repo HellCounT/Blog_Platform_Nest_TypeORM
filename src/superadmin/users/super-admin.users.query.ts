@@ -1,77 +1,75 @@
 import {
   getBanStatusForQuery,
-  pickOrderForUsersQuery,
   UserQueryParser,
 } from '../../application-helpers/query.parser';
-import {
-  UserAndBanInfoSqlType,
-  UserPaginatorType,
-} from '../../users/types/users.types';
+import { UserPaginatorType } from '../../users/types/users.types';
 import { OutputSuperAdminUserDto } from './dto/output.super-admin.user.dto';
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from '../../users/etities/user.entity';
+import { UserGlobalBan } from '../../users/etities/user-global-ban.entity';
+import { UserConfirmation } from '../../users/etities/user-confirmation.entity';
+import { UserRecovery } from '../../users/etities/user-recovery.entity';
 
 @Injectable()
 export class SuperAdminUsersQuery {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(User) protected usersRepo: Repository<User>,
+    @InjectRepository(UserGlobalBan)
+    protected usersBansRepo: Repository<UserGlobalBan>,
+    @InjectRepository(UserConfirmation)
+    protected usersConfirmationsRepo: Repository<UserConfirmation>,
+    @InjectRepository(UserRecovery)
+    protected usersRecoveryRepo: Repository<UserRecovery>,
+  ) {}
   async viewAllUsers(q: UserQueryParser): Promise<UserPaginatorType> {
-    const allUsersCountResult = await this.dataSource.query(
-      `
-SELECT COUNT(*)
-FROM "USERS" as u
-JOIN "USERS_GLOBAL_BAN" as b
-ON u."id" = b."userId"
-WHERE ${getBanStatusForQuery(q.banStatus)} (
-    u."login" ILIKE '%' || COALESCE($1, '') || '%'
-    OR
-    u."email" ILIKE '%' || COALESCE($2, '') || '%'
-)
-      `,
-      [q.searchLoginTerm, q.searchEmailTerm],
-    );
-    const allUsersCount: number = parseInt(allUsersCountResult[0].count, 10);
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
-    const reqPageUsers: UserAndBanInfoSqlType[] = await this.dataSource.query(
-      `
-SELECT u."id", u."login", u."email", u."createdAt", 
-b."isBanned", b."banDate", b."banReason"
-FROM "USERS" as u
-JOIN "USERS_GLOBAL_BAN" as b
-ON u."id" = b."userId"
-WHERE ${getBanStatusForQuery(q.banStatus)} (
-    u."login" ILIKE '%' || COALESCE($1, '') || '%'
-    OR
-    u."email" ILIKE '%' || COALESCE($2, '') || '%'
-) ${pickOrderForUsersQuery(q.sortBy, q.sortDirection)}
-LIMIT $3 OFFSET $4
-      `,
-      [q.searchLoginTerm, q.searchEmailTerm, q.pageSize, offsetSize],
-    );
-    const pageUsers = reqPageUsers.map((u) => this._mapUserToSAViewType(u));
+    const [reqPageUsers, allUsersCount] = await this.usersRepo
+      .createQueryBuilder()
+      .where(
+        `${getBanStatusForQuery(q.banStatus)} (
+        u."login" ILIKE '%' || COALESCE(:searchLoginTerm, '') || '%'
+        OR
+        u."email" ILIKE '%' || COALESCE(:searchEmailTerm, '') || '%')`,
+        {
+          searchLoginTerm: q.searchLoginTerm,
+          searchEmailTerm: q.searchEmailTerm,
+        },
+      )
+      .orderBy(`"${q.sortBy}"`, q.sortDirection)
+      .limit(q.pageSize)
+      .offset(offsetSize)
+      .getManyAndCount();
+    const items = [];
+    for await (const u of reqPageUsers) {
+      const user = await this._mapUserToSAViewType(u);
+      items.push(user);
+    }
     return {
       pagesCount: Math.ceil(allUsersCount / q.pageSize),
       page: q.pageNumber,
       pageSize: q.pageSize,
       totalCount: allUsersCount,
-      items: pageUsers,
+      items: items,
     };
   }
-  private _mapUserToSAViewType(
-    user: UserAndBanInfoSqlType,
-  ): OutputSuperAdminUserDto {
+  private async _mapUserToSAViewType(
+    user: User,
+  ): Promise<OutputSuperAdminUserDto> {
+    const userBanInfo = await this.usersBansRepo.findOneBy({ userId: user.id });
     let banDateString;
-    if (user.banDate === null) banDateString = null;
-    else banDateString = user.banDate.toISOString();
+    if (userBanInfo.banDate === null) banDateString = null;
+    else banDateString = userBanInfo.banDate.toISOString();
     return {
       id: user.id,
       login: user.login,
       email: user.email,
       createdAt: user.createdAt,
       banInfo: {
-        isBanned: user.isBanned,
+        isBanned: userBanInfo.isBanned,
         banDate: banDateString,
-        banReason: user.banReason,
+        banReason: userBanInfo.banReason,
       },
     };
   }

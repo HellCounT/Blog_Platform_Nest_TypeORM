@@ -8,7 +8,7 @@ export type QueryParser = {
 export type UserQueryParser = {
   banStatus: BanStatus;
   sortBy: string;
-  sortDirection: 1 | -1;
+  sortDirection: 'ASC' | 'DESC';
   pageNumber: number;
   pageSize: number;
   searchLoginTerm: string | null;
@@ -37,7 +37,7 @@ export const parseUserQueryPagination = (query): UserQueryParser => {
   const queryUserParamsParser: UserQueryParser = {
     banStatus: BanStatus.all,
     sortBy: 'createdAt',
-    sortDirection: -1,
+    sortDirection: 'DESC',
     pageNumber: 1,
     pageSize: 10,
     searchEmailTerm: null,
@@ -45,11 +45,13 @@ export const parseUserQueryPagination = (query): UserQueryParser => {
   };
   if (query.searchLoginTerm)
     queryUserParamsParser.searchLoginTerm = query.searchLoginTerm.toString();
+  else queryUserParamsParser.searchLoginTerm = '';
   if (query.searchEmailTerm)
     queryUserParamsParser.searchEmailTerm = query.searchEmailTerm.toString();
+  else queryUserParamsParser.searchLoginTerm = '';
   if (query.sortBy) queryUserParamsParser.sortBy = query.sortBy.toString();
   if (query.sortDirection && query.sortDirection.toString() === 'asc')
-    queryUserParamsParser.sortDirection = 1;
+    queryUserParamsParser.sortDirection = 'ASC';
   if (query.pageNumber) queryUserParamsParser.pageNumber = +query.pageNumber;
   if (query.pageSize) queryUserParamsParser.pageSize = +query.pageSize;
   if (query.banStatus) queryUserParamsParser.banStatus = query.banStatus;
@@ -63,31 +65,31 @@ export const getBanStatusForQuery = (banStatus: BanStatus): string => {
     return `b."isBanned" = false AND `;
   } else return ``;
 };
-export const pickOrderForUsersQuery = (
-  order: string,
-  direction: 1 | -1,
-): string => {
-  let orderString = 'ORDER BY';
-  switch (order) {
-    case 'id':
-      orderString += ' u."id"';
-      break;
-    case 'login':
-      orderString += ' u."login"';
-      break;
-    case 'email':
-      orderString += ' u."email"';
-      break;
-    default:
-      orderString = 'ORDER BY u."createdAt"';
-  }
-  if (direction === 1) {
-    orderString += ' ASC';
-  } else {
-    orderString += ' DESC';
-  }
-  return orderString;
-};
+// export const pickOrderForUsersQuery = (
+//   order: string,
+//   direction: 1 | -1,
+// ): string => {
+//   let orderString = 'ORDER BY';
+//   switch (order) {
+//     case 'id':
+//       orderString += ' u."id"';
+//       break;
+//     case 'login':
+//       orderString += ' u."login"';
+//       break;
+//     case 'email':
+//       orderString += ' u."email"';
+//       break;
+//     default:
+//       orderString = 'ORDER BY u."createdAt"';
+//   }
+//   if (direction === 1) {
+//     orderString += ' ASC';
+//   } else {
+//     orderString += ' DESC';
+//   }
+//   return orderString;
+// };
 
 export const pickOrderForBannedByBloggerUsersQuery = (
   order: string,
