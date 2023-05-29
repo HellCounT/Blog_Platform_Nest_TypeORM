@@ -1,5 +1,5 @@
 {
-  "name": "blogplatform_rawsql",
+  "name": "blogplatform_typeorm",
   "version": "0.0.2",
   "description": "",
   "author": "",

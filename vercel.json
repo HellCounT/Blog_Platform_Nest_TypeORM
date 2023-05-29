@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "BlogsAPI-Nest-RawSQL",
+  "name": "BlogsAPI-Nest-TypeORM",
   "builds": [
     {
       "src": "src/main.ts",
