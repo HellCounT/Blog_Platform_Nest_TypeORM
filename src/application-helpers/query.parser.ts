@@ -93,7 +93,7 @@ export const getBanStatusForQuery = (banStatus: BanStatus): string => {
 
 export const pickOrderForBannedByBloggerUsersQuery = (
   order: string,
-  direction: 1 | -1,
+  direction: 'ASC' | 'DESC',
 ): string => {
   let orderString = 'ORDER BY';
   switch (order) {
@@ -109,7 +109,7 @@ export const pickOrderForBannedByBloggerUsersQuery = (
     default:
       orderString = 'ORDER BY u."createdAt"';
   }
-  if (direction === 1) {
+  if (direction === 'ASC') {
     orderString += ' ASC';
   } else {
     orderString += ' DESC';

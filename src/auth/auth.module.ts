@@ -15,6 +15,7 @@ import { UserGlobalBan } from '../users/etities/user-global-ban.entity';
 import { User } from '../users/etities/user.entity';
 import { UserConfirmation } from '../users/etities/user-confirmation.entity';
 import { UserRecovery } from '../users/etities/user-recovery.entity';
+import { Device } from '../security/devices/entities/device.entity';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UserRecovery } from '../users/etities/user-recovery.entity';
       UserGlobalBan,
       UserConfirmation,
       UserRecovery,
+      Device,
     ]),
   ],
   providers: [

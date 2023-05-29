@@ -192,8 +192,8 @@ const adapters = [JwtAdapter, EmailManager];
       password: process.env.PGPASSWORD,
       database: process.env.PGDATABASE,
       ssl: true,
-      autoLoadEntities: false,
-      synchronize: false,
+      autoLoadEntities: true,
+      synchronize: true,
     }),
     TypeOrmModule.forFeature([...entities]),
     ServeStaticModule.forRoot({
