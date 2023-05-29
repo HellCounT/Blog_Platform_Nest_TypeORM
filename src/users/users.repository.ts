@@ -48,6 +48,7 @@ export class UsersRepository {
     const user = new User();
     user.id = newUser.id;
     user.login = newUser.accountData.login;
+    user.email = newUser.accountData.email;
     user.createdAt = newUser.accountData.createdAt;
     user.hash = newUser.accountData.hash;
     await this.usersRepo.save(user);

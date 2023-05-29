@@ -1,6 +1,7 @@
-import { Column, OneToOne, PrimaryColumn, JoinColumn } from 'typeorm';
+import { Column, OneToOne, PrimaryColumn, JoinColumn, Entity } from 'typeorm';
 import { User } from './user.entity';
 
+@Entity()
 export class UserRecovery {
   @OneToOne(() => User, (u) => u.userRecovery, { onDelete: 'CASCADE' })
   @JoinColumn()

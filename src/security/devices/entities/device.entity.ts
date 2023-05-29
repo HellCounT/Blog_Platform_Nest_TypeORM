@@ -12,7 +12,7 @@ export class Device {
   userId: string;
   @Column('varchar')
   ip: string;
-  @Column('varchar')
+  @Column('varchar', { nullable: true })
   deviceName: string;
   @Column('timestamp')
   issuedAt: Date;

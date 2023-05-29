@@ -10,8 +10,8 @@ export class UserGlobalBan {
   userId: string;
   @Column('boolean')
   isBanned: boolean;
-  @Column('varchar')
+  @Column('varchar', { nullable: true })
   banReason: string;
-  @Column('timestamp')
+  @Column('timestamp', { nullable: true })
   banDate: Date;
 }
