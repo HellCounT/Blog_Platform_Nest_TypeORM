@@ -83,6 +83,9 @@ import { UserGlobalBan } from './users/etities/user-global-ban.entity';
 import { UserRecovery } from './users/etities/user-recovery.entity';
 import { Device } from './security/devices/entities/device.entity';
 import { ExpiredToken } from './security/tokens/entities/expired-token.entity';
+import { Blog } from './blogs/entities/blog.entity';
+import { Post } from './posts/entities/post.entity';
+import { Comment } from './comments/entities/comment.entity';
 
 const entities = [
   User,
@@ -91,6 +94,9 @@ const entities = [
   UserRecovery,
   Device,
   ExpiredToken,
+  Blog,
+  Post,
+  Comment,
 ];
 
 const controllers = [
