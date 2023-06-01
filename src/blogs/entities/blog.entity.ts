@@ -23,7 +23,7 @@ export class Blog {
   @Column('varchar')
   createdAt: string;
   @Column('boolean')
-  isMembership: string;
+  isMembership: boolean;
   @ManyToOne(() => User, (u) => u.blogs)
   @JoinColumn()
   owner: User;
@@ -37,4 +37,23 @@ export class Blog {
   posts: Post[];
   @OneToMany(() => UserBannedByBlogger, (bb) => bb.blog)
   userBans: UserBannedByBlogger[];
+  static instantiate(
+    blogId: string,
+    name: string,
+    description: string,
+    websiteUrl: string,
+    userId: string,
+  ): Blog {
+    const blog = new Blog();
+    blog.id = blogId;
+    blog.name = name;
+    blog.description = description;
+    blog.websiteUrl = websiteUrl;
+    blog.createdAt = new Date().toISOString();
+    blog.isMembership = false;
+    blog.isBanned = false;
+    blog.banDate = null;
+    blog.ownerId = userId;
+    return blog;
+  }
 }
