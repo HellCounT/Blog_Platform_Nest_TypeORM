@@ -1,5 +1,5 @@
 import { LikesForPostsRepository } from './likes-for-posts.repository';
-import { LikeStatus, PostLike } from './types/likes.types';
+import { LikeStatus, PostLikeData } from './types/likes.types';
 import { Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -12,7 +12,7 @@ export class LikesForPostsService {
     userLogin: string,
     likeStatus: LikeStatus,
   ): Promise<void> {
-    const newLike = new PostLike(
+    const newLike = new PostLikeData(
       uuidv4(),
       postId,
       userId,

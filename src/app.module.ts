@@ -86,6 +86,7 @@ import { ExpiredToken } from './security/tokens/entities/expired-token.entity';
 import { Blog } from './blogs/entities/blog.entity';
 import { Post } from './posts/entities/post.entity';
 import { Comment } from './comments/entities/comment.entity';
+import { CommentLike } from './likes/entities/comment-like.entity';
 
 const entities = [
   User,
@@ -97,6 +98,7 @@ const entities = [
   Blog,
   Post,
   Comment,
+  CommentLike,
 ];
 
 const controllers = [

@@ -1,6 +1,14 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+} from 'typeorm';
 import { User } from '../../users/etities/user.entity';
 import { Post } from '../../posts/entities/post.entity';
+import { CommentLike } from '../../likes/entities/comment-like.entity';
 
 @Entity()
 export class Comment {
@@ -24,4 +32,6 @@ export class Comment {
   likesCount: number;
   @Column('integer')
   dislikesCount: number;
+  @OneToMany(() => CommentLike, (cl) => cl.comment)
+  likes: CommentLike[];
 }

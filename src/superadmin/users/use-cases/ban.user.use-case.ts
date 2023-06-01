@@ -8,7 +8,10 @@ import { DevicesRepository } from '../../../security/devices/devices.repository'
 import { InputBanUserDto } from '../dto/input.ban-user.dto';
 import { NotFoundException } from '@nestjs/common';
 import { ExpiredTokensRepository } from '../../../security/tokens/expired.tokens.repository';
-import { CommentLike, PostLike } from '../../../likes/types/likes.types';
+import {
+  CommentLikeData,
+  PostLikeData,
+} from '../../../likes/types/likes.types';
 
 export class BanUserCommand {
   constructor(public banUserDto: InputBanUserDto, public userId: string) {}
@@ -51,8 +54,8 @@ export class BanUserUseCase {
   }
 
   private async _recalculateLikesCountersOnEntities(
-    likesInPosts: PostLike[],
-    likesInComments: CommentLike[],
+    likesInPosts: PostLikeData[],
+    likesInComments: CommentLikeData[],
   ): Promise<void> {
     for (let i = 0; i < likesInPosts.length; i++) {
       const postLikesCounter = await this.likesForPostsRepo.getNewLikesCounter(

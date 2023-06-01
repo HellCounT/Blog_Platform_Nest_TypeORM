@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { LikeStatus, PostLike } from './types/likes.types';
+import { LikeStatus, PostLikeData } from './types/likes.types';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class LikesForPostsRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
-  async createNewLike(newLike: PostLike): Promise<void> {
+  async createNewLike(newLike: PostLikeData): Promise<void> {
     try {
       await this.dataSource.query(
         `
@@ -63,7 +63,7 @@ export class LikesForPostsRepository {
       return;
     }
   }
-  async getByUserId(userId: string): Promise<PostLike[]> {
+  async getByUserId(userId: string): Promise<PostLikeData[]> {
     try {
       return await this.dataSource.query(
         `

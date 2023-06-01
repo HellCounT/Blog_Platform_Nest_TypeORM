@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { LikesForCommentsRepository } from './likes-for-comments.repository';
-import { CommentLike, LikeStatus } from './types/likes.types';
+import { CommentLikeData, LikeStatus } from './types/likes.types';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class LikesForCommentsService {
     userId: string,
     likeStatus: LikeStatus,
   ): Promise<void> {
-    const newLike = new CommentLike(
+    const newLike = new CommentLikeData(
       uuidv4(),
       commentId,
       userId,

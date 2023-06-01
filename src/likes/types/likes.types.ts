@@ -4,7 +4,7 @@ export enum LikeStatus {
   dislike = 'Dislike',
 }
 
-export class CommentLike {
+export class CommentLikeData {
   constructor(
     public id: string,
     public commentId: string,
@@ -23,7 +23,7 @@ export type CommentLikeJoinedType = {
   likeStatus: LikeStatus;
 };
 
-export class PostLike {
+export class PostLikeData {
   constructor(
     public id: string,
     public postId: string,
