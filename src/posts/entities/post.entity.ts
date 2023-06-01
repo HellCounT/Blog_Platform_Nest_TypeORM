@@ -9,6 +9,7 @@ import {
 import { Blog } from '../../blogs/entities/blog.entity';
 import { User } from '../../users/etities/user.entity';
 import { Comment } from '../../comments/entities/comment.entity';
+import { PostLike } from '../../likes/entities/post-like.entity';
 
 @Entity()
 export class Post {
@@ -38,4 +39,6 @@ export class Post {
   dislikesCount: number;
   @OneToMany(() => Comment, (c) => c.post)
   comments: Comment[];
+  @OneToMany(() => PostLike, (pl) => pl.post)
+  likes: PostLike[];
 }

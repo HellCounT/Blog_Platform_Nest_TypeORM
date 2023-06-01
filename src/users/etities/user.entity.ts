@@ -8,6 +8,7 @@ import { Blog } from '../../blogs/entities/blog.entity';
 import { Post } from '../../posts/entities/post.entity';
 import { Comment } from '../../comments/entities/comment.entity';
 import { CommentLike } from '../../likes/entities/comment-like.entity';
+import { PostLike } from '../../likes/entities/post-like.entity';
 
 @Entity()
 export class User {
@@ -39,4 +40,6 @@ export class User {
   comments: Comment[];
   @OneToMany(() => CommentLike, (cl) => cl.user)
   commentLikes: CommentLike[];
+  @OneToMany(() => PostLike, (pl) => pl.user)
+  postLikes: PostLike[];
 }
