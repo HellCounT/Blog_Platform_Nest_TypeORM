@@ -41,4 +41,24 @@ export class Post {
   comments: Comment[];
   @OneToMany(() => PostLike, (pl) => pl.post)
   likes: PostLike[];
+  static instantiate(
+    postId: string,
+    title: string,
+    shortDescription: string,
+    content: string,
+    blogId: string,
+    ownerId: string,
+  ): Post {
+    const post = new Post();
+    post.id = postId;
+    post.title = title;
+    post.shortDescription = shortDescription;
+    post.content = content;
+    post.blogId = blogId;
+    post.createdAt = new Date();
+    post.ownerId = ownerId;
+    post.likesCount = 0;
+    post.dislikesCount = 0;
+    return post;
+  }
 }

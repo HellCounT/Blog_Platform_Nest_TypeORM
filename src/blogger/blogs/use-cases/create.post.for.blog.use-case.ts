@@ -2,9 +2,8 @@ import { InputCreatePostForBlogDto } from '../dto/input.create-post-for-blog.dto
 import { CommandHandler } from '@nestjs/cqrs';
 import { BlogsRepository } from '../../../blogs/blogs.repository';
 import { PostsRepository } from '../../../posts/posts.repository';
-import { PostData, PostViewModelType } from '../../../posts/types/posts.types';
+import { PostViewModelType } from '../../../posts/types/posts.types';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 
 export class CreatePostForBlogCommand {
   constructor(
@@ -25,17 +24,27 @@ export class CreatePostForBlogUseCase {
     const foundBlog = await this.blogsRepo.getBlogById(command.blogId);
     if (!foundBlog) throw new NotFoundException(['wrong blog id']);
     if (foundBlog.ownerId !== command.userId) throw new ForbiddenException();
-    const newPost = new PostData(
-      uuidv4(),
+    const result = await this.postsRepo.createPost(
       command.createPostDto.title,
       command.createPostDto.shortDescription,
-      command.createPostDto.content,
+      command.createPostDto.shortDescription,
       command.blogId,
-      new Date(),
       foundBlog.ownerId,
-      0,
-      0,
     );
-    return await this.postsRepo.createPost(newPost);
+    return {
+      id: result.id,
+      title: result.title,
+      shortDescription: result.shortDescription,
+      content: result.content,
+      blogId: result.blogId,
+      blogName: foundBlog.name,
+      createdAt: result.createdAt.toISOString(),
+      extendedLikesInfo: {
+        likesCount: result.likesCount,
+        dislikesCount: result.dislikesCount,
+        myStatus: 'None',
+        newestLikes: [],
+      },
+    };
   }
 }
