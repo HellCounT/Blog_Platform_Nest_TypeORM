@@ -4,7 +4,7 @@ import { PostsRepository } from '../../posts/posts.repository';
 import { UsersRepository } from '../../users/users.repository';
 import { CommentViewDto } from '../dto/output.comment.view.dto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { Comment } from '../types/comments.types';
+import { CommentData } from '../types/comments.types';
 import { UsersBannedByBloggerRepository } from '../../blogger/users/users-banned-by-blogger/users-banned-by-blogger.repository';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -33,7 +33,7 @@ export class CreateCommentUseCase {
       command.userId,
     );
     if (bannedByBlogger) throw new ForbiddenException();
-    const newComment = new Comment(
+    const newComment = new CommentData(
       uuidv4(),
       command.content,
       command.userId,

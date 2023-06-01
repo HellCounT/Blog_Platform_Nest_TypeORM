@@ -16,7 +16,7 @@ export class Device {
   deviceName: string;
   @Column('timestamp')
   issuedAt: Date;
-  @Column('timestamptz')
+  @Column('timestamp')
   expirationDate: Date;
   @Column('varchar')
   refreshTokenMeta: string;

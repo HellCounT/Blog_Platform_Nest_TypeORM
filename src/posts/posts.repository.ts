@@ -1,4 +1,8 @@
-import { Post, PostJoinedType, PostViewModelType } from './types/posts.types';
+import {
+  PostData,
+  PostJoinedType,
+  PostViewModelType,
+} from './types/posts.types';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -6,9 +10,9 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class PostsRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
-  async getPostById(postId: string): Promise<Post> {
+  async getPostById(postId: string): Promise<PostData> {
     try {
-      const result: Post[] = await this.dataSource.query(
+      const result: PostData[] = await this.dataSource.query(
         `
         SELECT * FROM "POSTS" as p
         WHERE p."id" = $1
@@ -22,7 +26,7 @@ export class PostsRepository {
       return null;
     }
   }
-  async createPost(newPost: Post): Promise<PostViewModelType | null> {
+  async createPost(newPost: PostData): Promise<PostViewModelType | null> {
     try {
       await this.dataSource.query(
         `

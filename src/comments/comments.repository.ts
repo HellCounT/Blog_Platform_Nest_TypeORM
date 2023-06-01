@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Comment, CommentJoinedType } from './types/comments.types';
+import { CommentData, CommentJoinedType } from './types/comments.types';
 import { LikeStatus } from '../likes/types/likes.types';
 import { CommentViewDto } from './dto/output.comment.view.dto';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -28,7 +28,7 @@ export class CommentsRepository {
     }
   }
 
-  async createComment(newComment: Comment): Promise<CommentViewDto | null> {
+  async createComment(newComment: CommentData): Promise<CommentViewDto | null> {
     try {
       await this.dataSource.query(
         `

@@ -30,7 +30,6 @@ export async function bootstrap() {
             });
           });
         });
-
         throw new BadRequestException(errorsForResponse);
       },
     }),

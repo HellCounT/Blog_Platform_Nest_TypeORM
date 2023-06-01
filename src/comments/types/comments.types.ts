@@ -1,4 +1,4 @@
-export class Comment {
+export class CommentData {
   constructor(
     public id: string,
     public content: string,

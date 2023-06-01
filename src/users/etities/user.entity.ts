@@ -4,6 +4,9 @@ import { UserConfirmation } from './user-confirmation.entity';
 import { UserRecovery } from './user-recovery.entity';
 import { Device } from '../../security/devices/entities/device.entity';
 import { ExpiredToken } from '../../security/tokens/entities/expired-token.entity';
+import { Blog } from '../../blogs/entities/blog.entity';
+import { Post } from '../../posts/entities/post.entity';
+import { Comment } from '../../comments/entities/comment.entity';
 
 @Entity()
 export class User {
@@ -27,4 +30,10 @@ export class User {
   devices: Device[];
   @OneToMany(() => ExpiredToken, (ep) => ep.user)
   expiredTokens: ExpiredToken[];
+  @OneToMany(() => Blog, (b) => b.owner)
+  blogs: Blog[];
+  @OneToMany(() => Post, (p) => p.owner)
+  posts: Post[];
+  @OneToMany(() => Comment, (c) => c.user)
+  comments: Comment[];
 }

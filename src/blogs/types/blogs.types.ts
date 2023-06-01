@@ -7,7 +7,7 @@ export type BlogViewModelType = {
   isMembership: boolean;
 };
 
-export class Blog {
+export class BlogData {
   constructor(
     public id: string,
     public name: string,

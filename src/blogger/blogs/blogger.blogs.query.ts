@@ -4,7 +4,7 @@ import {
   pickOrderForCommentsQuery,
   QueryParser,
 } from '../../application-helpers/query.parser';
-import { Blog, BlogPaginatorType } from '../../blogs/types/blogs.types';
+import { BlogData, BlogPaginatorType } from '../../blogs/types/blogs.types';
 import { BlogsQuery } from '../../blogs/blogs.query';
 import {
   CommentsForBloggerViewType,
@@ -39,7 +39,7 @@ export class BloggerBlogsQuery extends BlogsQuery {
     );
     const allBlogsCount: number = parseInt(allBlogsCountResult[0].count, 10);
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
-    const reqPageDbBlogs: Blog[] = await this.dataSource.query(
+    const reqPageDbBlogs: BlogData[] = await this.dataSource.query(
       `
       SELECT * FROM "BLOGS" AS b
       WHERE b."ownerId" = $1

@@ -1,4 +1,4 @@
-import { Blog } from './types/blogs.types';
+import { BlogData } from './types/blogs.types';
 import {
   ForbiddenException,
   Injectable,
@@ -10,9 +10,9 @@ import { DataSource } from 'typeorm';
 @Injectable()
 export class BlogsRepository {
   constructor(@InjectDataSource() protected dataSource: DataSource) {}
-  async getBlogById(blogId: string): Promise<Blog> {
+  async getBlogById(blogId: string): Promise<BlogData> {
     try {
-      const result: Blog[] = await this.dataSource.query(
+      const result: BlogData[] = await this.dataSource.query(
         `
         SELECT * FROM "BLOGS" AS b
         WHERE b."id" = $1
@@ -26,7 +26,7 @@ export class BlogsRepository {
       return null;
     }
   }
-  async createBlog(newBlog: Blog): Promise<Blog> {
+  async createBlog(newBlog: BlogData): Promise<BlogData> {
     try {
       await this.dataSource.query(
         `
