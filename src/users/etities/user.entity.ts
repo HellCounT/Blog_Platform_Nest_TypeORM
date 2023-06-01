@@ -9,6 +9,7 @@ import { Post } from '../../posts/entities/post.entity';
 import { Comment } from '../../comments/entities/comment.entity';
 import { CommentLike } from '../../likes/entities/comment-like.entity';
 import { PostLike } from '../../likes/entities/post-like.entity';
+import { UserBannedByBlogger } from '../../blogger/users/users-banned-by-blogger/entities/user-banned-by-blogger.entity';
 
 @Entity()
 export class User {
@@ -42,4 +43,6 @@ export class User {
   commentLikes: CommentLike[];
   @OneToMany(() => PostLike, (pl) => pl.user)
   postLikes: PostLike[];
+  @OneToMany(() => UserBannedByBlogger, (bb) => bb.bannedUser)
+  userBlogBans: UserBannedByBlogger[];
 }

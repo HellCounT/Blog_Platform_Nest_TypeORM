@@ -4,7 +4,7 @@ import { UsersRepository } from '../../../users/users.repository';
 import { BlogsRepository } from '../../../blogs/blogs.repository';
 import { UsersBannedByBloggerRepository } from '../users-banned-by-blogger/users-banned-by-blogger.repository';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { UserBannedByBloggerDb } from '../users-banned-by-blogger/types/user-banned-by-blogger.types';
+import { UserBannedByBloggerData } from '../users-banned-by-blogger/types/user-banned-by-blogger.types';
 
 export class BanUserForBlogCommand {
   constructor(
@@ -36,7 +36,7 @@ export class BanUserForBlogUseCase {
     if (command.banUserForBlogDto.isBanned === true) {
       if (foundBan) return true;
       else {
-        const banUserByBloggerInfo = new UserBannedByBloggerDb(
+        const banUserByBloggerInfo = new UserBannedByBloggerData(
           command.banUserForBlogDto.blogId,
           command.userIdToBan,
           command.banUserForBlogDto.banReason,

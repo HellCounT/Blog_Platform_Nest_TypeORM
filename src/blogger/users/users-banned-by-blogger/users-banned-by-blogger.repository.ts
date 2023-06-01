@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UserBannedByBloggerDb } from './types/user-banned-by-blogger.types';
+import { UserBannedByBloggerData } from './types/user-banned-by-blogger.types';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
@@ -9,9 +9,9 @@ export class UsersBannedByBloggerRepository {
   async findUserBan(
     blogId: string,
     bannedUserId: string,
-  ): Promise<UserBannedByBloggerDb> {
+  ): Promise<UserBannedByBloggerData> {
     try {
-      const findUserBanResult: UserBannedByBloggerDb[] =
+      const findUserBanResult: UserBannedByBloggerData[] =
         await this.dataSource.query(
           `
       SELECT * FROM "BANNED_USERS_BY_BLOGGERS" as bu
@@ -25,7 +25,7 @@ export class UsersBannedByBloggerRepository {
       return null;
     }
   }
-  async banUser(banUserByBloggerInfo: UserBannedByBloggerDb): Promise<void> {
+  async banUser(banUserByBloggerInfo: UserBannedByBloggerData): Promise<void> {
     try {
       await this.dataSource.query(
         `

@@ -1,4 +1,4 @@
-export class UserBannedByBloggerDb {
+export class UserBannedByBloggerData {
   constructor(
     public blogId: string,
     public bannedUserId: string,
