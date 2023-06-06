@@ -1,68 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { CommentData, CommentJoinedType } from './types/comments.types';
-import { LikeStatus } from '../likes/types/likes.types';
-import { CommentViewDto } from './dto/output.comment.view.dto';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { isVoid } from '../application-helpers/void.check.helper';
+import { Comment } from './entities/comment.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class CommentsRepository {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
-  async getCommentById(id: string): Promise<CommentJoinedType> {
+  constructor(
+    @InjectRepository(Comment) protected commentsRepo: Repository<Comment>,
+  ) {}
+  async getCommentById(commentId: string): Promise<Comment> {
     try {
-      const commentResult = await this.dataSource.query(
-        `
-        SELECT
-        c."id", c."content", c."userId", u."id" as "userLogin", c."postId", c."createdAt", c."likesCount", c."dislikesCount"
-        FROM "COMMENTS" AS c
-        LEFT JOIN "USERS" AS u
-        ON c."userId" = u."id"
-        WHERE c."id" = $1
-        `,
-        [id],
-      );
-      return commentResult[0];
+      const comment = await this.commentsRepo.findOneBy({ id: commentId });
+      if (isVoid(comment)) return null;
+      return comment;
     } catch (e) {
       console.log(e);
       return null;
     }
   }
 
-  async createComment(newComment: CommentData): Promise<CommentViewDto | null> {
+  async createComment(
+    content: string,
+    userId: string,
+    postId: string,
+  ): Promise<Comment | null> {
     try {
-      await this.dataSource.query(
-        `
-      INSERT INTO "COMMENTS"
-      ("id", "content", "userId", "postId", "createdAt", "likesCount", "dislikesCount")
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
-      `,
-        [
-          newComment.id,
-          newComment.content,
-          newComment.userId,
-          newComment.postId,
-          newComment.createdAt,
-          newComment.likesCount,
-          newComment.dislikesCount,
-        ],
+      const commentId = uuidv4();
+      const newComment = Comment.instantiate(
+        commentId,
+        content,
+        userId,
+        postId,
       );
-      const createdComment: CommentJoinedType = await this.getCommentById(
-        newComment.id,
-      );
-      return {
-        id: createdComment.id,
-        content: createdComment.content,
-        commentatorInfo: {
-          userId: createdComment.userId,
-          userLogin: createdComment.userLogin,
-        },
-        createdAt: createdComment.createdAt,
-        likesInfo: {
-          likesCount: createdComment.likesCount,
-          dislikesCount: createdComment.dislikesCount,
-          myStatus: LikeStatus.none,
-        },
-      };
+      await this.commentsRepo.save(newComment);
+      return await this.getCommentById(newComment.id);
     } catch (e) {
       console.log(e);
       return null;
@@ -74,13 +47,11 @@ export class CommentsRepository {
     content: string,
   ): Promise<boolean | null> {
     try {
-      await this.dataSource.query(
-        `
-        UPDATE "COMMENTS"
-        SET "content" = $1
-        WHERE "id" = $2
-        `,
-        [content, commentId],
+      await this.commentsRepo.update(
+        { id: commentId },
+        {
+          content: content,
+        },
       );
       return true;
     } catch (e) {
@@ -91,13 +62,7 @@ export class CommentsRepository {
 
   async deleteComment(commentId: string): Promise<boolean | null> {
     try {
-      await this.dataSource.query(
-        `
-        DELETE FROM "COMMENTS"
-        WHERE "id" = $1
-        `,
-        [commentId],
-      );
+      await this.commentsRepo.delete({ id: commentId });
       return true;
     } catch (e) {
       console.log(e);
@@ -110,14 +75,18 @@ export class CommentsRepository {
     newDislikesCount: number,
     commentId: string,
   ) {
-    await this.dataSource.query(
-      `
-      UPDATE "COMMENTS"
-      SET "likesCount" = $1, "dislikesCount" = $2
-      WHERE "id" = $3
-      `,
-      [newLikesCount, newDislikesCount, commentId],
-    );
-    return;
+    try {
+      await this.commentsRepo.update(
+        { id: commentId },
+        {
+          likesCount: newLikesCount,
+          dislikesCount: newDislikesCount,
+        },
+      );
+      return true;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
   }
 }

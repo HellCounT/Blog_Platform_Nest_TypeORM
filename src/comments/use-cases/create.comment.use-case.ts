@@ -4,9 +4,7 @@ import { PostsRepository } from '../../posts/posts.repository';
 import { UsersRepository } from '../../users/users.repository';
 import { CommentViewDto } from '../dto/output.comment.view.dto';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
-import { CommentData } from '../types/comments.types';
 import { UsersBannedByBloggerRepository } from '../../blogger/users/users-banned-by-blogger/users-banned-by-blogger.repository';
-import { v4 as uuidv4 } from 'uuid';
 
 export class CreateCommentCommand {
   constructor(
@@ -33,15 +31,24 @@ export class CreateCommentUseCase {
       command.userId,
     );
     if (bannedByBlogger) throw new ForbiddenException();
-    const newComment = new CommentData(
-      uuidv4(),
+    const createdComment = await this.commentsRepo.createComment(
       command.content,
       command.userId,
       command.postId,
-      new Date().toISOString(),
-      0,
-      0,
     );
-    return await this.commentsRepo.createComment(newComment);
+    return {
+      id: createdComment.id,
+      content: createdComment.content,
+      commentatorInfo: {
+        userId: foundUser.id,
+        userLogin: foundUser.accountData.login,
+      },
+      createdAt: createdComment.createdAt.toISOString(),
+      likesInfo: {
+        likesCount: createdComment.likesCount,
+        dislikesCount: createdComment.dislikesCount,
+        myStatus: 'None',
+      },
+    };
   }
 }

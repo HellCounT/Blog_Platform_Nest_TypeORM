@@ -25,20 +25,6 @@ export type ExtendedLikesInfoViewModelType = LikesInfoViewModelType & {
   newestLikes: newestLike[];
 };
 
-export class PostData {
-  constructor(
-    public id: string,
-    public title: string,
-    public shortDescription: string,
-    public content: string,
-    public blogId: string,
-    public createdAt: Date,
-    public ownerId: string,
-    public likesCount: number,
-    public dislikesCount: number,
-  ) {}
-}
-
 export type PostJoinedType = {
   id: string;
   title: string;
