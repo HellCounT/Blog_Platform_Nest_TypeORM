@@ -61,10 +61,12 @@ export class BanUserUseCase {
     for (let i = 0; i < likesInPosts.length; i++) {
       const postLikesCounter = await this.likesForPostsRepo.getNewLikesCounter(
         likesInPosts[i].postId,
+        LikeStatus.like,
       );
       const postDislikesCounter =
-        await this.likesForPostsRepo.getNewDislikesCounter(
+        await this.likesForPostsRepo.getNewLikesCounter(
           likesInPosts[i].postId,
+          LikeStatus.dislike,
         );
       await this.postsRepo.updateLikesCounters(
         postLikesCounter,

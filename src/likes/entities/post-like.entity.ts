@@ -33,5 +33,6 @@ export class PostLike {
     postLike.userId = userId;
     postLike.addedAt = new Date();
     postLike.likeStatus = likeStatus;
+    return postLike;
   }
 }
