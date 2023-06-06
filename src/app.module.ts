@@ -102,6 +102,7 @@ const entities = [
   Comment,
   CommentLike,
   PostLike,
+  UserBannedByBlogger,
 ];
 
 const controllers = [

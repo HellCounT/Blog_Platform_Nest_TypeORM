@@ -1,12 +1,3 @@
-export class UserBannedByBloggerData {
-  constructor(
-    public blogId: string,
-    public bannedUserId: string,
-    public banReason: string,
-    public banDate: Date,
-  ) {}
-}
-
 export type UserBannedByBloggerDbJoinedType = {
   blogId: string;
   bannedUserId: string;
