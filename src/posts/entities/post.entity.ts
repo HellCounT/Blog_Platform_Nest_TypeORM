@@ -21,14 +21,14 @@ export class Post {
   shortDescription: string;
   @Column('text')
   content: string;
-  @ManyToOne(() => Blog, (b) => b.posts)
+  @ManyToOne(() => Blog, (b) => b.posts, { onDelete: 'CASCADE' })
   @JoinColumn()
   blog: Blog;
   @Column('uuid')
   blogId: string;
   @Column('timestamp')
   createdAt: Date;
-  @ManyToOne(() => User, (u) => u.posts)
+  @ManyToOne(() => User, (u) => u.posts, { onDelete: 'CASCADE' })
   @JoinColumn()
   owner: User;
   @Column('uuid')

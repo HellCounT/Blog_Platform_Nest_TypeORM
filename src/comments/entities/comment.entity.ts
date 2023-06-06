@@ -16,12 +16,12 @@ export class Comment {
   id: string;
   @Column('text')
   content: string;
-  @ManyToOne(() => User, (u) => u.comments)
+  @ManyToOne(() => User, (u) => u.comments, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
   @Column('uuid')
   userId: string;
-  @ManyToOne(() => Post, (p) => p.comments)
+  @ManyToOne(() => Post, (p) => p.comments, { onDelete: 'CASCADE' })
   @JoinColumn()
   post: Post;
   @Column('uuid')

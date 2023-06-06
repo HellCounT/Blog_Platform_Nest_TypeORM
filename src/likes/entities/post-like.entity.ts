@@ -7,12 +7,12 @@ import { LikeStatus } from '../types/likes.types';
 export class PostLike {
   @PrimaryColumn('uuid')
   id: string;
-  @ManyToOne(() => Post, (p) => p.likes)
+  @ManyToOne(() => Post, (p) => p.likes, { onDelete: 'CASCADE' })
   @JoinColumn()
   post: Post;
   @Column('uuid')
   postId: string;
-  @ManyToOne(() => User, (u) => u.postLikes)
+  @ManyToOne(() => User, (u) => u.postLikes, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
   @Column('uuid')
