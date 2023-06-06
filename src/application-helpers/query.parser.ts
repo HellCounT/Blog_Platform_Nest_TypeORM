@@ -119,7 +119,7 @@ export const pickOrderForBannedByBloggerUsersQuery = (
 
 export const pickOrderForBlogsQuery = (
   order: string,
-  direction: 1 | -1,
+  direction: 'ASC' | 'DESC',
 ): string => {
   let orderString = 'ORDER BY';
   switch (order) {
@@ -141,7 +141,7 @@ export const pickOrderForBlogsQuery = (
     default:
       orderString = 'ORDER BY b."createdAt"';
   }
-  if (direction === 1) {
+  if (direction === 'ASC') {
     orderString += ' ASC';
   } else {
     orderString += ' DESC';

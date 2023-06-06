@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { QueryParser } from '../../application-helpers/query.parser';
-import { BlogSAPaginatorType } from './types/super-admin.blogs.types';
 import { OutputSuperAdminBlogDto } from './dto/output.super-admin.blog.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Blog } from '../../blogs/entities/blog.entity';
 import { User } from '../../users/etities/user.entity';
 import { isVoid } from '../../application-helpers/void.check.helper';
+import { PaginatorType } from '../../application-helpers/paginator.type';
 
 @Injectable()
 export class SuperAdminBlogsQuery {
@@ -14,7 +14,9 @@ export class SuperAdminBlogsQuery {
     @InjectRepository(Blog) protected blogsRepo: Repository<Blog>,
     @InjectRepository(User) protected usersRepo: Repository<User>,
   ) {}
-  async viewAllBlogs(q: QueryParser): Promise<BlogSAPaginatorType> {
+  async viewAllBlogs(
+    q: QueryParser,
+  ): Promise<PaginatorType<OutputSuperAdminBlogDto>> {
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
     const [reqPageDbBlogs, allBlogsCount] = await this.blogsRepo
       .createQueryBuilder('b')

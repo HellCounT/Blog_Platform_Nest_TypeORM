@@ -1,47 +1,38 @@
-import {
-  pickOrderForBlogsQuery,
-  QueryParser,
-} from '../application-helpers/query.parser';
-import {
-  BlogData,
-  BlogPaginatorType,
-  BlogViewModelType,
-} from './types/blogs.types';
+import { QueryParser } from '../application-helpers/query.parser';
+import { BlogViewModelType } from './types/blogs.types';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { Blog } from './entities/blog.entity';
+import { PaginatorType } from '../application-helpers/paginator.type';
 
 @Injectable()
 export class BlogsQuery {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
-  async viewAllBlogs(q: QueryParser): Promise<BlogPaginatorType> {
-    const allBlogsCountResult = await this.dataSource.query(
-      `
-      SELECT COUNT(*)
-      FROM "BLOGS" AS b
-      JOIN "USERS_GLOBAL_BAN" AS ub
-      ON b."ownerId" = ub."userId"
-      WHERE (b."isBanned" = false AND ub."isBanned" = false)
-      AND "name" ILIKE '%' || COALESCE($1, '') || '%'
-      `,
-      [q.searchNameTerm],
-    );
-    const allBlogsCount: number = parseInt(allBlogsCountResult[0].count, 10);
+  constructor(
+    @InjectDataSource() protected dataSource: DataSource,
+    @InjectRepository(Blog) protected blogsRepo: Repository<Blog>,
+  ) {}
+  async viewAllBlogs(
+    q: QueryParser,
+  ): Promise<PaginatorType<BlogViewModelType>> {
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
-    const reqPageDbBlogs: BlogData[] = await this.dataSource.query(
-      `
-      SELECT b."id", b."name", b."description", b."websiteUrl", b."createdAt",
-      b."isMembership", b."ownerId", b."isBanned", b."banDate"
-      FROM "BLOGS" AS b
-      JOIN "USERS_GLOBAL_BAN" AS ub
-      ON b."ownerId" = ub."userId"
-      WHERE (b."isBanned" = false AND ub."isBanned" = false)
-      AND "name" ILIKE '%' || COALESCE($1, '') || '%'
-      ${pickOrderForBlogsQuery(q.sortBy, q.sortDirection)}
-      LIMIT $2 OFFSET $3
+    const [reqPageDbBlogs, allBlogsCount] = await this.blogsRepo
+      .createQueryBuilder('b')
+      .select()
+      .leftJoin('b.owner', 'u')
+      .leftJoin('u.userGlobalBan', 'ub')
+      .where(`b."isBanned" = false`)
+      .andWhere(`ub."isBanned" = false`)
+      .andWhere(
+        `
+      "name" ILIKE '%' || COALESCE(:searchNameTerm, '') || '%'
       `,
-      [q.searchNameTerm, q.pageSize, offsetSize],
-    );
+        { searchNameTerm: q.searchNameTerm },
+      )
+      .orderBy(`"${q.sortBy}"`, q.sortDirection)
+      .limit(q.pageSize)
+      .offset(offsetSize)
+      .getManyAndCount();
     const pageBlogs = reqPageDbBlogs.map((b) => this._mapBlogToViewType(b));
     return {
       pagesCount: Math.ceil(allBlogsCount / q.pageSize),
@@ -52,18 +43,14 @@ export class BlogsQuery {
     };
   }
   async findBlogById(blogId: string): Promise<BlogViewModelType> {
-    const foundBlogResult: BlogData[] = await this.dataSource.query(
-      `
-      SELECT * FROM "BLOGS"
-      WHERE "id" = $1 AND "isBanned" = false
-      `,
-      [blogId],
-    );
-    if (foundBlogResult.length === 1)
-      return this._mapBlogToViewType(foundBlogResult[0]);
+    const foundBlog = await this.blogsRepo.findOneBy({
+      id: blogId,
+      isBanned: false,
+    });
+    if (!foundBlog) return this._mapBlogToViewType(foundBlog);
     else throw new NotFoundException();
   }
-  _mapBlogToViewType(blog: BlogData): BlogViewModelType {
+  _mapBlogToViewType(blog: Blog): BlogViewModelType {
     return {
       id: blog.id,
       name: blog.name,

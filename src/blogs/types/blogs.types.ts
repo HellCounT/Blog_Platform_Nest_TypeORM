@@ -34,11 +34,3 @@ export type BlogDbJoinedType = {
   isBanned: boolean;
   banDate: Date | null;
 };
-
-export type BlogPaginatorType = {
-  pagesCount: number;
-  page: number;
-  pageSize: number;
-  totalCount: number;
-  items: BlogViewModelType[];
-};

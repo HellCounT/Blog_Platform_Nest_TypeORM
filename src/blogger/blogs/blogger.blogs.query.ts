@@ -4,7 +4,7 @@ import {
   pickOrderForCommentsQuery,
   QueryParser,
 } from '../../application-helpers/query.parser';
-import { BlogData, BlogPaginatorType } from '../../blogs/types/blogs.types';
+import { BlogData, BlogViewModelType } from '../../blogs/types/blogs.types';
 import { BlogsQuery } from '../../blogs/blogs.query';
 import {
   CommentsForBloggerViewType,
@@ -18,6 +18,7 @@ import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { PostJoinedType } from '../../posts/types/posts.types';
 import { CommentJoinedType } from '../../comments/types/comments.types';
+import { PaginatorType } from '../../application-helpers/paginator.type';
 
 @Injectable()
 export class BloggerBlogsQuery extends BlogsQuery {
@@ -27,7 +28,7 @@ export class BloggerBlogsQuery extends BlogsQuery {
   async getAllBlogsForBlogger(
     q: QueryParser,
     userId,
-  ): Promise<BlogPaginatorType> {
+  ): Promise<PaginatorType<BlogViewModelType>> {
     const allBlogsCountResult = await this.dataSource.query(
       `
       SELECT COUNT(*)
