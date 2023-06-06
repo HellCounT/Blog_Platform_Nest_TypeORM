@@ -20,17 +20,3 @@ export class BlogData {
     public banDate: Date | null,
   ) {}
 }
-
-export type BlogDbJoinedType = {
-  id: string;
-  name: string;
-  description: string;
-  websiteUrl: string;
-  createdAt: string;
-  isMembership: boolean;
-  ownerId: string;
-  ownerLogin: string;
-  ownerIsBanned: boolean;
-  isBanned: boolean;
-  banDate: Date | null;
-};

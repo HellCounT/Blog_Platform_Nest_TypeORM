@@ -119,7 +119,7 @@ export class BloggerBlogsQuery extends BlogsQuery {
         .createQueryBuilder('lc')
         .select()
         .leftJoin('lc.user', 'u')
-        .leftJoin('u.userGlobalBan', 'ub')
+        .leftJoin(`u."userGlobalBan"`, 'ub')
         .where(`lc."commentId" = :commentId`, { commentId: commentId })
         .andWhere(`lc."userId" = :userId`, { userId: userId })
         .andWhere(`ub."isBanned" = false`)

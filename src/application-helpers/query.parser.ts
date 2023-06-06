@@ -65,31 +65,6 @@ export const getBanStatusForQuery = (banStatus: BanStatus): string => {
     return `b."isBanned" = false AND `;
   } else return ``;
 };
-// export const pickOrderForUsersQuery = (
-//   order: string,
-//   direction: 1 | -1,
-// ): string => {
-//   let orderString = 'ORDER BY';
-//   switch (order) {
-//     case 'id':
-//       orderString += ' u."id"';
-//       break;
-//     case 'login':
-//       orderString += ' u."login"';
-//       break;
-//     case 'email':
-//       orderString += ' u."email"';
-//       break;
-//     default:
-//       orderString = 'ORDER BY u."createdAt"';
-//   }
-//   if (direction === 1) {
-//     orderString += ' ASC';
-//   } else {
-//     orderString += ' DESC';
-//   }
-//   return orderString;
-// };
 
 export const pickOrderForBannedByBloggerUsersQuery = (
   order: string,
@@ -108,38 +83,6 @@ export const pickOrderForBannedByBloggerUsersQuery = (
       break;
     default:
       orderString = 'ORDER BY u."createdAt"';
-  }
-  if (direction === 'ASC') {
-    orderString += ' ASC';
-  } else {
-    orderString += ' DESC';
-  }
-  return orderString;
-};
-
-export const pickOrderForBlogsQuery = (
-  order: string,
-  direction: 'ASC' | 'DESC',
-): string => {
-  let orderString = 'ORDER BY';
-  switch (order) {
-    case 'id':
-      orderString += ' b."id"';
-      break;
-    case 'name':
-      orderString += ' b."name"';
-      break;
-    case 'description':
-      orderString += ' b."description"';
-      break;
-    case 'websiteUrl':
-      orderString += ' b."websiteUrl"';
-      break;
-    case 'ownerId':
-      orderString += ' b."ownerId"';
-      break;
-    default:
-      orderString = 'ORDER BY b."createdAt"';
   }
   if (direction === 'ASC') {
     orderString += ' ASC';
@@ -175,44 +118,6 @@ export const pickOrderForPostsQuery = (
       break;
     default:
       orderString = 'ORDER BY p."createdAt"';
-  }
-  if (direction === 1) {
-    orderString += ' ASC';
-  } else {
-    orderString += ' DESC';
-  }
-  return orderString;
-};
-
-export const pickOrderForCommentsQuery = (
-  order: string,
-  direction: 1 | -1,
-): string => {
-  let orderString = 'ORDER BY';
-  switch (order) {
-    case 'id':
-      orderString += ' c."id"';
-      break;
-    case 'content':
-      orderString += ' c."content"';
-      break;
-    case 'userId':
-      orderString += ' c."userId"';
-      break;
-    case 'userLogin':
-      orderString += ' "userLogin"';
-      break;
-    case 'postId':
-      orderString += ' c."postId"';
-      break;
-    case 'likesCount':
-      orderString += ' c."likesCount"';
-      break;
-    case 'dislikesCount':
-      orderString += ' c."dislikesCount"';
-      break;
-    default:
-      orderString = 'ORDER BY c."createdAt"';
   }
   if (direction === 1) {
     orderString += ' ASC';

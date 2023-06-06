@@ -1,70 +1,55 @@
-import {
-  pickOrderForCommentsQuery,
-  QueryParser,
-} from '../application-helpers/query.parser';
+import { QueryParser } from '../application-helpers/query.parser';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CommentViewDto } from './dto/output.comment.view.dto';
 import { CommentPaginatorDto } from './dto/output.comment-paginator.dto';
-import { CommentLikeJoinedType, LikeStatus } from '../likes/types/likes.types';
-import { DataSource } from 'typeorm';
-import { CommentJoinedType } from './types/comments.types';
-import { InjectDataSource } from '@nestjs/typeorm';
+import { LikeStatus } from '../likes/types/likes.types';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Comment } from './entities/comment.entity';
+import { isVoid } from '../application-helpers/void.check.helper';
+import { User } from '../users/etities/user.entity';
+import { CommentLike } from '../likes/entities/comment-like.entity';
 
 @Injectable()
 export class CommentsQuery {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(Comment) protected commentRepo: Repository<Comment>,
+    @InjectRepository(User) protected usersRepo: Repository<User>,
+    @InjectRepository(CommentLike)
+    protected commentLikeRepo: Repository<CommentLike>,
+  ) {}
   async findCommentById(
-    id: string,
+    commentId: string,
     activeUserId: string,
   ): Promise<CommentViewDto | null> {
-    const commentResult: CommentJoinedType[] = await this.dataSource.query(
-      `
-        SELECT
-        c."id", c."content", c."userId", u."id" as "userLogin", c."postId", c."createdAt", c."likesCount", c."dislikesCount"
-        FROM "COMMENTS" AS c
-        LEFT JOIN "USERS" AS u
-        ON c."userId" = u."id"
-        LEFT JOIN "USERS_GLOBAL_BAN" AS ub
-        ON c."userId" = ub."userId"
-        WHERE c."id" = $1 AND ub."isBanned" = false
-        `,
-      [id],
-    );
-    if (!commentResult[0]) throw new NotFoundException();
-    return this._mapCommentToViewType(commentResult[0], activeUserId);
+    const comment = await this.commentRepo
+      .createQueryBuilder('c')
+      .select()
+      .leftJoin('c.user', 'u')
+      .leftJoin(`u."userGlobalBan"`, 'ub')
+      .where(`c."id" = :commentId`, { commentId: commentId })
+      .andWhere(`ub."isBanned" = false`)
+      .getOne();
+    if (isVoid(comment)) throw new NotFoundException();
+    return this._mapCommentToViewType(comment, activeUserId);
   }
   async findCommentsByPostId(
     postId: string,
     q: QueryParser,
     activeUserId = '',
   ): Promise<CommentPaginatorDto | null> {
-    const foundCommentsCountResult = await this.dataSource.query(
-      `
-      SELECT COUNT(*)
-      FROM "COMMENTS" AS c
-      LEFT JOIN "USERS_GLOBAL_BAN" AS ub
-      ON c."userId" = ub."userId"
-      WHERE c."postId" = $1 AND ub."isBanned" = false
-      `,
-      [postId],
-    );
-    const foundCommentsCount = parseInt(foundCommentsCountResult[0].count, 10);
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
-    const reqPageDbComments: CommentJoinedType[] = await this.dataSource.query(
-      `
-      SELECT
-      c."id", c."content", c."userId", u."id" as "userLogin", c."postId", c."createdAt", c."likesCount", c."dislikesCount"
-      FROM "COMMENTS" AS c
-      LEFT JOIN "USERS" AS u
-      ON c."userId" = u."id"
-      LEFT JOIN "USERS_GLOBAL_BAN" AS ub
-      ON c."userId" = ub."userId"
-      WHERE c."postId" = $1 AND ub."isBanned" = false
-      ${pickOrderForCommentsQuery(q.sortBy, q.sortDirection)}
-      LIMIT $2 OFFSET $3
-      `,
-      [postId, q.pageSize, offsetSize],
-    );
+    const [reqPageDbComments, foundCommentsCount] = await this.commentRepo
+      .createQueryBuilder('c')
+      .select()
+      .leftJoin('c.user', 'u')
+      .leftJoin(`u."userGlobalBan"`, 'ub')
+      .where(`c."postId" = :postId`, { postId: postId })
+      .andWhere(`ub."isBanned" = false`)
+      .orderBy(`"${q.sortBy}"`, q.sortDirection)
+      .limit(q.pageSize)
+      .offset(offsetSize)
+      .getManyAndCount();
     const items = [];
     for await (const c of reqPageDbComments) {
       const comment = await this._mapCommentToViewType(c, activeUserId);
@@ -81,43 +66,38 @@ export class CommentsQuery {
   async getUserLikeForComment(
     userId: string,
     commentId: string,
-  ): Promise<CommentLikeJoinedType | null> {
+  ): Promise<CommentLike | null> {
     try {
-      const foundLikeResult: CommentLikeJoinedType[] =
-        await this.dataSource.query(
-          `
-      SELECT lc."id", lc."commentId", lc."userId", u."login" as "userLogin",
-      lc."addedAt", lc."likeStatus"
-      FROM "LIKES_FOR_COMMENTS" AS lc
-      LEFT JOIN "USERS" AS u
-      ON lc."userId" = u."id"
-      LEFT JOIN "USERS_GLOBAL_BAN" AS ub
-      ON lc."userId" = ub."userId"
-      WHERE (lc."commentId" = $1 AND lc."userId" = $2) AND ub."isBanned" = false
-      `,
-          [commentId, userId],
-        );
-      return foundLikeResult[0];
+      return await this.commentLikeRepo
+        .createQueryBuilder('lc')
+        .select()
+        .leftJoin('lc.user', 'u')
+        .leftJoin(`u."userGlobalBan"`, 'ub')
+        .where(`lc."commentId" = :commentId`, { commentId: commentId })
+        .andWhere(`lc."userId" = :userId`, { userId: userId })
+        .andWhere(`ub."isBanned" = false`)
+        .getOne();
     } catch (e) {
       console.log(e);
       return null;
     }
   }
   async _mapCommentToViewType(
-    comment: CommentJoinedType,
+    comment: Comment,
     activeUserId: string,
   ): Promise<CommentViewDto> {
     if (activeUserId === '')
       activeUserId = '3465cc2e-f49b-11ed-a05b-0242ac120003';
     const like = await this.getUserLikeForComment(activeUserId, comment.id);
+    const user = await this.usersRepo.findOneBy({ id: comment.userId });
     return {
       id: comment.id,
       content: comment.content,
       commentatorInfo: {
         userId: comment.userId,
-        userLogin: comment.userLogin,
+        userLogin: user.login,
       },
-      createdAt: comment.createdAt,
+      createdAt: comment.createdAt.toISOString(),
       likesInfo: {
         likesCount: comment.likesCount,
         dislikesCount: comment.dislikesCount,
