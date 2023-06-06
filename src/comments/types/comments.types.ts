@@ -1,15 +1,3 @@
-export class CommentData {
-  constructor(
-    public id: string,
-    public content: string,
-    public userId: string,
-    public postId: string,
-    public createdAt: string,
-    public likesCount: number,
-    public dislikesCount: number,
-  ) {}
-}
-
 export type CommentJoinedType = {
   id: string;
   content: string;
