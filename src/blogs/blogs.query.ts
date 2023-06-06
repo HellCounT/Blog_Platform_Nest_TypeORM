@@ -1,17 +1,14 @@
 import { QueryParser } from '../application-helpers/query.parser';
 import { BlogViewModelType } from './types/blogs.types';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Blog } from './entities/blog.entity';
 import { PaginatorType } from '../application-helpers/paginator.type';
 
 @Injectable()
 export class BlogsQuery {
-  constructor(
-    @InjectDataSource() protected dataSource: DataSource,
-    @InjectRepository(Blog) protected blogsRepo: Repository<Blog>,
-  ) {}
+  constructor(@InjectRepository(Blog) protected blogsRepo: Repository<Blog>) {}
   async viewAllBlogs(
     q: QueryParser,
   ): Promise<PaginatorType<BlogViewModelType>> {

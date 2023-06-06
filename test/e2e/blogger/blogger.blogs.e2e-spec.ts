@@ -20,7 +20,7 @@ import { errorsMessageForIncorrectBlog } from '../../test-entities/errors.test-e
 import { correctComment } from '../../test-entities/comment.test-entities';
 import { correctPost } from '../../test-entities/post.test-entities';
 import { LikeStatus } from '../../../src/likes/types/likes.types';
-import { CommentsForBloggerViewType } from '../../../src/blogger/blogs/dto/output.comments.paginator.blogger.dto';
+import { CommentForBloggerViewType } from '../../../src/blogger/blogs/dto/output.comments.paginator.blogger.dto';
 
 describe('Blogger Blogs Controller (e2e)', () => {
   jest.setTimeout(10000);
@@ -156,7 +156,7 @@ describe('Blogger Blogs Controller (e2e)', () => {
         .get(bloggerBlogsPath + '/comments')
         .set(authHeader, getBearerAccessToken(tokenPair.accessToken))
         .expect(200);
-      expect(response.body).toEqual<PaginatorType<CommentsForBloggerViewType>>({
+      expect(response.body).toEqual<PaginatorType<CommentForBloggerViewType>>({
         pagesCount: 1,
         page: 1,
         pageSize: 10,

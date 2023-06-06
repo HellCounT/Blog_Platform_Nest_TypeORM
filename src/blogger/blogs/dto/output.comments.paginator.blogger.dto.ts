@@ -1,14 +1,6 @@
 import { LikeStatus } from '../../../likes/types/likes.types';
 
-export class OutputCommentsPaginatorBloggerDto {
-  pagesCount: number;
-  page: number;
-  pageSize: number;
-  totalCount: number;
-  items: CommentsForBloggerViewType[];
-}
-
-export type CommentsForBloggerViewType = {
+export type CommentForBloggerViewType = {
   id: string;
   content: string;
   commentatorInfo: {
