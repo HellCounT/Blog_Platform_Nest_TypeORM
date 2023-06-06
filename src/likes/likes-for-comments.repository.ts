@@ -1,27 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { CommentLikeData, LikeStatus } from './types/likes.types';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { LikeStatus } from './types/likes.types';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CommentLike } from './entities/comment-like.entity';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class LikesForCommentsRepository {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
-  async createNewLike(newLike: CommentLikeData): Promise<void> {
+  constructor(
+    @InjectRepository(CommentLike)
+    protected commentLikeRepo: Repository<CommentLike>,
+  ) {}
+  async createNewLike(
+    commentId: string,
+    userId: string,
+    likeStatus: LikeStatus,
+  ): Promise<void> {
     try {
-      await this.dataSource.query(
-        `
-        INSERT INTO "LIKES_FOR_COMMENTS"
-        ("id", "commentId", "userId", "addedAt", "likeStatus")
-        VALUES($1, $2, $3, $4, $5)
-        `,
-        [
-          newLike.id,
-          newLike.commentId,
-          newLike.userId,
-          newLike.addedAt,
-          newLike.likeStatus,
-        ],
+      const commentLikeId = uuidv4();
+      const newCommentLike = CommentLike.instantiate(
+        commentLikeId,
+        commentId,
+        userId,
+        likeStatus,
       );
+      await this.commentLikeRepo.save(newCommentLike);
       return;
     } catch (e) {
       console.log(e);
@@ -34,13 +37,12 @@ export class LikesForCommentsRepository {
     likeStatus: LikeStatus,
   ): Promise<void> {
     try {
-      await this.dataSource.query(
-        `
-        UPDATE "LIKES_FOR_COMMENTS"
-        SET "likeStatus" = $1
-        WHERE "commentId" = $2 AND "userId" = $3
-        `,
-        [likeStatus, commentId, userId],
+      await this.commentLikeRepo.update(
+        {
+          commentId: commentId,
+          userId: userId,
+        },
+        { likeStatus: likeStatus },
       );
       return;
     } catch (e) {
@@ -50,64 +52,46 @@ export class LikesForCommentsRepository {
   }
   async deleteAllLikesWhenCommentIsDeleted(commentId: string): Promise<void> {
     try {
-      await this.dataSource.query(
-        `
-        DELETE FROM "LIKES_FOR_COMMENTS"
-        WHERE "commentId" = $1
-        `,
-        [commentId],
-      );
+      await this.commentLikeRepo.delete({ commentId: commentId });
       return;
     } catch (e) {
       console.log(e);
       return;
     }
   }
-  async getByUserId(userId: string): Promise<CommentLikeData[]> {
+  async getByUserId(userId: string): Promise<CommentLike[]> {
     try {
-      return await this.dataSource.query(
-        `
-        SELECT * FROM "LIKES_FOR_COMMENTS"
-        WHERE "userId" = $1
-        `,
-        [userId],
-      );
+      return await this.commentLikeRepo.findBy({ userId: userId });
     } catch (e) {
       console.log(e);
       return;
     }
   }
-  async getNewLikesCounter(commentId: string): Promise<number> {
+  async getNewLikesCounter(
+    commentId: string,
+    likeStatus: LikeStatus,
+  ): Promise<number> {
     try {
-      const counterResult = await this.dataSource.query(
-        `
-        SELECT COUNT(*)
-        FROM "LIKES_FOR_COMMENTS" as l
-        LEFT JOIN "USERS_GLOBAL_BAN" as b
-        ON l."userId" = b."userId"
-        WHERE (l."commentId" = $1 AND l."likeStatus" = $2) AND b."isBanned" = false
-        `,
-        [commentId, LikeStatus.like],
-      );
-      return parseInt(counterResult[0].count, 10);
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
-  async getNewDislikesCounter(commentId: string): Promise<number> {
-    try {
-      const counterResult = await this.dataSource.query(
-        `
-        SELECT COUNT(*)
-        FROM "LIKES_FOR_COMMENTS" as l
-        LEFT JOIN "USERS_GLOBAL_BAN" as b
-        ON l."userId" = b."userId"
-        WHERE (l."commentId" = $1 AND l."likeStatus" = $2) AND b."isBanned" = false
-        `,
-        [commentId, LikeStatus.dislike],
-      );
-      return parseInt(counterResult[0].count, 10);
+      return await this.commentLikeRepo
+        .createQueryBuilder()
+        .select()
+        .from('comment_like', 'l')
+        .leftJoin('user_global_ban', 'b', 'l.userId = b.userId')
+        .where('l.commentId = :commentId', { commentId })
+        .andWhere('l.likeStatus = :likeStatus', { likeStatus: likeStatus })
+        .andWhere('b.isBanned = :isBanned', { isBanned: false })
+        .getCount();
+      // const counterResult = await this.dataSource.query(
+      //   `
+      //   SELECT COUNT(*)
+      //   FROM "LIKES_FOR_COMMENTS" as l
+      //   LEFT JOIN "USERS_GLOBAL_BAN" as b
+      //   ON l."userId" = b."userId"
+      //   WHERE (l."commentId" = $1 AND l."likeStatus" = $2) AND b."isBanned" = false
+      //   `,
+      //   [commentId, LikeStatus.like],
+      // );
+      // return parseInt(counterResult[0].count, 10);
     } catch (e) {
       console.log(e);
       return null;

@@ -10,6 +10,7 @@ import { NotFoundException } from '@nestjs/common';
 import { ExpiredTokensRepository } from '../../../security/tokens/expired.tokens.repository';
 import {
   CommentLikeData,
+  LikeStatus,
   PostLikeData,
 } from '../../../likes/types/likes.types';
 
@@ -75,10 +76,12 @@ export class BanUserUseCase {
       const commentLikesCounter =
         await this.likesForCommentsRepo.getNewLikesCounter(
           likesInComments[i].commentId,
+          LikeStatus.like,
         );
       const commentDislikesCounter =
-        await this.likesForCommentsRepo.getNewDislikesCounter(
+        await this.likesForCommentsRepo.getNewLikesCounter(
           likesInComments[i].commentId,
+          LikeStatus.dislike,
         );
       await this.commentsRepo.updateLikesCounters(
         commentLikesCounter,
