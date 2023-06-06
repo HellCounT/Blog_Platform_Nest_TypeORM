@@ -21,4 +21,17 @@ export class PostLike {
   addedAt: Date;
   @Column('varchar')
   likeStatus: LikeStatus;
+  static instantiate(
+    postLikeId: string,
+    postId: string,
+    userId: string,
+    likeStatus: LikeStatus,
+  ) {
+    const postLike = new PostLike();
+    postLike.id = postLikeId;
+    postLike.postId = postId;
+    postLike.userId = userId;
+    postLike.addedAt = new Date();
+    postLike.likeStatus = likeStatus;
+  }
 }

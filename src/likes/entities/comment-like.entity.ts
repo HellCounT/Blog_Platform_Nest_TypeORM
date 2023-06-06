@@ -21,4 +21,18 @@ export class CommentLike {
   addedAt: Date;
   @Column('varchar')
   likeStatus: LikeStatus;
+  static instantiate(
+    commentLikeId: string,
+    commentId: string,
+    userId: string,
+    likeStatus: LikeStatus,
+  ) {
+    const commentLike = new CommentLike();
+    commentLike.id = commentLikeId;
+    commentLike.commentId = commentId;
+    commentLike.userId = userId;
+    commentLike.addedAt = new Date();
+    commentLike.likeStatus = likeStatus;
+    return commentLike;
+  }
 }
