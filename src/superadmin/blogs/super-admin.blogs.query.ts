@@ -1,58 +1,52 @@
 import { Injectable } from '@nestjs/common';
-import {
-  pickOrderForBlogsQuery,
-  QueryParser,
-} from '../../application-helpers/query.parser';
+import { QueryParser } from '../../application-helpers/query.parser';
 import { BlogSAPaginatorType } from './types/super-admin.blogs.types';
 import { OutputSuperAdminBlogDto } from './dto/output.super-admin.blog.dto';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
-import { BlogDbJoinedType } from '../../blogs/types/blogs.types';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Blog } from '../../blogs/entities/blog.entity';
+import { User } from '../../users/etities/user.entity';
+import { isVoid } from '../../application-helpers/void.check.helper';
 
 @Injectable()
 export class SuperAdminBlogsQuery {
-  constructor(@InjectDataSource() protected dataSource: DataSource) {}
+  constructor(
+    @InjectRepository(Blog) protected blogsRepo: Repository<Blog>,
+    @InjectRepository(User) protected usersRepo: Repository<User>,
+  ) {}
   async viewAllBlogs(q: QueryParser): Promise<BlogSAPaginatorType> {
-    const allBlogsCountResult = await this.dataSource.query(
-      `
-      SELECT COUNT(*)
-      FROM "BLOGS"
-      WHERE "name" ILIKE '%' || COALESCE($1, '') || '%'
-      `,
-      [q.searchNameTerm],
-    );
-    const allBlogsCount: number = parseInt(allBlogsCountResult[0].count, 10);
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
-    const reqPageDbBlogs: BlogDbJoinedType[] = await this.dataSource.query(
-      `
-      SELECT b."id", b."name", b."description", b."websiteUrl", b."createdAt",
-      b."isMembership", b."ownerId", u."login" as "ownerLogin",
-      ub."isBanned" as "ownerIsBanned", b."isBanned", b."banDate"
-      FROM "BLOGS" AS b
-      JOIN "USERS" AS u
-      ON b."ownerId" = u."id"
-      JOIN "USERS_GLOBAL_BAN" AS ub
-      ON b."ownerId" = ub."userId"
-      WHERE "name" ILIKE '%' || COALESCE($1, '') || '%'
-      ${pickOrderForBlogsQuery(q.sortBy, q.sortDirection)}
-      LIMIT $2 OFFSET $3
-      `,
-      [q.searchNameTerm, q.pageSize, offsetSize],
-    );
-    const pageBlogs = reqPageDbBlogs.map((b) =>
-      this._mapBlogToSuperAdminViewType(b),
-    );
+    const [reqPageDbBlogs, allBlogsCount] = await this.blogsRepo
+      .createQueryBuilder('b')
+      .select()
+      .leftJoinAndSelect('b.owner', 'u')
+      .where(`b."name" ILIKE '%' || COALESCE(:searchNameTerm, '') || '%'`, {
+        searchNameTerm: q.searchNameTerm,
+      })
+      .orderBy(`"${q.sortBy}"`, q.sortDirection)
+      .limit(q.pageSize)
+      .offset(offsetSize)
+      .getManyAndCount();
+    const items = [];
+    for await (const b of reqPageDbBlogs) {
+      const blog = await this._mapBlogToSuperAdminViewType(b);
+      items.push(blog);
+    }
     return {
       pagesCount: Math.ceil(allBlogsCount / q.pageSize),
       page: q.pageNumber,
       pageSize: q.pageSize,
       totalCount: allBlogsCount,
-      items: pageBlogs,
+      items: items,
     };
   }
-  private _mapBlogToSuperAdminViewType(
-    blog: BlogDbJoinedType,
-  ): OutputSuperAdminBlogDto {
+  private async _mapBlogToSuperAdminViewType(
+    blog: Blog,
+  ): Promise<OutputSuperAdminBlogDto> {
+    const owner = await this.usersRepo.findOneBy({ id: blog.ownerId });
+    let ownerLogin;
+    if (isVoid(blog.ownerId)) ownerLogin = null;
+    else ownerLogin = owner.login;
     let banDateString;
     if (blog.banDate === null) banDateString = null;
     else banDateString = blog.banDate.toISOString();
@@ -65,7 +59,7 @@ export class SuperAdminBlogsQuery {
       isMembership: blog.isMembership,
       blogOwnerInfo: {
         userId: blog.ownerId,
-        userLogin: blog.ownerLogin,
+        userLogin: ownerLogin,
       },
       banInfo: {
         isBanned: blog.isBanned,

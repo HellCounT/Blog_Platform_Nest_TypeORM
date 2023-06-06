@@ -71,9 +71,8 @@ export class LikesForPostsRepository {
   ): Promise<number> {
     try {
       return await this.postLikeRepo
-        .createQueryBuilder()
+        .createQueryBuilder('l')
         .select()
-        .from('post_like', 'l')
         .leftJoin('user_global_ban', 'b', 'l.userId = b.userId')
         .where('l.commentId = :commentId', { postId })
         .andWhere('l.likeStatus = :likeStatus', { likeStatus: likeStatus })

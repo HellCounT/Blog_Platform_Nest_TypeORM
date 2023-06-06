@@ -27,7 +27,7 @@ export class Blog {
   @ManyToOne(() => User, (u) => u.blogs)
   @JoinColumn()
   owner: User;
-  @Column('uuid')
+  @Column('uuid', { nullable: true })
   ownerId: string;
   @Column('boolean')
   isBanned: boolean;

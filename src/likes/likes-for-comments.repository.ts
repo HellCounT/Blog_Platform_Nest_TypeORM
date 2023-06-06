@@ -73,9 +73,8 @@ export class LikesForCommentsRepository {
   ): Promise<number> {
     try {
       return await this.commentLikeRepo
-        .createQueryBuilder()
+        .createQueryBuilder('l')
         .select()
-        .from('comment_like', 'l')
         .leftJoin('user_global_ban', 'b', 'l.userId = b.userId')
         .where('l.commentId = :commentId', { commentId })
         .andWhere('l.likeStatus = :likeStatus', { likeStatus: likeStatus })

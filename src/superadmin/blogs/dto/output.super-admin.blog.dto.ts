@@ -6,8 +6,8 @@ export class OutputSuperAdminBlogDto {
   createdAt: string;
   isMembership: boolean;
   blogOwnerInfo: {
-    userId: string;
-    userLogin: string;
+    userId: string | null;
+    userLogin: string | null;
   };
   banInfo: {
     isBanned: boolean;

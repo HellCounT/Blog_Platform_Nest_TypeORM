@@ -1,7 +1,7 @@
 export type QueryParser = {
   searchNameTerm: string | null;
   sortBy: string;
-  sortDirection: 1 | -1;
+  sortDirection: 'ASC' | 'DESC';
   pageNumber: number;
   pageSize: number;
 };
@@ -19,7 +19,7 @@ export const parseQueryPagination = (query): QueryParser => {
   const queryParamsParser: QueryParser = {
     searchNameTerm: null,
     sortBy: 'createdAt',
-    sortDirection: -1,
+    sortDirection: 'DESC',
     pageNumber: 1,
     pageSize: 10,
   };
@@ -27,7 +27,7 @@ export const parseQueryPagination = (query): QueryParser => {
     queryParamsParser.searchNameTerm = query.searchNameTerm.toString();
   if (query.sortBy) queryParamsParser.sortBy = query.sortBy.toString();
   if (query.sortDirection && query.sortDirection.toString() === 'asc')
-    queryParamsParser.sortDirection = 1;
+    queryParamsParser.sortDirection = 'ASC';
   if (query.pageNumber) queryParamsParser.pageNumber = +query.pageNumber;
   if (query.pageSize) queryParamsParser.pageSize = +query.pageSize;
   return queryParamsParser;
