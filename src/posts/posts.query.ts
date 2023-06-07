@@ -20,18 +20,25 @@ export class PostsQuery {
     activeUserId: string,
   ): Promise<PostPaginatorType> {
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
-    const [reqPageDbPosts, allPostsCount] = await this.postsRepo
-      .createQueryBuilder('p')
-      .select()
-      .leftJoin('b.blog', 'b')
-      .leftJoin('p.owner', 'u')
-      .leftJoin(`u."userGlobalBan"`, 'ub')
-      .where(`ub."isBanned" = false`)
-      .andWhere(`b."isBanned" = false`)
-      .orderBy(`"${q.sortBy}"`, q.sortDirection)
-      .limit(q.pageSize)
-      .offset(offsetSize)
-      .getManyAndCount();
+    const [reqPageDbPosts, allPostsCount] = await this.postsRepo.findAndCount({
+      where: {
+        owner: {
+          userGlobalBan: {
+            isBanned: false,
+          },
+        },
+        blog: { isBanned: false },
+      },
+      order: { [q.sortBy]: q.sortDirection },
+      take: q.pageSize,
+      skip: offsetSize,
+      relations: {
+        blog: true,
+        owner: {
+          userGlobalBan: true,
+        },
+      },
+    });
     const items = [];
     for await (const p of reqPageDbPosts) {
       const post = await this._mapPostToViewType(p, activeUserId);
