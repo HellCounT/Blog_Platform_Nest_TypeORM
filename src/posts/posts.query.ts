@@ -73,7 +73,14 @@ export class PostsQuery {
     postId: string,
     activeUserId: string,
   ): Promise<PostViewModelType | null> {
-    const post = await this.postsRepo.findOneBy({ id: postId });
+    const post = await this.postsRepo.findOne({
+      where: {
+        id: postId,
+      },
+      relations: {
+        blog: true,
+      },
+    });
     if (!post) throw new NotFoundException();
     return this._mapPostToViewType(post, activeUserId);
   }
