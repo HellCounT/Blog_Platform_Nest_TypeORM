@@ -1,12 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { QueryParser } from '../application-helpers/query.parser';
-import { PostPaginatorType, PostViewModelType } from './types/posts.types';
+import {
+  pickOrderForPostsQuery,
+  QueryParser,
+} from '../application-helpers/query.parser';
+import { PostJoinedType, PostViewModelType } from './types/posts.types';
 import { LikeStatus } from '../likes/types/likes.types';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
 import { Blog } from '../blogs/entities/blog.entity';
 import { PostLike } from '../likes/entities/post-like.entity';
+import { PaginatorType } from '../application-helpers/paginator.type';
 
 @Injectable()
 export class PostsQuery {
@@ -14,34 +18,47 @@ export class PostsQuery {
     @InjectRepository(Post) protected postsRepo: Repository<Post>,
     @InjectRepository(Blog) protected blogsRepo: Repository<Blog>,
     @InjectRepository(PostLike) protected postLikeRepo: Repository<PostLike>,
+    @InjectDataSource() protected dataSource: DataSource,
   ) {}
   async viewAllPosts(
     q: QueryParser,
     activeUserId: string,
-  ): Promise<PostPaginatorType> {
+  ): Promise<PaginatorType<PostViewModelType>> {
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
-    const [reqPageDbPosts, allPostsCount] = await this.postsRepo.findAndCount({
-      where: {
-        owner: {
-          userGlobalBan: {
-            isBanned: false,
-          },
-        },
-        blog: { isBanned: false },
-      },
-      order: { [q.sortBy]: q.sortDirection },
-      take: q.pageSize,
-      skip: offsetSize,
-      relations: {
-        blog: true,
-        owner: {
-          userGlobalBan: true,
-        },
-      },
-    });
+    const queryString = `
+        SELECT p."id", p."title", p."shortDescription", 
+        p."content", p."blogId", b."name" as "blogName", p."createdAt", 
+        p."ownerId", ub."isBanned" as "ownerIsBanned", p."likesCount", 
+        p."dislikesCount", b."isBanned" as "parentBlogIsBanned"
+        FROM "post" as p
+        JOIN "blog" as b
+        ON p."blogId" = b."id"
+        JOIN "user_global_ban" as ub
+        ON p."ownerId" = ub."userId"
+        WHERE ub."isBanned" = false AND b."isBanned" = false
+        ${pickOrderForPostsQuery(q.sortBy, q.sortDirection)}
+        LIMIT $1 OFFSET $2
+      `;
+    const countString = `
+        SELECT COUNT(*)
+        FROM "post" AS p
+        JOIN "user_global_ban" AS ub
+        ON p."ownerId" = ub."userId"
+        JOIN "blog" as b
+        ON p."blogId" = b."id"
+        WHERE ub."isBanned" = false AND b."isBanned" = false`;
+    const reqPageDbPosts: PostJoinedType[] = await this.dataSource.query(
+      queryString,
+      [q.pageSize, offsetSize],
+    );
+    const allPostsCount: number = parseInt(
+      (await this.dataSource.query(countString))[0].count,
+      10,
+    );
+    if (allPostsCount === 0) return null;
     const items = [];
     for await (const p of reqPageDbPosts) {
-      const post = await this._mapPostToViewType(p, activeUserId);
+      const post = await this._mapJoinedPostToViewType(p, activeUserId);
       items.push(post);
     }
     return {
@@ -64,7 +81,7 @@ export class PostsQuery {
     blogId: string,
     q: QueryParser,
     activeUserId: string,
-  ): Promise<PostPaginatorType | null> {
+  ): Promise<PaginatorType<PostViewModelType> | null> {
     const blog: Blog = await this.blogsRepo.findOneBy({
       id: blogId,
     });
@@ -92,6 +109,7 @@ export class PostsQuery {
         },
       },
     );
+    if (foundPostsCount === 0) return null;
     const items = [];
     for await (const p of reqPageDbPosts) {
       const post = await this._mapPostToViewType(p, activeUserId);
@@ -179,6 +197,37 @@ export class PostsQuery {
       content: post.content,
       blogId: post.blogId,
       blogName: post.blog.name,
+      createdAt: new Date(post.createdAt).toISOString(),
+      extendedLikesInfo: {
+        likesCount: post.likesCount,
+        dislikesCount: post.dislikesCount,
+        myStatus: userLike?.likeStatus || LikeStatus.none,
+        newestLikes: mappedLikes,
+      },
+    };
+  }
+  async _mapJoinedPostToViewType(
+    post: PostJoinedType,
+    activeUserId: string,
+  ): Promise<PostViewModelType> {
+    if (activeUserId === '')
+      activeUserId = '3465cc2e-f49b-11ed-a05b-0242ac120003';
+    const userLike = await this.getUserLikeForPost(activeUserId, post.id);
+    const newestLikes = await this._getNewestLikes(post.id);
+    const mappedLikes = newestLikes.map((l) => {
+      return {
+        addedAt: new Date(l.addedAt).toISOString(),
+        userId: l.userId,
+        login: l.user.login,
+      };
+    });
+    return {
+      id: post.id,
+      title: post.title,
+      shortDescription: post.shortDescription,
+      content: post.content,
+      blogId: post.blogId,
+      blogName: post.blogName,
       createdAt: new Date(post.createdAt).toISOString(),
       extendedLikesInfo: {
         likesCount: post.likesCount,

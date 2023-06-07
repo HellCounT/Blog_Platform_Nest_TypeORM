@@ -2,7 +2,7 @@ import { QueryParser } from '../application-helpers/query.parser';
 import { BlogViewModelType } from './types/blogs.types';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Blog } from './entities/blog.entity';
 import { PaginatorType } from '../application-helpers/paginator.type';
 
@@ -15,7 +15,7 @@ export class BlogsQuery {
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
     const [reqPageDbBlogs, allBlogsCount] = await this.blogsRepo.findAndCount({
       where: {
-        name: Like('%' + q.searchNameTerm + '%'),
+        name: ILike('%' + q.searchNameTerm + '%'),
         isBanned: false,
         owner: {
           userGlobalBan: {

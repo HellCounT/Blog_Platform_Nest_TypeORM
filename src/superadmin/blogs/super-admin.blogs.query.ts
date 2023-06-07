@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { QueryParser } from '../../application-helpers/query.parser';
 import { OutputSuperAdminBlogDto } from './dto/output.super-admin.blog.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Blog } from '../../blogs/entities/blog.entity';
 import { PaginatorType } from '../../application-helpers/paginator.type';
 
@@ -15,7 +15,7 @@ export class SuperAdminBlogsQuery {
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
     const [reqPageDbBlogs, allBlogsCount] = await this.blogsRepo.findAndCount({
       where: {
-        name: Like('%' + q.searchNameTerm + '%'),
+        name: ILike('%' + q.searchNameTerm + '%'),
       },
       order: { [q.sortBy]: q.sortDirection },
       take: q.pageSize,
