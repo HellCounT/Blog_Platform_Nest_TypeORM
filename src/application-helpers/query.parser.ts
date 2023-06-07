@@ -92,7 +92,6 @@ export const pickOrderForPostsQuery = (
       break;
     default:
       orderString = 'ORDER BY p."createdAt"';
-      break;
   }
   if (direction === 'ASC') {
     orderString += ' ASC';
