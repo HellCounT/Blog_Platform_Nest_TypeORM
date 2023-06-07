@@ -7,7 +7,6 @@ import { Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
 import { Blog } from '../blogs/entities/blog.entity';
 import { PostLike } from '../likes/entities/post-like.entity';
-import { User } from '../users/etities/user.entity';
 
 @Injectable()
 export class PostsQuery {
@@ -15,7 +14,6 @@ export class PostsQuery {
     @InjectRepository(Post) protected postsRepo: Repository<Post>,
     @InjectRepository(Blog) protected blogsRepo: Repository<Blog>,
     @InjectRepository(PostLike) protected postLikeRepo: Repository<PostLike>,
-    @InjectRepository(User) protected usersRepo: Repository<User>,
   ) {}
   async viewAllPosts(
     q: QueryParser,

@@ -4,16 +4,11 @@ import { OutputSuperAdminBlogDto } from './dto/output.super-admin.blog.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Blog } from '../../blogs/entities/blog.entity';
-import { User } from '../../users/etities/user.entity';
-import { isVoid } from '../../application-helpers/void.check.helper';
 import { PaginatorType } from '../../application-helpers/paginator.type';
 
 @Injectable()
 export class SuperAdminBlogsQuery {
-  constructor(
-    @InjectRepository(Blog) protected blogsRepo: Repository<Blog>,
-    @InjectRepository(User) protected usersRepo: Repository<User>,
-  ) {}
+  constructor(@InjectRepository(Blog) protected blogsRepo: Repository<Blog>) {}
   async viewAllBlogs(
     q: QueryParser,
   ): Promise<PaginatorType<OutputSuperAdminBlogDto>> {
@@ -29,11 +24,9 @@ export class SuperAdminBlogsQuery {
       .limit(q.pageSize)
       .offset(offsetSize)
       .getManyAndCount();
-    const items = [];
-    for await (const b of reqPageDbBlogs) {
-      const blog = await this._mapBlogToSuperAdminViewType(b);
-      items.push(blog);
-    }
+    const items = reqPageDbBlogs.map((b) =>
+      this._mapBlogToSuperAdminViewType(b),
+    );
     return {
       pagesCount: Math.ceil(allBlogsCount / q.pageSize),
       page: q.pageNumber,
@@ -42,13 +35,7 @@ export class SuperAdminBlogsQuery {
       items: items,
     };
   }
-  private async _mapBlogToSuperAdminViewType(
-    blog: Blog,
-  ): Promise<OutputSuperAdminBlogDto> {
-    const owner = await this.usersRepo.findOneBy({ id: blog.ownerId });
-    let ownerLogin;
-    if (isVoid(blog.ownerId)) ownerLogin = null;
-    else ownerLogin = owner.login;
+  private _mapBlogToSuperAdminViewType(blog: Blog): OutputSuperAdminBlogDto {
     let banDateString;
     if (blog.banDate === null) banDateString = null;
     else banDateString = blog.banDate.toISOString();
@@ -61,7 +48,7 @@ export class SuperAdminBlogsQuery {
       isMembership: blog.isMembership,
       blogOwnerInfo: {
         userId: blog.ownerId,
-        userLogin: ownerLogin,
+        userLogin: blog.owner.login,
       },
       banInfo: {
         isBanned: blog.isBanned,
