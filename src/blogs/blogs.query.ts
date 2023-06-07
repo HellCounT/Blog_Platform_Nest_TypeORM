@@ -2,7 +2,7 @@ import { QueryParser } from '../application-helpers/query.parser';
 import { BlogViewModelType } from './types/blogs.types';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Blog } from './entities/blog.entity';
 import { PaginatorType } from '../application-helpers/paginator.type';
 
@@ -13,23 +13,25 @@ export class BlogsQuery {
     q: QueryParser,
   ): Promise<PaginatorType<BlogViewModelType>> {
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
-    const [reqPageDbBlogs, allBlogsCount] = await this.blogsRepo
-      .createQueryBuilder('b')
-      .select()
-      .leftJoin('b.owner', 'u')
-      .leftJoin('u.userGlobalBan', 'ub')
-      .where(`b."isBanned" = false`)
-      .andWhere(`ub."isBanned" = false`)
-      .andWhere(
-        `
-      "name" ILIKE '%' || COALESCE(:searchNameTerm, '') || '%'
-      `,
-        { searchNameTerm: q.searchNameTerm },
-      )
-      .orderBy(`"${q.sortBy}"`, q.sortDirection)
-      .limit(q.pageSize)
-      .offset(offsetSize)
-      .getManyAndCount();
+    const [reqPageDbBlogs, allBlogsCount] = await this.blogsRepo.findAndCount({
+      where: {
+        name: Like('%' + q.searchNameTerm + '%'),
+        isBanned: false,
+        owner: {
+          userGlobalBan: {
+            isBanned: false,
+          },
+        },
+      },
+      order: { [q.sortBy]: q.sortDirection },
+      take: q.pageSize,
+      skip: offsetSize,
+      relations: {
+        owner: {
+          userGlobalBan: true,
+        },
+      },
+    });
     const pageBlogs = reqPageDbBlogs.map((b) => this._mapBlogToViewType(b));
     return {
       pagesCount: Math.ceil(allBlogsCount / q.pageSize),

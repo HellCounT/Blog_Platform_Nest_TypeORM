@@ -1,5 +1,5 @@
 export type QueryParser = {
-  searchNameTerm: string | null;
+  searchNameTerm: string;
   sortBy: string;
   sortDirection: 'ASC' | 'DESC';
   pageNumber: number;
@@ -17,7 +17,7 @@ export type UserQueryParser = {
 
 export const parseQueryPagination = (query): QueryParser => {
   const queryParamsParser: QueryParser = {
-    searchNameTerm: null,
+    searchNameTerm: '',
     sortBy: 'createdAt',
     sortDirection: 'DESC',
     pageNumber: 1,
