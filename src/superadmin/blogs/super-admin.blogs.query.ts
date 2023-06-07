@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { QueryParser } from '../../application-helpers/query.parser';
 import { OutputSuperAdminBlogDto } from './dto/output.super-admin.blog.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Blog } from '../../blogs/entities/blog.entity';
 import { PaginatorType } from '../../application-helpers/paginator.type';
 
@@ -13,17 +13,14 @@ export class SuperAdminBlogsQuery {
     q: QueryParser,
   ): Promise<PaginatorType<OutputSuperAdminBlogDto>> {
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
-    const [reqPageDbBlogs, allBlogsCount] = await this.blogsRepo
-      .createQueryBuilder('b')
-      .select()
-      .leftJoin('b.owner', 'u')
-      .where(`b."name" ILIKE '%' || COALESCE(:searchNameTerm, '') || '%'`, {
-        searchNameTerm: q.searchNameTerm,
-      })
-      .orderBy(`"${q.sortBy}"`, q.sortDirection)
-      .limit(q.pageSize)
-      .offset(offsetSize)
-      .getManyAndCount();
+    const [reqPageDbBlogs, allBlogsCount] = await this.blogsRepo.findAndCount({
+      where: {
+        name: Like('%' + q.searchNameTerm + '%'),
+      },
+      order: { [q.sortBy]: q.sortDirection },
+      take: q.pageSize,
+      skip: offsetSize,
+    });
     const items = reqPageDbBlogs.map((b) =>
       this._mapBlogToSuperAdminViewType(b),
     );
