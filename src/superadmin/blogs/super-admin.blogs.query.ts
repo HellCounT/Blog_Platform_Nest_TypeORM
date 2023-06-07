@@ -16,7 +16,7 @@ export class SuperAdminBlogsQuery {
     const [reqPageDbBlogs, allBlogsCount] = await this.blogsRepo
       .createQueryBuilder('b')
       .select()
-      .leftJoinAndSelect('b.owner', 'u')
+      .leftJoin('b.owner', 'u')
       .where(`b."name" ILIKE '%' || COALESCE(:searchNameTerm, '') || '%'`, {
         searchNameTerm: q.searchNameTerm,
       })

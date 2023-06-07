@@ -46,7 +46,7 @@ export class BlogsQuery {
       id: blogId,
       isBanned: false,
     });
-    if (!foundBlog) return this._mapBlogToViewType(foundBlog);
+    if (foundBlog) return this._mapBlogToViewType(foundBlog);
     else throw new NotFoundException();
   }
   _mapBlogToViewType(blog: Blog): BlogViewModelType {
