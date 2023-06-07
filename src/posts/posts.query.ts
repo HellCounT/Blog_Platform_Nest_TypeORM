@@ -114,7 +114,7 @@ export class PostsQuery {
   private async _getNewestLikes(postId: string): Promise<Array<PostLike>> {
     try {
       return await this.postLikeRepo
-        .createQueryBuilder('pl')
+        .createQueryBuilder('lp')
         .select()
         .leftJoin('lp.user', 'u')
         .leftJoin(`u."userGlobalBan"`, 'ub')

@@ -19,12 +19,12 @@ export class AppController {
   async deleteAllData() {
     await Promise.allSettled([
       this.dataSource.query(`DELETE FROM "user"`),
-      this.dataSource.query(`DELETE FROM "POSTS"`),
-      this.dataSource.query(`DELETE FROM "BLOGS"`),
-      this.dataSource.query(`DELETE FROM "COMMENTS"`),
-      this.dataSource.query(`DELETE FROM "LIKES_FOR_COMMENTS"`),
-      this.dataSource.query(`DELETE FROM "LIKES_FOR_POSTS"`),
-      this.dataSource.query(`DELETE FROM "BANNED_USERS_BY_BLOGGERS"`),
+      this.dataSource.query(`DELETE FROM "post"`),
+      this.dataSource.query(`DELETE FROM "blog"`),
+      this.dataSource.query(`DELETE FROM "comment"`),
+      this.dataSource.query(`DELETE FROM "comment_like"`),
+      this.dataSource.query(`DELETE FROM "post_like"`),
+      this.dataSource.query(`DELETE FROM "user_banned_by_blogger"`),
     ]);
     return;
   }
