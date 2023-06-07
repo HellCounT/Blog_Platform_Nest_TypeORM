@@ -73,7 +73,6 @@ export class UpdatePostLikeStatusUseCase {
         await this.likesForPostsService.createNewLike(
           command.postId,
           command.activeUserId,
-          command.activeUserLogin,
           command.inputLikeStatus,
         );
         await this.postsRepo.updateLikesCounters(

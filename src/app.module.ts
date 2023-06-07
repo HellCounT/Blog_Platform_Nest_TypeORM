@@ -116,7 +116,6 @@ const controllers = [
   SuperAdminUsersController,
   BloggerBlogsController,
   BloggerUsersController,
-  UserBannedByBlogger,
 ];
 
 const services = [
