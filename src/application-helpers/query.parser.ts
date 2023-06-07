@@ -66,67 +66,6 @@ export const getBanStatusForQuery = (banStatus: BanStatus): string => {
   } else return ``;
 };
 
-export const pickOrderForBannedByBloggerUsersQuery = (
-  order: string,
-  direction: 'ASC' | 'DESC',
-): string => {
-  let orderString = 'ORDER BY';
-  switch (order) {
-    case 'id':
-      orderString += ' u."id"';
-      break;
-    case 'login':
-      orderString += ' u."login"';
-      break;
-    case 'email':
-      orderString += ' "banDate"';
-      break;
-    default:
-      orderString = 'ORDER BY u."createdAt"';
-  }
-  if (direction === 'ASC') {
-    orderString += ' ASC';
-  } else {
-    orderString += ' DESC';
-  }
-  return orderString;
-};
-
-export const pickOrderForPostsQuery = (
-  order: string,
-  direction: 1 | -1,
-): string => {
-  let orderString = 'ORDER BY';
-  switch (order) {
-    case 'id':
-      orderString += ' p."id"';
-      break;
-    case 'title':
-      orderString += ' p."title"';
-      break;
-    case 'shortDescription':
-      orderString += ' p."shortDescription"';
-      break;
-    case 'blogId':
-      orderString += ' p."blogId"';
-      break;
-    case 'blogName':
-      orderString += ' b."name"';
-      break;
-    case 'ownerId':
-      orderString += ' p."ownerId"';
-      break;
-    default:
-      orderString = 'ORDER BY p."createdAt"';
-  }
-  if (direction === 1) {
-    orderString += ' ASC';
-  } else {
-    orderString += ' DESC';
-  }
-  return orderString;
-};
-
 export enum BanStatus {
   all = 'all',
   banned = 'banned',
