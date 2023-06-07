@@ -68,46 +68,44 @@ export class PostsQuery {
     const blog: Blog = await this.blogsRepo.findOneBy({
       id: blogId,
     });
-    if (!!blog) {
-      const offsetSize = (q.pageNumber - 1) * q.pageSize;
-      const [reqPageDbPosts, foundPostsCount] =
-        await this.postsRepo.findAndCount({
-          where: {
-            blogId: blogId,
-            owner: {
-              userGlobalBan: {
-                isBanned: false,
-              },
-            },
-            blog: { isBanned: false },
-          },
-          order: { [q.sortBy]: q.sortDirection },
-          take: q.pageSize,
-          skip: offsetSize,
-          relations: {
-            blog: true,
-            owner: {
-              userGlobalBan: true,
+    if (!blog) throw new NotFoundException();
+    const offsetSize = (q.pageNumber - 1) * q.pageSize;
+    const [reqPageDbPosts, foundPostsCount] = await this.postsRepo.findAndCount(
+      {
+        where: {
+          blogId: blogId,
+          owner: {
+            userGlobalBan: {
+              isBanned: false,
             },
           },
-        });
-      if (reqPageDbPosts.length === 0) return null;
-      else {
-        const items = [];
-        for await (const p of reqPageDbPosts) {
-          const post = await this._mapPostToViewType(p, activeUserId);
-          items.push(post);
-        }
-        return {
-          pagesCount: Math.ceil(foundPostsCount / q.pageSize),
-          page: q.pageNumber,
-          pageSize: q.pageSize,
-          totalCount: foundPostsCount,
-          items: items,
-        };
-      }
-    } else throw new NotFoundException();
+          blog: { isBanned: false },
+        },
+        order: { [q.sortBy]: q.sortDirection },
+        take: q.pageSize,
+        skip: offsetSize,
+        relations: {
+          blog: true,
+          owner: {
+            userGlobalBan: true,
+          },
+        },
+      },
+    );
+    const items = [];
+    for await (const p of reqPageDbPosts) {
+      const post = await this._mapPostToViewType(p, activeUserId);
+      items.push(post);
+    }
+    return {
+      pagesCount: Math.ceil(foundPostsCount / q.pageSize),
+      page: q.pageNumber,
+      pageSize: q.pageSize,
+      totalCount: foundPostsCount,
+      items: items,
+    };
   }
+
   async getUserLikeForPost(userId: string, postId: string): Promise<PostLike> {
     try {
       return await this.postLikeRepo.findOne({

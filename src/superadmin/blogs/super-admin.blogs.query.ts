@@ -20,6 +20,9 @@ export class SuperAdminBlogsQuery {
       order: { [q.sortBy]: q.sortDirection },
       take: q.pageSize,
       skip: offsetSize,
+      relations: {
+        owner: true,
+      },
     });
     const items = reqPageDbBlogs.map((b) =>
       this._mapBlogToSuperAdminViewType(b),
