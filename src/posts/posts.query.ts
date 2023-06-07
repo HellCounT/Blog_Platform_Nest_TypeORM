@@ -76,9 +76,18 @@ export class PostsQuery {
     const post = await this.postsRepo.findOne({
       where: {
         id: postId,
+        owner: {
+          userGlobalBan: {
+            isBanned: false,
+          },
+        },
+        blog: { isBanned: false },
       },
       relations: {
         blog: true,
+        owner: {
+          userGlobalBan: true,
+        },
       },
     });
     if (!post) throw new NotFoundException();
