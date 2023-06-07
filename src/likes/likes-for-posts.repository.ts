@@ -74,7 +74,7 @@ export class LikesForPostsRepository {
         .createQueryBuilder('l')
         .select()
         .leftJoin('user_global_ban', 'b', 'l.userId = b.userId')
-        .where('l.commentId = :commentId', { postId })
+        .where('l.postId = :postId', { postId })
         .andWhere('l.likeStatus = :likeStatus', { likeStatus: likeStatus })
         .andWhere('b.isBanned = :isBanned', { isBanned: false })
         .getCount();
