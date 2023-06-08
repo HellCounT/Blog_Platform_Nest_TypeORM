@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { User } from '../../users/etities/user.entity';
 import { Blog } from '../../blogs/entities/blog.entity';
 import { UserBannedByBlogger } from './users-banned-by-blogger/entities/user-banned-by-blogger.entity';
+import { emptyPaginatorStab } from '../../application-helpers/empty.paginator.stab';
 
 @Injectable()
 export class BloggerUsersQuery {
@@ -29,10 +30,25 @@ export class BloggerUsersQuery {
     const foundBlog = await this.blogsRepo.findOneBy({ id: blogId });
     if (!foundBlog) throw new NotFoundException();
     if (foundBlog.ownerId !== userId) throw new ForbiddenException();
+    // const [reqPageDbBans, bansCount] =
+    // await this.bansByBloggersRepo.findAndCount({
+    //   where: {
+    //     blogId: blogId,
+    //     bannedUser: {
+    //       login: ILike('%' + q.searchLoginTerm + '%'),
+    //     },
+    //   },
+    //   order: { [q.sortBy]: q.sortDirection },
+    //   take: q.pageSize,
+    //   skip: offsetSize,
+    //   relations: {
+    //     bannedUser: true,
+    //   },
+    // });
     const [reqPageDbBans, bansCount] = await this.bansByBloggersRepo
       .createQueryBuilder('bu')
       .select()
-      .leftJoin(`bu."bannedUser"`, 'u')
+      .leftJoinAndSelect(User, 'u', `bu."bannedUserId" = u.id`)
       .where('bu."blogId" = :blogId', { blogId: blogId })
       .andWhere(
         `u."login" ILIKE '%' || COALESCE(:searchLoginTerm, '') || '%'`,
@@ -42,10 +58,11 @@ export class BloggerUsersQuery {
       .limit(q.pageSize)
       .offset(offsetSize)
       .getManyAndCount();
+    if (bansCount === 0) return emptyPaginatorStab;
     const items = [];
     for await (const b of reqPageDbBans) {
-      const bannedUser = this._mapBanToBannedUserViewType(b);
-      items.push(bannedUser);
+      const item = await this._mapBanToBannedUserViewType(b);
+      items.push(item);
     }
     return {
       pagesCount: Math.ceil(bansCount / q.pageSize),
@@ -58,12 +75,12 @@ export class BloggerUsersQuery {
   private async _mapBanToBannedUserViewType(
     bannedUserByBloggerInfo: UserBannedByBlogger,
   ): Promise<OutputBannedUserByBloggerDto> {
-    const bannedUser = await this.usersRepo.findOneBy({
+    const user = await this.usersRepo.findOneBy({
       id: bannedUserByBloggerInfo.bannedUserId,
     });
     return {
       id: bannedUserByBloggerInfo.bannedUserId,
-      login: bannedUser.login,
+      login: user.login,
       banInfo: {
         isBanned: true,
         banDate: bannedUserByBloggerInfo.banDate.toISOString(),

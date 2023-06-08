@@ -11,6 +11,7 @@ import { Post } from './entities/post.entity';
 import { Blog } from '../blogs/entities/blog.entity';
 import { PostLike } from '../likes/entities/post-like.entity';
 import { PaginatorType } from '../application-helpers/paginator.type';
+import { emptyPaginatorStab } from '../application-helpers/empty.paginator.stab';
 
 @Injectable()
 export class PostsQuery {
@@ -55,7 +56,7 @@ export class PostsQuery {
       (await this.dataSource.query(countString))[0].count,
       10,
     );
-    if (allPostsCount === 0) return null;
+    if (allPostsCount === 0) return emptyPaginatorStab;
     const items = [];
     for await (const p of reqPageDbPosts) {
       const post = await this._mapJoinedPostToViewType(p, activeUserId);
