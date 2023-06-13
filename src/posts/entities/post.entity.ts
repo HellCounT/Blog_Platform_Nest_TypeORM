@@ -7,7 +7,7 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 import { Blog } from '../../blogs/entities/blog.entity';
-import { User } from '../../users/etities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { Comment } from '../../comments/entities/comment.entity';
 import { PostLike } from '../../likes/entities/post-like.entity';
 

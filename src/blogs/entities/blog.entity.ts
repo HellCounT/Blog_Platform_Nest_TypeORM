@@ -6,7 +6,7 @@ import {
   OneToMany,
   PrimaryColumn,
 } from 'typeorm';
-import { User } from '../../users/etities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { Post } from '../../posts/entities/post.entity';
 import { UserBannedByBlogger } from '../../blogger/users/users-banned-by-blogger/entities/user-banned-by-blogger.entity';
 

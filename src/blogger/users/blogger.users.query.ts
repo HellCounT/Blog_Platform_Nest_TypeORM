@@ -8,7 +8,7 @@ import { OutputBannedUserByBloggerDto } from './dto/output.user-banned-by-blogge
 import { UserQueryParser } from '../../application-helpers/query.parser';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../../users/etities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { Blog } from '../../blogs/entities/blog.entity';
 import { UserBannedByBlogger } from './users-banned-by-blogger/entities/user-banned-by-blogger.entity';
 import { emptyPaginatorStab } from '../../application-helpers/empty.paginator.stab';

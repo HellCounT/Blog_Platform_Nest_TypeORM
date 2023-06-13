@@ -77,10 +77,10 @@ import { UpdateCommentUseCase } from './comments/use-cases/update.comment.use-ca
 import { DeleteCommentUseCase } from './comments/use-cases/delete.comment.use-case';
 import { UpdateCommentLikeStatusUseCase } from './comments/use-cases/update.comment.likestatus.use-case';
 import { UpdatePostLikeStatusUseCase } from './posts/use-cases/update.post.likestatus.use-case';
-import { User } from './users/etities/user.entity';
-import { UserConfirmation } from './users/etities/user-confirmation.entity';
-import { UserGlobalBan } from './users/etities/user-global-ban.entity';
-import { UserRecovery } from './users/etities/user-recovery.entity';
+import { User } from './users/entities/user.entity';
+import { UserConfirmation } from './users/entities/user-confirmation.entity';
+import { UserGlobalBan } from './users/entities/user-global-ban.entity';
+import { UserRecovery } from './users/entities/user-recovery.entity';
 import { Device } from './security/devices/entities/device.entity';
 import { ExpiredToken } from './security/tokens/entities/expired-token.entity';
 import { Blog } from './blogs/entities/blog.entity';

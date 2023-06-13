@@ -11,10 +11,10 @@ import { BasicStrategy } from './strategies/basic.strategy';
 import { EmailService } from '../email/email.service';
 import { UsersQuery } from '../users/users.query';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserGlobalBan } from '../users/etities/user-global-ban.entity';
-import { User } from '../users/etities/user.entity';
-import { UserConfirmation } from '../users/etities/user-confirmation.entity';
-import { UserRecovery } from '../users/etities/user-recovery.entity';
+import { UserGlobalBan } from '../users/entities/user-global-ban.entity';
+import { User } from '../users/entities/user.entity';
+import { UserConfirmation } from '../users/entities/user-confirmation.entity';
+import { UserRecovery } from '../users/entities/user-recovery.entity';
 import { Device } from '../security/devices/entities/device.entity';
 
 @Module({

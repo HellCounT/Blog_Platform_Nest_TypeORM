@@ -3,7 +3,7 @@ import { UserQueryType } from './types/users.types';
 import { OutputDeviceDto } from '../security/devices/dto/output.device.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './etities/user.entity';
+import { User } from './entities/user.entity';
 import { isVoid } from '../application-helpers/void.check.helper';
 import { Device } from '../security/devices/entities/device.entity';
 

@@ -3,10 +3,10 @@ import { UserCollectedData } from './types/users.types';
 import { OutputSuperAdminUserDto } from '../superadmin/users/dto/output.super-admin.user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './etities/user.entity';
-import { UserGlobalBan } from './etities/user-global-ban.entity';
-import { UserConfirmation } from './etities/user-confirmation.entity';
-import { UserRecovery } from './etities/user-recovery.entity';
+import { User } from './entities/user.entity';
+import { UserGlobalBan } from './entities/user-global-ban.entity';
+import { UserConfirmation } from './entities/user-confirmation.entity';
+import { UserRecovery } from './entities/user-recovery.entity';
 import { isVoid } from '../application-helpers/void.check.helper';
 
 @Injectable()

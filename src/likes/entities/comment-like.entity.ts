@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Comment } from '../../comments/entities/comment.entity';
-import { User } from '../../users/etities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { LikeStatus } from '../types/likes.types';
 
 @Entity()

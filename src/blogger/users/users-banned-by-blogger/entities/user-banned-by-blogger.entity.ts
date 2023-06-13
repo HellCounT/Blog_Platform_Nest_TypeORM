@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Blog } from '../../../../blogs/entities/blog.entity';
-import { User } from '../../../../users/etities/user.entity';
+import { User } from '../../../../users/entities/user.entity';
 
 @Entity()
 export class UserBannedByBlogger {

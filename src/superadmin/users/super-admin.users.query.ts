@@ -7,10 +7,10 @@ import { OutputSuperAdminUserDto } from './dto/output.super-admin.user.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../../users/etities/user.entity';
-import { UserGlobalBan } from '../../users/etities/user-global-ban.entity';
-import { UserConfirmation } from '../../users/etities/user-confirmation.entity';
-import { UserRecovery } from '../../users/etities/user-recovery.entity';
+import { User } from '../../users/entities/user.entity';
+import { UserGlobalBan } from '../../users/entities/user-global-ban.entity';
+import { UserConfirmation } from '../../users/entities/user-confirmation.entity';
+import { UserRecovery } from '../../users/entities/user-recovery.entity';
 
 @Injectable()
 export class SuperAdminUsersQuery {
