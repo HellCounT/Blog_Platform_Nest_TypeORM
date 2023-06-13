@@ -42,13 +42,15 @@ export class SuperAdminQuestionsQueryRepository {
     };
   }
   private _mapQuestionToViewType(question: Question): OutputQuestionDto {
+    let updateInfo = null;
+    if (question.updatedAt) updateInfo = question.updatedAt;
     return {
       id: question.id,
       body: question.body,
       correctAnswers: question.correctAnswers,
       published: question.published,
       createdAt: question.createdAt.toISOString(),
-      updatedAt: question.updatedAt.toISOString(),
+      updatedAt: updateInfo,
     };
   }
 }

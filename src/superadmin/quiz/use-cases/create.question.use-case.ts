@@ -20,8 +20,8 @@ export class CreateQuestionUseCase {
       body: createdQuestion.body,
       correctAnswers: createdQuestion.correctAnswers,
       published: createdQuestion.published,
-      createdAt: null,
-      updatedAt: createdQuestion.updatedAt.toISOString(),
+      createdAt: createdQuestion.createdAt.toISOString(),
+      updatedAt: null,
     };
   }
 }
