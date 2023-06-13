@@ -20,7 +20,7 @@ export class CreateQuestionUseCase {
       body: createdQuestion.body,
       correctAnswers: createdQuestion.correctAnswers,
       published: createdQuestion.published,
-      createdAt: createdQuestion.createdAt.toISOString(),
+      createdAt: null,
       updatedAt: createdQuestion.updatedAt.toISOString(),
     };
   }

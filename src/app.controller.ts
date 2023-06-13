@@ -25,6 +25,7 @@ export class AppController {
       this.dataSource.query(`DELETE FROM "comment_like"`),
       this.dataSource.query(`DELETE FROM "post_like"`),
       this.dataSource.query(`DELETE FROM "user_banned_by_blogger"`),
+      this.dataSource.query(`DELETE FROM "question"`),
     ]);
     return;
   }

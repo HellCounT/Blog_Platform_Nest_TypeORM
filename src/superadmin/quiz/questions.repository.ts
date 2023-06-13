@@ -37,6 +37,7 @@ export class QuestionsRepository {
         {
           body: body,
           correctAnswers: correctAnswers,
+          updatedAt: new Date(),
         },
       );
       return result.affected === 1;

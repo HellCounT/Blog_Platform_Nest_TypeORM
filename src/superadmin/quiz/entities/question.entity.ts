@@ -25,7 +25,7 @@ export class Question {
     question.correctAnswers = correctAnswers;
     question.published = false;
     question.createdAt = new Date();
-    question.updatedAt = new Date();
+    question.updatedAt = null;
     return question;
   }
 }
