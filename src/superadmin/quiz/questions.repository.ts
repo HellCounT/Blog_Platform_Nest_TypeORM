@@ -54,4 +54,21 @@ export class QuestionsRepository {
       return false;
     }
   }
+  async changePublishedStatus(
+    publishedStatus: boolean,
+    questionId: string,
+  ): Promise<boolean> {
+    try {
+      const result = await this.questionRepo.update(
+        { id: questionId },
+        {
+          published: publishedStatus,
+        },
+      );
+      return result.affected === 1;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
+  }
 }

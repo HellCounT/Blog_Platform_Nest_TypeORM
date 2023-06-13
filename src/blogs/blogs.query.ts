@@ -1,4 +1,4 @@
-import { QueryParser } from '../application-helpers/query-parser';
+import { QueryParserType } from '../application-helpers/query-parser-type';
 import { BlogViewModelType } from './types/blogs.types';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,7 +10,7 @@ import { PaginatorType } from '../application-helpers/paginator.type';
 export class BlogsQuery {
   constructor(@InjectRepository(Blog) protected blogsRepo: Repository<Blog>) {}
   async viewAllBlogs(
-    q: QueryParser,
+    q: QueryParserType,
   ): Promise<PaginatorType<BlogViewModelType>> {
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
     const [reqPageDbBlogs, allBlogsCount] = await this.blogsRepo.findAndCount({

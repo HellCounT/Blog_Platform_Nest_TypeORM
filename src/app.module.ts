@@ -91,6 +91,12 @@ import { PostLike } from './likes/entities/post-like.entity';
 import { UserBannedByBlogger } from './blogger/users/users-banned-by-blogger/entities/user-banned-by-blogger.entity';
 import { SuperAdminQuestionsController } from './superadmin/quiz/super-admin.questions.controller';
 import { Question } from './superadmin/quiz/entities/question.entity';
+import { CreateQuestionUseCase } from './superadmin/quiz/use-cases/create.question.use-case';
+import { UpdateQuestionUseCase } from './superadmin/quiz/use-cases/update.question.use-case';
+import { DeleteQuestionUseCase } from './superadmin/quiz/use-cases/delete.question.use-case';
+import { ChangePublishedStatusUseCase } from './superadmin/quiz/use-cases/change.published.status.use-case';
+import { QuestionsRepository } from './superadmin/quiz/questions.repository';
+import { SuperAdminQuestionsQueryRepository } from './superadmin/quiz/super-admin.questions.query';
 
 const entities = [
   User,
@@ -160,6 +166,10 @@ const useCases = [
   DeleteCommentUseCase,
   UpdateCommentLikeStatusUseCase,
   UpdatePostLikeStatusUseCase,
+  CreateQuestionUseCase,
+  UpdateQuestionUseCase,
+  DeleteQuestionUseCase,
+  ChangePublishedStatusUseCase,
 ];
 
 const repositories = [
@@ -172,6 +182,7 @@ const repositories = [
   DevicesRepository,
   ExpiredTokensRepository,
   UsersBannedByBloggerRepository,
+  QuestionsRepository,
 ];
 
 const query = [
@@ -183,6 +194,7 @@ const query = [
   SuperAdminUsersQuery,
   BloggerBlogsQuery,
   BloggerUsersQuery,
+  SuperAdminQuestionsQueryRepository,
 ];
 
 const constraints = [

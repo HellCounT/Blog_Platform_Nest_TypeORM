@@ -1,4 +1,4 @@
-import { QueryParser } from '../application-helpers/query-parser';
+import { QueryParserType } from '../application-helpers/query-parser-type';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CommentViewDto } from './dto/output.comment.view.dto';
 import { CommentPaginatorDto } from './dto/output.comment-paginator.dto';
@@ -40,7 +40,7 @@ export class CommentsQuery {
   }
   async findCommentsByPostId(
     postId: string,
-    q: QueryParser,
+    q: QueryParserType,
     activeUserId = '',
   ): Promise<CommentPaginatorDto | null> {
     const offsetSize = (q.pageNumber - 1) * q.pageSize;

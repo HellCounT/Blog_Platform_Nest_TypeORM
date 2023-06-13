@@ -1,4 +1,4 @@
-export type QueryParser = {
+export type QueryParserType = {
   searchNameTerm: string;
   sortBy: string;
   sortDirection: 'ASC' | 'DESC';
@@ -23,8 +23,8 @@ export type QuestionQueryParserType = {
   pageSize: number;
 };
 
-export const parseQueryPagination = (query): QueryParser => {
-  const queryParamsParser: QueryParser = {
+export const parseQueryPagination = (query): QueryParserType => {
+  const queryParamsParser: QueryParserType = {
     searchNameTerm: '',
     sortBy: 'createdAt',
     sortDirection: 'DESC',

@@ -20,8 +20,8 @@ import { UpdateBlogCommand } from './use-cases/update.blog.use-case';
 import { DeleteBlogCommand } from './use-cases/delete.blog.use-case';
 import {
   parseQueryPagination,
-  QueryParser,
-} from '../../application-helpers/query-parser';
+  QueryParserType,
+} from '../../application-helpers/query-parser-type';
 import { BloggerBlogsQuery } from './blogger.blogs.query';
 import { InputCreatePostForBlogDto } from './dto/input.create-post-for-blog.dto';
 import { CreatePostForBlogCommand } from './use-cases/create.post.for.blog.use-case';
@@ -38,7 +38,7 @@ export class BloggerBlogsController {
   ) {}
   @Get()
   @HttpCode(200)
-  async getAllBlogsForBlogger(@Query() query: QueryParser, @Req() req) {
+  async getAllBlogsForBlogger(@Query() query: QueryParserType, @Req() req) {
     const queryParams = parseQueryPagination(query);
     return await this.bloggerBlogsQueryRepo.getAllBlogsForBlogger(
       queryParams,
@@ -115,7 +115,10 @@ export class BloggerBlogsController {
   }
   @Get('comments')
   @HttpCode(200)
-  async getAllCommentsForBloggerPosts(@Req() req, @Query() query: QueryParser) {
+  async getAllCommentsForBloggerPosts(
+    @Req() req,
+    @Query() query: QueryParserType,
+  ) {
     const queryParams = parseQueryPagination(query);
     return await this.bloggerBlogsQueryRepo.getAllCommentsForBloggerPosts(
       queryParams,

@@ -10,8 +10,8 @@ import {
 } from '@nestjs/common';
 import {
   parseQueryPagination,
-  QueryParser,
-} from '../application-helpers/query-parser';
+  QueryParserType,
+} from '../application-helpers/query-parser-type';
 import { BlogsQuery } from './blogs.query';
 import { PostsQuery } from '../posts/posts.query';
 import { GuestGuard } from '../auth/guards/guest.guard';
@@ -24,7 +24,7 @@ export class BlogsController {
   ) {}
   @Get()
   @HttpCode(200)
-  async getAllBlogs(@Query() query: QueryParser) {
+  async getAllBlogs(@Query() query: QueryParserType) {
     const queryParams = parseQueryPagination(query);
     return await this.blogsQueryRepo.viewAllBlogs(queryParams);
   }
@@ -40,7 +40,7 @@ export class BlogsController {
   @HttpCode(200)
   async getPostsForBlogId(
     @Param('id') id: string,
-    @Query() query: QueryParser,
+    @Query() query: QueryParserType,
     @Req() req,
   ) {
     const queryParams = parseQueryPagination(query);

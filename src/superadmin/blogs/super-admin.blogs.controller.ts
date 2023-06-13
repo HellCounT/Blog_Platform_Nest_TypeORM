@@ -14,8 +14,8 @@ import { BindBlogToUserCommand } from './use-cases/bind.blog.to.user.use-case';
 import { SuperAdminBlogsQuery } from './super-admin.blogs.query';
 import {
   parseQueryPagination,
-  QueryParser,
-} from '../../application-helpers/query-parser';
+  QueryParserType,
+} from '../../application-helpers/query-parser-type';
 import { BanBlogCommand } from './use-cases/ban.blog.use-case';
 import { InputSABanBlogDto } from './dto/input.super-admin.ban.blog.dto';
 
@@ -29,7 +29,7 @@ export class SuperAdminBlogsController {
 
   @Get()
   @HttpCode(200)
-  async getAllBlogs(@Query() query: QueryParser) {
+  async getAllBlogs(@Query() query: QueryParserType) {
     const queryParams = parseQueryPagination(query);
     return await this.superAdminBlogsQueryRepo.viewAllBlogs(queryParams);
   }

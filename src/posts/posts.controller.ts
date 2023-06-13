@@ -14,8 +14,8 @@ import {
 import { PostsQuery } from './posts.query';
 import {
   parseQueryPagination,
-  QueryParser,
-} from '../application-helpers/query-parser';
+  QueryParserType,
+} from '../application-helpers/query-parser-type';
 import { CommentsQuery } from '../comments/comments.query';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { InputCommentDto } from '../comments/dto/input-comment.dto';
@@ -37,7 +37,7 @@ export class PostsController {
   ) {}
   @UseGuards(GuestGuard)
   @Get()
-  async getAllPosts(@Query() query: QueryParser, @Req() req) {
+  async getAllPosts(@Query() query: QueryParserType, @Req() req) {
     const queryParams = parseQueryPagination(query);
     return await this.postsQueryRepo.viewAllPosts(queryParams, req.user.userId);
   }
@@ -50,7 +50,7 @@ export class PostsController {
   @Get(':postId/comments')
   async getCommentsByPostId(
     @Param('postId') postId: string,
-    @Query() query: QueryParser,
+    @Query() query: QueryParserType,
     @Req() req,
   ): Promise<CommentPaginatorDto> {
     const queryParams = parseQueryPagination(query);

@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   pickOrderForPostsQuery,
-  QueryParser,
-} from '../application-helpers/query-parser';
+  QueryParserType,
+} from '../application-helpers/query-parser-type';
 import { PostJoinedType, PostViewModelType } from './types/posts.types';
 import { LikeStatus } from '../likes/types/likes.types';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
@@ -22,7 +22,7 @@ export class PostsQuery {
     @InjectDataSource() protected dataSource: DataSource,
   ) {}
   async viewAllPosts(
-    q: QueryParser,
+    q: QueryParserType,
     activeUserId: string,
   ): Promise<PaginatorType<PostViewModelType>> {
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
@@ -96,7 +96,7 @@ export class PostsQuery {
   }
   async findPostsByBlogId(
     blogId: string,
-    q: QueryParser,
+    q: QueryParserType,
     activeUserId: string,
   ): Promise<PaginatorType<PostViewModelType> | null> {
     const blog: Blog = await this.blogsRepo.findOneBy({

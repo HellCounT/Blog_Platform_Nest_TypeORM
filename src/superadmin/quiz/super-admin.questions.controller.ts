@@ -15,7 +15,7 @@ import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
 import {
   parseQuestionQueryPagination,
   QuestionQueryParserType,
-} from '../../application-helpers/query-parser';
+} from '../../application-helpers/query-parser-type';
 import { InputCreateQuestionDto } from './dto/input.create-question.dto';
 import { OutputQuestionDto } from './dto/output.question.dto';
 import { PaginatorType } from '../../application-helpers/paginator.type';
@@ -23,11 +23,16 @@ import { InputPublishedStatusDto } from './dto/input.published-status.dto';
 import { CreateQuestionCommand } from './use-cases/create.question.use-case';
 import { DeleteQuestionCommand } from './use-cases/delete.question.use-case';
 import { UpdateQuestionCommand } from './use-cases/update.question.use-case';
+import { ChangePublishedStatusCommand } from './use-cases/change.published.status.use-case';
+import { SuperAdminQuestionsQueryRepository } from './super-admin.questions.query';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/quiz/questions')
 export class SuperAdminQuestionsController {
-  constructor(private readonly commandBus: CommandBus) {}
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly superAdminQuestionsQueryRepo: SuperAdminQuestionsQueryRepository,
+  ) {}
   @Get()
   @HttpCode(200)
   getAllQuestions(
@@ -71,5 +76,6 @@ export class SuperAdminQuestionsController {
     await this.commandBus.execute(
       new ChangePublishedStatusCommand(publishedStatusDto, id),
     );
+    return;
   }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { QueryParser } from '../../application-helpers/query-parser';
+import { QueryParserType } from '../../application-helpers/query-parser-type';
 import { BlogViewModelType } from '../../blogs/types/blogs.types';
 import { BlogsQuery } from '../../blogs/blogs.query';
 import { CommentForBloggerViewType } from './dto/output.comments.paginator.blogger.dto';
@@ -25,7 +25,7 @@ export class BloggerBlogsQuery extends BlogsQuery {
     super(blogsRepo);
   }
   async getAllBlogsForBlogger(
-    q: QueryParser,
+    q: QueryParserType,
     userId,
   ): Promise<PaginatorType<BlogViewModelType>> {
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
@@ -50,7 +50,7 @@ export class BloggerBlogsQuery extends BlogsQuery {
     };
   }
   async getAllCommentsForBloggerPosts(
-    q: QueryParser,
+    q: QueryParserType,
     userId: string,
   ): Promise<PaginatorType<CommentForBloggerViewType>> {
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
