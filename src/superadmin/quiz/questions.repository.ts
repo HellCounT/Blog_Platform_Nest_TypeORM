@@ -64,6 +64,7 @@ export class QuestionsRepository {
         { id: questionId },
         {
           published: publishedStatus,
+          updatedAt: new Date(),
         },
       );
       return result.affected === 1;
