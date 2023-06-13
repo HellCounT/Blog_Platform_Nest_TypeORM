@@ -12,7 +12,7 @@ export class Question {
   published: boolean;
   @Column('timestamp')
   createdAt: Date;
-  @Column('timestamp')
+  @Column('timestamp', { nullable: true })
   updatedAt: Date;
   static instantiate(
     questionId: string,
