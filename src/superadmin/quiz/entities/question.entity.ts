@@ -6,7 +6,7 @@ export class Question {
   id: string;
   @Column('varchar')
   body: string;
-  @Column('simple-array')
+  @Column('varchar', { array: true })
   correctAnswers: string[];
   @Column('boolean')
   published: boolean;
