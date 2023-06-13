@@ -21,6 +21,8 @@ import { OutputQuestionDto } from './dto/output.question.dto';
 import { PaginatorType } from '../../application-helpers/paginator.type';
 import { InputPublishedStatusDto } from './dto/input.published-status.dto';
 import { CreateQuestionCommand } from './use-cases/create.question.use-case';
+import { DeleteQuestionCommand } from './use-cases/delete.question.use-case';
+import { UpdateQuestionCommand } from './use-cases/update.question.use-case';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/quiz/questions')

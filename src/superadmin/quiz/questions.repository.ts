@@ -42,7 +42,16 @@ export class QuestionsRepository {
       return result.affected === 1;
     } catch (e) {
       console.log(e);
-      return null;
+      return false;
+    }
+  }
+  async deleteQuestion(questionId: string): Promise<boolean> {
+    try {
+      const result = await this.questionRepo.delete({ id: questionId });
+      return result.affected === 1;
+    } catch (e) {
+      console.log(e);
+      return false;
     }
   }
 }
