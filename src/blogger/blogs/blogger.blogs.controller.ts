@@ -21,7 +21,7 @@ import { DeleteBlogCommand } from './use-cases/delete.blog.use-case';
 import {
   parseQueryPagination,
   QueryParser,
-} from '../../application-helpers/query.parser';
+} from '../../application-helpers/query-parser';
 import { BloggerBlogsQuery } from './blogger.blogs.query';
 import { InputCreatePostForBlogDto } from './dto/input.create-post-for-blog.dto';
 import { CreatePostForBlogCommand } from './use-cases/create.post.for.blog.use-case';

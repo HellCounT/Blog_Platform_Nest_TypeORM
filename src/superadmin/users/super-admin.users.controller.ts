@@ -17,8 +17,8 @@ import { CreateUserCommand } from './use-cases/create.user.use-case';
 import { DeleteUserCommand } from './use-cases/delete.user.use-case';
 import {
   parseUserQueryPagination,
-  UserQueryParser,
-} from '../../application-helpers/query.parser';
+  UserQueryParserType,
+} from '../../application-helpers/query-parser';
 import { SuperAdminUsersQuery } from './super-admin.users.query';
 import { InputBanUserDto } from './dto/input.ban-user.dto';
 import { BanUserCommand } from './use-cases/ban.user.use-case';
@@ -32,8 +32,8 @@ export class SuperAdminUsersController {
   ) {}
 
   @Get()
-  async getAllUsers(@Query() query: UserQueryParser) {
-    const queryParams: UserQueryParser = parseUserQueryPagination(query);
+  async getAllUsers(@Query() query: UserQueryParserType) {
+    const queryParams: UserQueryParserType = parseUserQueryPagination(query);
     return this.superAdminUsersQueryRepo.viewAllUsers(queryParams);
   }
 

@@ -1,4 +1,4 @@
-import { QueryParser } from '../application-helpers/query.parser';
+import { QueryParser } from '../application-helpers/query-parser';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CommentViewDto } from './dto/output.comment.view.dto';
 import { CommentPaginatorDto } from './dto/output.comment-paginator.dto';

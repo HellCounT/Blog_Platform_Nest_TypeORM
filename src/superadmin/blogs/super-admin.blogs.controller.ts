@@ -15,7 +15,7 @@ import { SuperAdminBlogsQuery } from './super-admin.blogs.query';
 import {
   parseQueryPagination,
   QueryParser,
-} from '../../application-helpers/query.parser';
+} from '../../application-helpers/query-parser';
 import { BanBlogCommand } from './use-cases/ban.blog.use-case';
 import { InputSABanBlogDto } from './dto/input.super-admin.ban.blog.dto';
 

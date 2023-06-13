@@ -16,8 +16,8 @@ import { BanUserForBlogCommand } from './use-cases/ban.user.for.blog.use-case';
 import { BloggerUsersQuery } from './blogger.users.query';
 import {
   parseUserQueryPagination,
-  UserQueryParser,
-} from '../../application-helpers/query.parser';
+  UserQueryParserType,
+} from '../../application-helpers/query-parser';
 
 @UseGuards(JwtAuthGuard)
 @Controller('blogger/users')
@@ -42,10 +42,10 @@ export class BloggerUsersController {
   @HttpCode(200)
   async getAllBannedUsersForBlog(
     @Param('id') blogId: string,
-    @Query() query: UserQueryParser,
+    @Query() query: UserQueryParserType,
     @Req() req,
   ) {
-    const queryParams: UserQueryParser = parseUserQueryPagination(query);
+    const queryParams: UserQueryParserType = parseUserQueryPagination(query);
     return this.bloggerUsersQueryRepo.getAllBannedUsersForBlog(
       blogId,
       req.user.userId,

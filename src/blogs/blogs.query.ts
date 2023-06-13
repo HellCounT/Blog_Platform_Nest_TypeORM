@@ -1,4 +1,4 @@
-import { QueryParser } from '../application-helpers/query.parser';
+import { QueryParser } from '../application-helpers/query-parser';
 import { BlogViewModelType } from './types/blogs.types';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';

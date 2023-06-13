@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   pickOrderForPostsQuery,
   QueryParser,
-} from '../application-helpers/query.parser';
+} from '../application-helpers/query-parser';
 import { PostJoinedType, PostViewModelType } from './types/posts.types';
 import { LikeStatus } from '../likes/types/likes.types';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';

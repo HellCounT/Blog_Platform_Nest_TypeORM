@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { QueryParser } from '../../application-helpers/query.parser';
+import { QueryParser } from '../../application-helpers/query-parser';
 import { OutputSuperAdminBlogDto } from './dto/output.super-admin.blog.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';

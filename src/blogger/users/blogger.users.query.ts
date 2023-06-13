@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { PaginatorType } from '../../application-helpers/paginator.type';
 import { OutputBannedUserByBloggerDto } from './dto/output.user-banned-by-blogger.dto';
-import { UserQueryParser } from '../../application-helpers/query.parser';
+import { UserQueryParserType } from '../../application-helpers/query-parser';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
@@ -24,7 +24,7 @@ export class BloggerUsersQuery {
   async getAllBannedUsersForBlog(
     blogId: string,
     userId: string,
-    q: UserQueryParser,
+    q: UserQueryParserType,
   ): Promise<PaginatorType<OutputBannedUserByBloggerDto>> {
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
     const foundBlog = await this.blogsRepo.findOneBy({ id: blogId });

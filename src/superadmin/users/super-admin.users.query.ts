@@ -1,7 +1,7 @@
 import {
   getBanStatusForQuery,
-  UserQueryParser,
-} from '../../application-helpers/query.parser';
+  UserQueryParserType,
+} from '../../application-helpers/query-parser';
 import { UserPaginatorType } from '../../users/types/users.types';
 import { OutputSuperAdminUserDto } from './dto/output.super-admin.user.dto';
 import { Injectable } from '@nestjs/common';
@@ -23,7 +23,7 @@ export class SuperAdminUsersQuery {
     @InjectRepository(UserRecovery)
     protected usersRecoveryRepo: Repository<UserRecovery>,
   ) {}
-  async viewAllUsers(q: UserQueryParser): Promise<UserPaginatorType> {
+  async viewAllUsers(q: UserQueryParserType): Promise<UserPaginatorType> {
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
     const [reqPageUsers, allUsersCount] = await this.usersRepo
       .createQueryBuilder('u')

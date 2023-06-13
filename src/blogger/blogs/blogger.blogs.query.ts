@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { QueryParser } from '../../application-helpers/query.parser';
+import { QueryParser } from '../../application-helpers/query-parser';
 import { BlogViewModelType } from '../../blogs/types/blogs.types';
 import { BlogsQuery } from '../../blogs/blogs.query';
 import { CommentForBloggerViewType } from './dto/output.comments.paginator.blogger.dto';

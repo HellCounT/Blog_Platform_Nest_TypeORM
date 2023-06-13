@@ -5,7 +5,7 @@ export type QueryParser = {
   pageNumber: number;
   pageSize: number;
 };
-export type UserQueryParser = {
+export type UserQueryParserType = {
   banStatus: BanStatus;
   sortBy: string;
   sortDirection: 'ASC' | 'DESC';
@@ -13,6 +13,14 @@ export type UserQueryParser = {
   pageSize: number;
   searchLoginTerm: string | null;
   searchEmailTerm: string | null;
+};
+export type QuestionQueryParserType = {
+  bodySearchTerm: string;
+  publishedStatus: PublishedStatus;
+  sortBy: string;
+  sortDirection: 'ASC' | 'DESC';
+  pageNumber: number;
+  pageSize: number;
 };
 
 export const parseQueryPagination = (query): QueryParser => {
@@ -33,8 +41,8 @@ export const parseQueryPagination = (query): QueryParser => {
   return queryParamsParser;
 };
 
-export const parseUserQueryPagination = (query): UserQueryParser => {
-  const queryUserParamsParser: UserQueryParser = {
+export const parseUserQueryPagination = (query): UserQueryParserType => {
+  const queryUserParamsParser: UserQueryParserType = {
     banStatus: BanStatus.all,
     sortBy: 'createdAt',
     sortDirection: 'DESC',
@@ -56,6 +64,31 @@ export const parseUserQueryPagination = (query): UserQueryParser => {
   if (query.pageSize) queryUserParamsParser.pageSize = +query.pageSize;
   if (query.banStatus) queryUserParamsParser.banStatus = query.banStatus;
   return queryUserParamsParser;
+};
+
+export const parseQuestionQueryPagination = (
+  query,
+): QuestionQueryParserType => {
+  const queryQuestionParamsParser: QuestionQueryParserType = {
+    bodySearchTerm: null,
+    publishedStatus: PublishedStatus.all,
+    sortBy: 'createdAt',
+    sortDirection: 'DESC',
+    pageNumber: 1,
+    pageSize: 10,
+  };
+  if (query.bodySearchTerm)
+    queryQuestionParamsParser.bodySearchTerm = query.bodySearchTerm.toString();
+  if (query.publishedStatus)
+    queryQuestionParamsParser.publishedStatus = query.publishedStatus;
+  else queryQuestionParamsParser.bodySearchTerm = '';
+  if (query.sortBy) queryQuestionParamsParser.sortBy = query.sortBy.toString();
+  if (query.sortDirection && query.sortDirection.toString() === 'asc')
+    queryQuestionParamsParser.sortDirection = 'ASC';
+  if (query.pageNumber)
+    queryQuestionParamsParser.pageNumber = +query.pageNumber;
+  if (query.pageSize) queryQuestionParamsParser.pageSize = +query.pageSize;
+  return queryQuestionParamsParser;
 };
 
 export const getBanStatusForQuery = (banStatus: BanStatus): string => {
@@ -106,4 +139,10 @@ export enum BanStatus {
   all = 'all',
   banned = 'banned',
   notBanned = 'notBanned',
+}
+
+export enum PublishedStatus {
+  all = 'all',
+  published = 'published',
+  notPublished = 'notPublished',
 }
