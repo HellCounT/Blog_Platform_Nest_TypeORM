@@ -880,6 +880,114 @@ window.onload = function() {
             }
           }
         }
+      },
+      "/sa/quiz/questions": {
+        "get": {
+          "operationId": "SuperAdminQuestionsController_getAllQuestions",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          }
+        },
+        "post": {
+          "operationId": "SuperAdminQuestionsController_createQuestion",
+          "parameters": [],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputCreateQuestionDto"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": ""
+            }
+          }
+        }
+      },
+      "/sa/quiz/questions/{id}": {
+        "delete": {
+          "operationId": "SuperAdminQuestionsController_deleteQuestion",
+          "parameters": [
+            {
+              "name": "id",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": ""
+            }
+          }
+        },
+        "put": {
+          "operationId": "SuperAdminQuestionsController_updateQuestion",
+          "parameters": [
+            {
+              "name": "id",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputCreateQuestionDto"
+                }
+              }
+            }
+          },
+          "responses": {
+            "204": {
+              "description": ""
+            }
+          }
+        }
+      },
+      "/sa/quiz/questions/{id}/publish": {
+        "put": {
+          "operationId": "SuperAdminQuestionsController_changePublishedStatus",
+          "parameters": [
+            {
+              "name": "id",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputPublishedStatusDto"
+                }
+              }
+            }
+          },
+          "responses": {
+            "204": {
+              "description": ""
+            }
+          }
+        }
       }
     },
     "info": {
@@ -958,6 +1066,14 @@ window.onload = function() {
           "properties": {}
         },
         "InputBanUserForBlogDto": {
+          "type": "object",
+          "properties": {}
+        },
+        "InputCreateQuestionDto": {
+          "type": "object",
+          "properties": {}
+        },
+        "InputPublishedStatusDto": {
           "type": "object",
           "properties": {}
         }

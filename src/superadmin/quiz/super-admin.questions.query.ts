@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { Question } from './entities/question.entity';
-import { QuestionQueryParserType } from '../../application-helpers/query-parser-type';
+import {
+  getPublishedStatusForQuery,
+  QuestionQueryParserType,
+} from '../../application-helpers/query-parser-type';
 import { PaginatorType } from '../../application-helpers/paginator.type';
 import { OutputQuestionDto } from './dto/output.question.dto';
 import { emptyPaginatorStab } from '../../application-helpers/empty.paginator.stab';
@@ -18,7 +21,10 @@ export class SuperAdminQuestionsQueryRepository {
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
     const [reqPageQuestions, allQuestionsCount] =
       await this.questionsRepo.findAndCount({
-        where: { body: ILike('%' + q.bodySearchTerm + '%') },
+        where: {
+          body: ILike('%' + q.bodySearchTerm + '%'),
+          published: getPublishedStatusForQuery(q.publishedStatus),
+        },
         order: { [q.sortBy]: q.sortDirection },
         take: q.pageSize,
         skip: offsetSize,

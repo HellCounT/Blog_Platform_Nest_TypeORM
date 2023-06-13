@@ -99,6 +99,18 @@ export const getBanStatusForQuery = (banStatus: BanStatus): string => {
   } else return ``;
 };
 
+export const getPublishedStatusForQuery = (
+  publishedStatus: PublishedStatus,
+): boolean => {
+  if (publishedStatus === PublishedStatus.notPublished) {
+    return false;
+  } else if (publishedStatus === PublishedStatus.published) {
+    return true;
+  } else if (publishedStatus === PublishedStatus.all) {
+    return null;
+  }
+};
+
 export const pickOrderForPostsQuery = (
   order: string,
   direction: 'ASC' | 'DESC',

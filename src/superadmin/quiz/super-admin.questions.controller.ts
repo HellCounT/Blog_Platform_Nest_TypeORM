@@ -67,7 +67,7 @@ export class SuperAdminQuestionsController {
     );
     return;
   }
-  @Put(':id')
+  @Put(':id/publish')
   @HttpCode(204)
   async changePublishedStatus(
     @Param('id') id: string,
