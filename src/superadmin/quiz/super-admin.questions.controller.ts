@@ -20,10 +20,11 @@ import { InputCreateQuestionDto } from './dto/input.create-question.dto';
 import { OutputQuestionDto } from './dto/output.question.dto';
 import { PaginatorType } from '../../application-helpers/paginator.type';
 import { InputPublishedStatusDto } from './dto/input.published-status.dto';
+import { CreateQuestionCommand } from './use-cases/create.question.use-case';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/quiz/questions')
-export class SuperAdminQuizQuestionsController {
+export class SuperAdminQuestionsController {
   constructor(private readonly commandBus: CommandBus) {}
   @Get()
   @HttpCode(200)
