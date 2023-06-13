@@ -89,6 +89,8 @@ import { Comment } from './comments/entities/comment.entity';
 import { CommentLike } from './likes/entities/comment-like.entity';
 import { PostLike } from './likes/entities/post-like.entity';
 import { UserBannedByBlogger } from './blogger/users/users-banned-by-blogger/entities/user-banned-by-blogger.entity';
+import { SuperAdminQuizQuestionsController } from './superadmin/quiz/super-admin.quiz.questions.controller';
+import { Question } from './superadmin/quiz/entities/question.entity';
 
 const entities = [
   User,
@@ -103,6 +105,7 @@ const entities = [
   CommentLike,
   PostLike,
   UserBannedByBlogger,
+  Question,
 ];
 
 const controllers = [
@@ -116,6 +119,7 @@ const controllers = [
   SuperAdminUsersController,
   BloggerBlogsController,
   BloggerUsersController,
+  SuperAdminQuizQuestionsController,
 ];
 
 const services = [
