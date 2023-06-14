@@ -4,7 +4,6 @@ import {
   QueryParserType,
 } from '../application-helpers/query-parser-type';
 import { PostJoinedType, PostViewModelType } from './types/posts.types';
-import { LikeStatus } from '../likes/types/likes.types';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
@@ -12,6 +11,7 @@ import { Blog } from '../blogs/entities/blog.entity';
 import { PostLike } from '../likes/entities/post-like.entity';
 import { PaginatorType } from '../application-helpers/paginator.type';
 import { emptyPaginatorStab } from '../application-helpers/empty.paginator.stab';
+import { LikeStatus } from '../application-helpers/statuses';
 
 @Injectable()
 export class PostsQuery {

@@ -1,8 +1,4 @@
-export enum LikeStatus {
-  none = 'None',
-  like = 'Like',
-  dislike = 'Dislike',
-}
+import { LikeStatus } from '../../application-helpers/statuses';
 
 export type CommentLikeJoinedType = {
   id: string;

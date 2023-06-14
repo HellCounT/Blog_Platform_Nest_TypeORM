@@ -1,9 +1,9 @@
 import { CommandHandler } from '@nestjs/cqrs';
-import { LikeStatus } from '../../likes/types/likes.types';
 import { PostsRepository } from '../posts.repository';
 import { LikesForPostsService } from '../../likes/likes-for-posts.service';
 import { PostsQuery } from '../posts.query';
 import { NotFoundException } from '@nestjs/common';
+import { LikeStatus } from '../../application-helpers/statuses';
 
 export class UpdatePostLikeStatusCommand {
   constructor(

@@ -1,6 +1,6 @@
 import { LikesForPostsRepository } from './likes-for-posts.repository';
-import { LikeStatus } from './types/likes.types';
 import { Injectable } from '@nestjs/common';
+import { LikeStatus } from '../application-helpers/statuses';
 
 @Injectable()
 export class LikesForPostsService {

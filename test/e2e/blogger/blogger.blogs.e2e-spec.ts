@@ -19,8 +19,8 @@ import { BlogViewModelType } from '../../../src/blogs/types/blogs.types';
 import { errorsMessageForIncorrectBlog } from '../../test-entities/errors.test-entities';
 import { correctComment } from '../../test-entities/comment.test-entities';
 import { correctPost } from '../../test-entities/post.test-entities';
-import { LikeStatus } from '../../../src/likes/types/likes.types';
 import { CommentForBloggerViewType } from '../../../src/blogger/blogs/dto/output.comments.paginator.blogger.dto';
+import { LikeStatus } from '../../../src/application-helpers/statuses';
 
 describe('Blogger Blogs Controller (e2e)', () => {
   jest.setTimeout(10000);

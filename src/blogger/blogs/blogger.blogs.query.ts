@@ -3,7 +3,6 @@ import { QueryParserType } from '../../application-helpers/query-parser-type';
 import { BlogViewModelType } from '../../blogs/types/blogs.types';
 import { BlogsQuery } from '../../blogs/blogs.query';
 import { CommentForBloggerViewType } from './dto/output.comments.paginator.blogger.dto';
-import { LikeStatus } from '../../likes/types/likes.types';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginatorType } from '../../application-helpers/paginator.type';
@@ -12,6 +11,7 @@ import { Post } from '../../posts/entities/post.entity';
 import { Comment } from '../../comments/entities/comment.entity';
 import { isVoid } from '../../application-helpers/void.check.helper';
 import { CommentLike } from '../../likes/entities/comment-like.entity';
+import { LikeStatus } from '../../application-helpers/statuses';
 
 @Injectable()
 export class BloggerBlogsQuery extends BlogsQuery {

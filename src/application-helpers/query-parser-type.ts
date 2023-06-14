@@ -1,3 +1,5 @@
+import { BanStatus, PublishedStatus } from './statuses';
+
 export type QueryParserType = {
   searchNameTerm: string;
   sortBy: string;
@@ -146,15 +148,3 @@ export const pickOrderForPostsQuery = (
   }
   return orderString;
 };
-
-export enum BanStatus {
-  all = 'all',
-  banned = 'banned',
-  notBanned = 'notBanned',
-}
-
-export enum PublishedStatus {
-  all = 'all',
-  published = 'published',
-  notPublished = 'notPublished',
-}

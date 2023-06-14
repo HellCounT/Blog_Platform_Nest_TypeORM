@@ -97,6 +97,8 @@ import { DeleteQuestionUseCase } from './superadmin/quiz/use-cases/delete.questi
 import { ChangePublishedStatusUseCase } from './superadmin/quiz/use-cases/change.published.status.use-case';
 import { QuestionsRepository } from './superadmin/quiz/questions.repository';
 import { SuperAdminQuestionsQueryRepository } from './superadmin/quiz/super-admin.questions.query';
+import { QuizGameController } from './quiz/quiz-game.controller';
+import { QuizGameService } from './quiz/quiz-game.service';
 
 const entities = [
   User,
@@ -126,6 +128,7 @@ const controllers = [
   BloggerBlogsController,
   BloggerUsersController,
   SuperAdminQuestionsController,
+  QuizGameController,
 ];
 
 const services = [
@@ -135,6 +138,7 @@ const services = [
   TokenBanService,
   EmailService,
   JwtService,
+  QuizGameService,
 ];
 
 const useCases = [

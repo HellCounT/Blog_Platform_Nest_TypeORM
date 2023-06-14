@@ -1,4 +1,4 @@
-import { LikeStatus } from '../../../likes/types/likes.types';
+import { LikeStatus } from '../../../application-helpers/statuses';
 
 export type CommentForBloggerViewType = {
   id: string;
