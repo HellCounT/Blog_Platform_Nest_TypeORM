@@ -73,4 +73,12 @@ export class QuestionsRepository {
       return false;
     }
   }
+  async pickFiveRandomQuestions(): Promise<Question[]> {
+    return await this.questionRepo
+      .createQueryBuilder('q')
+      .select()
+      .orderBy('RANDOM()')
+      .take(5)
+      .getMany();
+  }
 }

@@ -17,7 +17,7 @@ export class Question {
   updatedAt: Date;
   @OneToMany(() => Answer, (a) => a.question)
   @JoinColumn()
-  playerAnswers: Answer;
+  playerAnswers: Answer[];
 
   static instantiate(
     questionId: string,

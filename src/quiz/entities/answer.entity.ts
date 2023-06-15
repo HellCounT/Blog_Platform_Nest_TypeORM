@@ -13,6 +13,8 @@ export class Answer {
   playerId: string;
   @ManyToOne(() => Question, (q) => q.playerAnswers)
   question: Question;
+  @Column('uuid')
+  questionId: string;
   @Column('varchar')
   body: string;
   @Column('varchar')

@@ -19,7 +19,7 @@ export class Player {
   @Column('int')
   totalScore: number;
   @ManyToMany(() => Game)
-  games: Game;
+  games: Game[];
   @OneToMany(() => Answer, (a) => a.player)
-  answers: Answer;
+  answers: Answer[];
 }
