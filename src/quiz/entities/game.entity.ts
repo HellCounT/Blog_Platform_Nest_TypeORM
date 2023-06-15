@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Player } from './player.entity';
 import { GameStatus } from '../../application-helpers/statuses';
 
@@ -6,7 +6,7 @@ import { GameStatus } from '../../application-helpers/statuses';
 export class Game {
   @PrimaryColumn('uuid')
   id: string;
-  @ManyToMany(() => Player, (p) => p.gamesAsFirstPlayer)
+  @ManyToOne(() => Player, (p) => p.gamesAsFirstPlayer)
   @JoinColumn()
   firstPlayer: Player;
   @Column('uuid', { nullable: true })
@@ -15,7 +15,7 @@ export class Game {
   firstPlayerScore: number;
   @Column('uuid', { array: true, nullable: true })
   firstPlayerAnswersIds: string[] | null;
-  @ManyToMany(() => Player, (p) => p.gamesAsSecondPlayer)
+  @ManyToOne(() => Player, (p) => p.gamesAsSecondPlayer)
   @JoinColumn()
   secondPlayer: Player;
   @Column('uuid', { nullable: true })
