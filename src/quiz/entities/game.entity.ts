@@ -6,7 +6,7 @@ import { GameStatus } from '../../application-helpers/statuses';
 export class Game {
   @PrimaryColumn('uuid')
   id: string;
-  @ManyToMany(() => Player, (p) => p.games)
+  @ManyToMany(() => Player, (p) => p.gamesAsFirstPlayer)
   @JoinColumn()
   firstPlayer: Player;
   @Column('uuid', { nullable: true })
@@ -15,7 +15,7 @@ export class Game {
   firstPlayerScore: number;
   @Column('uuid', { array: true, nullable: true })
   firstPlayerAnswersIds: string[] | null;
-  @ManyToMany(() => Player, (p) => p.games)
+  @ManyToMany(() => Player, (p) => p.gamesAsSecondPlayer)
   @JoinColumn()
   secondPlayer: Player;
   @Column('uuid', { nullable: true })
@@ -26,7 +26,7 @@ export class Game {
   secondPlayerAnswersIds: string[] | null;
   @Column('uuid', { array: true, nullable: true })
   questionIds: string[] | null;
-  @Column('varchar')
+  @Column('varchar', { default: GameStatus.pending })
   status: GameStatus;
   @Column('timestamp', { nullable: true })
   pairCreatedDate: Date | null;

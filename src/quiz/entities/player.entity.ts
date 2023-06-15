@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  ManyToMany,
-  OneToMany,
-  OneToOne,
-  PrimaryColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Game } from './game.entity';
 import { Answer } from './answer.entity';
@@ -20,8 +13,10 @@ export class Player {
   totalScore: number;
   @Column('timestamp')
   addedAt: Date;
-  @ManyToMany(() => Game)
-  games: Game[];
+  @OneToMany(() => Game, (g) => g.firstPlayer)
+  gamesAsFirstPlayer: Game[];
+  @OneToMany(() => Game, (g) => g.secondPlayer)
+  gamesAsSecondPlayer: Game[];
   @OneToMany(() => Answer, (a) => a.player)
   answers: Answer[];
 
