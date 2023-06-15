@@ -18,8 +18,17 @@ export class Player {
   userId: string;
   @Column('int')
   totalScore: number;
+  @Column('timestamp')
+  addedAt: Date;
   @ManyToMany(() => Game)
   games: Game[];
   @OneToMany(() => Answer, (a) => a.player)
   answers: Answer[];
+
+  static instantiate(userId: string) {
+    const player = new Player();
+    player.userId = userId;
+    player.totalScore = 0;
+    player.addedAt = new Date();
+  }
 }

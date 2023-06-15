@@ -19,4 +19,22 @@ export class Answer {
   body: string;
   @Column('varchar')
   status: AnswerStatus;
+  @Column('timestamp')
+  addedAt: Date;
+
+  static instantiate(
+    answerId: string,
+    playerId: string,
+    questionId: string,
+    body: string,
+    answerStatus: AnswerStatus,
+  ) {
+    const answer = new Answer();
+    answer.id = answerId;
+    answer.playerId = playerId;
+    answer.questionId = questionId;
+    answer.body = body;
+    answer.status = answerStatus;
+    return answer;
+  }
 }
