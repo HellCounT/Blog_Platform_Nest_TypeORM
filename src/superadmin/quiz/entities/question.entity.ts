@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, PrimaryColumn } from 'typeorm';
+import { Answer } from '../../../quiz/entities/answer.entity';
 
 @Entity()
 export class Question {
@@ -14,6 +15,10 @@ export class Question {
   createdAt: Date;
   @Column('timestamp', { nullable: true })
   updatedAt: Date;
+  @OneToMany(() => Answer, (a) => a.question)
+  @JoinColumn()
+  playerAnswers: Answer;
+
   static instantiate(
     questionId: string,
     body: string,

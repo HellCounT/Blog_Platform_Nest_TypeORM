@@ -1,4 +1,11 @@
-import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn,
+} from 'typeorm';
 import { UserGlobalBan } from './user-global-ban.entity';
 import { UserConfirmation } from './user-confirmation.entity';
 import { UserRecovery } from './user-recovery.entity';
@@ -10,6 +17,7 @@ import { Comment } from '../../comments/entities/comment.entity';
 import { CommentLike } from '../../likes/entities/comment-like.entity';
 import { PostLike } from '../../likes/entities/post-like.entity';
 import { UserBannedByBlogger } from '../../blogger/users/users-banned-by-blogger/entities/user-banned-by-blogger.entity';
+import { Player } from '../../quiz/entities/player.entity';
 
 @Entity()
 export class User {
@@ -45,4 +53,7 @@ export class User {
   postLikes: PostLike[];
   @OneToMany(() => UserBannedByBlogger, (bb) => bb.bannedUser)
   userBlogBans: UserBannedByBlogger[];
+  @OneToOne(() => Player, (p) => p.user)
+  @JoinColumn()
+  player: Player;
 }
