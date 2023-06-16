@@ -98,7 +98,6 @@ import { ChangePublishedStatusUseCase } from './superadmin/quiz/use-cases/change
 import { QuestionsRepository } from './superadmin/quiz/questions.repository';
 import { SuperAdminQuestionsQueryRepository } from './superadmin/quiz/super-admin.questions.query';
 import { QuizGameController } from './quiz/quiz-game.controller';
-import { QuizGameService } from './quiz/quiz-game.service';
 import { Player } from './quiz/entities/player.entity';
 import { Answer } from './quiz/entities/answer.entity';
 import { Game } from './quiz/entities/game.entity';
@@ -144,7 +143,6 @@ const services = [
   TokenBanService,
   EmailService,
   JwtService,
-  QuizGameService,
 ];
 
 const useCases = [

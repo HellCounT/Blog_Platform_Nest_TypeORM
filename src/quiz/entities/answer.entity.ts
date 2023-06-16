@@ -6,7 +6,7 @@ import { Question } from '../../superadmin/quiz/entities/question.entity';
 export class Answer {
   @PrimaryColumn('uuid')
   id: string;
-  @ManyToOne(() => Player, (p) => p.answers)
+  @ManyToOne(() => Player, (p) => p.currentAnswers)
   @JoinColumn()
   player: Player;
   @Column('uuid')

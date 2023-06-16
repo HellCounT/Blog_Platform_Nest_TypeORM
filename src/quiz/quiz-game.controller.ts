@@ -5,18 +5,20 @@ import {
   HttpCode,
   Param,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { InputAnswerDto } from './dto/input.answer.dto';
 import { OutputAnswerDto } from './dto/output.answer.dto';
 import { OutputPairGameDto } from './dto/output-pair-game.dto';
-import { QuizGameService } from './quiz-game.service';
+import { CommandBus } from '@nestjs/cqrs';
+import { JoinOrCreateGameCommand } from './use-cases/join.or.create.game.use-case';
 
 @UseGuards(JwtAuthGuard)
 @Controller('pair-game-quiz/pairs')
 export class QuizGameController {
-  constructor(protected gameService: QuizGameService) {
+  constructor(protected commandBus: CommandBus) {
     return null;
   }
   @Get('my-current')
@@ -38,7 +40,9 @@ export class QuizGameController {
   }
   @Post('connection')
   @HttpCode(200)
-  async connectOrCreate() {
-    return null;
+  async joinOrCreate(@Req() req): Promise<OutputPairGameDto> {
+    return await this.commandBus.execute(
+      new JoinOrCreateGameCommand(req.user.userId),
+    );
   }
 }

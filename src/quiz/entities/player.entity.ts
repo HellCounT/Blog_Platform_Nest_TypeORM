@@ -18,12 +18,13 @@ export class Player {
   @OneToMany(() => Game, (g) => g.secondPlayer)
   gamesAsSecondPlayer: Game[];
   @OneToMany(() => Answer, (a) => a.player)
-  answers: Answer[];
+  currentAnswers: Answer[];
 
   static instantiate(userId: string) {
     const player = new Player();
     player.userId = userId;
     player.totalScore = 0;
     player.addedAt = new Date();
+    return player;
   }
 }
