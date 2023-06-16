@@ -1,39 +1,61 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+} from 'typeorm';
 import { Player } from './player.entity';
 import { GameStatus } from '../../application-helpers/statuses';
+import { Answer } from './answer.entity';
 
 @Entity()
 export class Game {
   @PrimaryColumn('uuid')
   id: string;
+
   @ManyToOne(() => Player, (p) => p.gamesAsFirstPlayer)
   @JoinColumn()
   firstPlayer: Player;
   @Column('uuid', { nullable: true })
   firstPlayerId: string;
+
   @Column('int')
   firstPlayerScore: number;
+
   @Column('uuid', { array: true, nullable: true })
   firstPlayerAnswersIds: string[] | null;
+
   @ManyToOne(() => Player, (p) => p.gamesAsSecondPlayer)
   @JoinColumn()
   secondPlayer: Player;
   @Column('uuid', { nullable: true })
   secondPlayerId: string | null;
+
   @Column('int')
   secondPlayerScore: number | null;
+
   @Column('uuid', { array: true, nullable: true })
   secondPlayerAnswersIds: string[] | null;
+
   @Column('uuid', { array: true, nullable: true })
   questionIds: string[] | null;
+
   @Column('varchar', { default: GameStatus.pending })
   status: GameStatus;
+
   @Column('timestamp', { nullable: true })
   pairCreatedDate: Date | null;
+
   @Column('timestamp', { nullable: true })
   startGameDate: Date | null;
+
   @Column('timestamp', { nullable: true })
   finishGameDate: Date | null;
+
+  @OneToMany(() => Answer, (a) => a.game)
+  allAnswersInGame: Answer[];
 
   static instantiate(gameId: string, firstPlayerId: string) {
     const game = new Game();

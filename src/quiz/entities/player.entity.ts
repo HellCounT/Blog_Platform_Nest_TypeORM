@@ -1,4 +1,11 @@
-import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn,
+} from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Game } from './game.entity';
 import { Answer } from './answer.entity';
@@ -6,6 +13,7 @@ import { Answer } from './answer.entity';
 @Entity()
 export class Player {
   @OneToOne(() => User, (u) => u.player, { onDelete: 'CASCADE' })
+  @JoinColumn()
   user: User;
   @PrimaryColumn('uuid')
   userId: string;

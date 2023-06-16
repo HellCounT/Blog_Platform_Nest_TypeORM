@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Game } from './entities/game.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
-import { GameStatus } from '../application-helpers/statuses';
+import { GameStatus, PlayerOrder } from '../application-helpers/statuses';
 
 @Injectable()
 export class GamesRepository {
@@ -19,6 +19,18 @@ export class GamesRepository {
       .andWhere(`g.firstPlayerId != :playerId`, { playerId: playerId })
       .orderBy('RANDOM()')
       .getOne();
+  }
+  async getCurrentActiveGame(playerId: string): Promise<Game> {
+    return await this.gamesRepo.findOneBy([
+      {
+        firstPlayerId: playerId,
+        status: GameStatus.active,
+      },
+      {
+        secondPlayerId: playerId,
+        status: GameStatus.active,
+      },
+    ]);
   }
   async createGame(firstPlayerId: string): Promise<Game> {
     try {
@@ -64,6 +76,47 @@ export class GamesRepository {
     } catch (e) {
       console.log(e);
       return null;
+    }
+  }
+  async finishGame(gameId: string): Promise<boolean> {
+    try {
+      const result = await this.gamesRepo.update(
+        { id: gameId },
+        {
+          status: GameStatus.finished,
+        },
+      );
+      return result.affected === 1;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
+  }
+  async incrementPlayerScore(
+    gameId: string,
+    playerOrder: PlayerOrder,
+  ): Promise<boolean> {
+    try {
+      if (playerOrder === PlayerOrder.first) {
+        const result = await this.gamesRepo
+          .createQueryBuilder('g')
+          .update(Game)
+          .set({ firstPlayerScore: () => 'firstPlayerScore + 1' })
+          .where({ id: gameId })
+          .execute();
+        return result.affected === 1;
+      } else {
+        const result = await this.gamesRepo
+          .createQueryBuilder('g')
+          .update(Game)
+          .set({ secondPlayerScore: () => 'secondPlayerScore + 1' })
+          .where({ id: gameId })
+          .execute();
+        return result.affected === 1;
+      }
+    } catch (e) {
+      console.log(e);
+      return false;
     }
   }
 }

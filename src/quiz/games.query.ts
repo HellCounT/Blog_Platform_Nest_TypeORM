@@ -13,7 +13,7 @@ import { GameStatus } from '../application-helpers/statuses';
 import { isVoid } from '../application-helpers/void.check.helper';
 
 @Injectable()
-export class GamesQueryRepository {
+export class GamesQuery {
   constructor(
     @InjectRepository(Game) protected gamesRepo: Repository<Game>,
     @InjectRepository(Question) protected questionsRepo: Repository<Question>,

@@ -96,12 +96,17 @@ import { UpdateQuestionUseCase } from './superadmin/quiz/use-cases/update.questi
 import { DeleteQuestionUseCase } from './superadmin/quiz/use-cases/delete.question.use-case';
 import { ChangePublishedStatusUseCase } from './superadmin/quiz/use-cases/change.published.status.use-case';
 import { QuestionsRepository } from './superadmin/quiz/questions.repository';
-import { SuperAdminQuestionsQueryRepository } from './superadmin/quiz/super-admin.questions.query';
+import { SuperAdminQuestionsQuery } from './superadmin/quiz/super-admin.questions.query';
 import { QuizGameController } from './quiz/quiz-game.controller';
 import { Player } from './quiz/entities/player.entity';
 import { Answer } from './quiz/entities/answer.entity';
 import { Game } from './quiz/entities/game.entity';
 import { JoinOrCreateGameUseCase } from './quiz/use-cases/join.or.create.game.use-case';
+import { SendAnswerUseCase } from './quiz/use-cases/send.answer.use-case';
+import { GamesRepository } from './quiz/games.repository';
+import { PlayersRepository } from './quiz/players.repository';
+import { GamesQuery } from './quiz/games.query';
+import { AnswersRepository } from './quiz/answers.repository';
 
 const entities = [
   User,
@@ -180,6 +185,7 @@ const useCases = [
   DeleteQuestionUseCase,
   ChangePublishedStatusUseCase,
   JoinOrCreateGameUseCase,
+  SendAnswerUseCase,
 ];
 
 const repositories = [
@@ -193,6 +199,9 @@ const repositories = [
   ExpiredTokensRepository,
   UsersBannedByBloggerRepository,
   QuestionsRepository,
+  GamesRepository,
+  PlayersRepository,
+  AnswersRepository,
 ];
 
 const query = [
@@ -204,7 +213,8 @@ const query = [
   SuperAdminUsersQuery,
   BloggerBlogsQuery,
   BloggerUsersQuery,
-  SuperAdminQuestionsQueryRepository,
+  SuperAdminQuestionsQuery,
+  GamesQuery,
 ];
 
 const constraints = [

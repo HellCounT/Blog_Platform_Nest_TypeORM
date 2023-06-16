@@ -81,4 +81,12 @@ export class QuestionsRepository {
       .take(5)
       .getMany();
   }
+  async getQuestionsForIds(questionIds: string[]): Promise<Question[]> {
+    const items = [];
+    for await (const qId of questionIds) {
+      const question = await this.getQuestionById(qId);
+      items.push(question);
+    }
+    return items;
+  }
 }

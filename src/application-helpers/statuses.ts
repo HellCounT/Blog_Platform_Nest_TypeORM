@@ -26,3 +26,8 @@ export enum GameStatus {
   active = 'Active',
   finished = 'Finished',
 }
+
+export enum PlayerOrder {
+  first = 'firstPlayer',
+  second = 'secondPlayer',
+}

@@ -24,14 +24,14 @@ import { CreateQuestionCommand } from './use-cases/create.question.use-case';
 import { DeleteQuestionCommand } from './use-cases/delete.question.use-case';
 import { UpdateQuestionCommand } from './use-cases/update.question.use-case';
 import { ChangePublishedStatusCommand } from './use-cases/change.published.status.use-case';
-import { SuperAdminQuestionsQueryRepository } from './super-admin.questions.query';
+import { SuperAdminQuestionsQuery } from './super-admin.questions.query';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/quiz/questions')
 export class SuperAdminQuestionsController {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly superAdminQuestionsQueryRepo: SuperAdminQuestionsQueryRepository,
+    private readonly superAdminQuestionsQueryRepo: SuperAdminQuestionsQuery,
   ) {}
   @Get()
   @HttpCode(200)

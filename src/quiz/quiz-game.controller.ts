@@ -14,14 +14,14 @@ import { OutputAnswerDto } from './dto/output.answer.dto';
 import { OutputPairGameDto } from './dto/output-pair-game.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { JoinOrCreateGameCommand } from './use-cases/join.or.create.game.use-case';
-import { GamesQueryRepository } from './games.query';
+import { GamesQuery } from './games.query';
 
 @UseGuards(JwtAuthGuard)
 @Controller('pair-game-quiz/pairs')
 export class QuizGameController {
   constructor(
     protected commandBus: CommandBus,
-    protected gamesQueryRepo: GamesQueryRepository,
+    protected gamesQueryRepo: GamesQuery,
   ) {
     return null;
   }

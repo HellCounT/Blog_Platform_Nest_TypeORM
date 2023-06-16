@@ -11,7 +11,7 @@ import { OutputQuestionDto } from './dto/output.question.dto';
 import { emptyPaginatorStab } from '../../application-helpers/empty.paginator.stab';
 
 @Injectable()
-export class SuperAdminQuestionsQueryRepository {
+export class SuperAdminQuestionsQuery {
   constructor(
     @InjectRepository(Question) protected questionsRepo: Repository<Question>,
   ) {}
