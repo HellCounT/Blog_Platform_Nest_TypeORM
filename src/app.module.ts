@@ -101,6 +101,7 @@ import { QuizGameController } from './quiz/quiz-game.controller';
 import { Player } from './quiz/entities/player.entity';
 import { Answer } from './quiz/entities/answer.entity';
 import { Game } from './quiz/entities/game.entity';
+import { JoinOrCreateGameUseCase } from './quiz/use-cases/join.or.create.game.use-case';
 
 const entities = [
   User,
@@ -178,6 +179,7 @@ const useCases = [
   UpdateQuestionUseCase,
   DeleteQuestionUseCase,
   ChangePublishedStatusUseCase,
+  JoinOrCreateGameUseCase,
 ];
 
 const repositories = [

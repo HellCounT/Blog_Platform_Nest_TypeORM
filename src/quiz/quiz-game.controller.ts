@@ -14,11 +14,15 @@ import { OutputAnswerDto } from './dto/output.answer.dto';
 import { OutputPairGameDto } from './dto/output-pair-game.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { JoinOrCreateGameCommand } from './use-cases/join.or.create.game.use-case';
+import { GamesQueryRepository } from './games.query';
 
 @UseGuards(JwtAuthGuard)
 @Controller('pair-game-quiz/pairs')
 export class QuizGameController {
-  constructor(protected commandBus: CommandBus) {
+  constructor(
+    protected commandBus: CommandBus,
+    protected gamesQueryRepo: GamesQueryRepository,
+  ) {
     return null;
   }
   @Get('my-current')
@@ -35,8 +39,11 @@ export class QuizGameController {
   }
   @Get(':id')
   @HttpCode(200)
-  async getGameById(@Param('id') gameId: string): Promise<OutputPairGameDto> {
-    return null;
+  async getGameById(
+    @Param('id') gameId: string,
+    @Req() req,
+  ): Promise<OutputPairGameDto> {
+    return await this.gamesQueryRepo.getGameById(gameId, req.user.userId);
   }
   @Post('connection')
   @HttpCode(200)
