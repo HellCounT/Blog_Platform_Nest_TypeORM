@@ -27,13 +27,14 @@ export class QuizGameController {
   }
   @Get('my-current')
   @HttpCode(200)
-  async getCurrentGame(): Promise<OutputPairGameDto> {
-    return null;
+  async getCurrentGame(@Req() req): Promise<OutputPairGameDto> {
+    return await this.gamesQueryRepo.getCurrentGame(req.user.userId);
   }
   @Post('my-current/answers')
   @HttpCode(200)
   async sendAnswer(
     @Body() answerDto: InputAnswerDto,
+    @Req() req,
   ): Promise<OutputAnswerDto> {
     return null;
   }
