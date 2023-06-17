@@ -988,6 +988,69 @@ window.onload = function() {
             }
           }
         }
+      },
+      "/pair-game-quiz/pairs/my-current": {
+        "get": {
+          "operationId": "QuizGameController_getCurrentGame",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          }
+        }
+      },
+      "/pair-game-quiz/pairs/my-current/answers": {
+        "post": {
+          "operationId": "QuizGameController_sendAnswer",
+          "parameters": [],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputAnswerDto"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          }
+        }
+      },
+      "/pair-game-quiz/pairs/{id}": {
+        "get": {
+          "operationId": "QuizGameController_getGameById",
+          "parameters": [
+            {
+              "name": "id",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          }
+        }
+      },
+      "/pair-game-quiz/pairs/connection": {
+        "post": {
+          "operationId": "QuizGameController_joinOrCreate",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          }
+        }
       }
     },
     "info": {
@@ -1074,6 +1137,10 @@ window.onload = function() {
           "properties": {}
         },
         "InputPublishedStatusDto": {
+          "type": "object",
+          "properties": {}
+        },
+        "InputAnswerDto": {
           "type": "object",
           "properties": {}
         }

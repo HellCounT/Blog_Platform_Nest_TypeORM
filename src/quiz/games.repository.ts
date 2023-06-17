@@ -23,11 +23,11 @@ export class GamesRepository {
   async getCurrentActiveGame(playerId: string): Promise<Game> {
     return await this.gamesRepo.findOneBy([
       {
-        firstPlayerId: playerId,
+        firstPlayerUserId: playerId,
         status: GameStatus.active,
       },
       {
-        secondPlayerId: playerId,
+        secondPlayerUserId: playerId,
         status: GameStatus.active,
       },
     ]);
@@ -48,7 +48,7 @@ export class GamesRepository {
       const result = await this.gamesRepo.update(
         { id: gameId },
         {
-          secondPlayerId: secondPlayerId,
+          secondPlayerUserId: secondPlayerId,
           secondPlayerScore: 0,
           status: GameStatus.active,
           pairCreatedDate: new Date(),

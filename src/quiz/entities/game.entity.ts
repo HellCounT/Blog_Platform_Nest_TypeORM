@@ -19,7 +19,7 @@ export class Game {
   @JoinColumn()
   firstPlayer: Player;
   @Column('uuid', { nullable: true })
-  firstPlayerId: string;
+  firstPlayerUserId: string;
 
   @Column('int')
   firstPlayerScore: number;
@@ -31,7 +31,7 @@ export class Game {
   @JoinColumn()
   secondPlayer: Player;
   @Column('uuid', { nullable: true })
-  secondPlayerId: string | null;
+  secondPlayerUserId: string | null;
 
   @Column('int')
   secondPlayerScore: number | null;
@@ -60,10 +60,10 @@ export class Game {
   static instantiate(gameId: string, firstPlayerId: string) {
     const game = new Game();
     game.id = gameId;
-    game.firstPlayerId = firstPlayerId;
+    game.firstPlayerUserId = firstPlayerId;
     game.firstPlayerScore = 0;
     game.firstPlayerAnswersIds = null;
-    game.secondPlayerId = null;
+    game.secondPlayerUserId = null;
     game.secondPlayerScore = null;
     game.secondPlayerAnswersIds = null;
     game.questionIds = null;

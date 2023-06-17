@@ -49,13 +49,13 @@ export class JoinOrCreateGameUseCase {
     game: Game,
     questions: Question[],
   ): Promise<OutputPairGameDto> {
-    const user1 = await this.usersRepo.getUserById(game.firstPlayerId);
-    const user2 = await this.usersRepo.getUserById(game.secondPlayerId);
+    const user1 = await this.usersRepo.getUserById(game.firstPlayerUserId);
+    const user2 = await this.usersRepo.getUserById(game.secondPlayerUserId);
     return {
       firstPlayerProgress: {
         answers: [],
         player: {
-          id: game.firstPlayerId,
+          id: game.firstPlayerUserId,
           login: user1.accountData.login,
         },
         score: game.firstPlayerScore,
@@ -63,7 +63,7 @@ export class JoinOrCreateGameUseCase {
       secondPlayerProgress: {
         answers: [],
         player: {
-          id: game.secondPlayerId,
+          id: game.secondPlayerUserId,
           login: user2.accountData.login,
         },
         score: game.secondPlayerScore,

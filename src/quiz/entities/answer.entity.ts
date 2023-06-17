@@ -13,7 +13,7 @@ export class Answer {
   @JoinColumn()
   player: Player;
   @Column('uuid')
-  playerId: string;
+  playerUserId: string;
 
   @ManyToOne(() => Game, (g) => g.allAnswersInGame)
   @JoinColumn()
@@ -46,7 +46,7 @@ export class Answer {
   ) {
     const answer = new Answer();
     answer.id = answerId;
-    answer.playerId = playerId;
+    answer.playerUserId = playerId;
     answer.questionId = questionId;
     answer.gameId = gameId;
     answer.body = body;

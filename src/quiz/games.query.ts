@@ -26,11 +26,11 @@ export class GamesQuery {
   async getCurrentGame(playerId: string): Promise<OutputPairGameDto> {
     const game = await this.gamesRepo.findOneBy([
       {
-        firstPlayerId: playerId,
+        firstPlayerUserId: playerId,
         status: GameStatus.active || GameStatus.pending,
       },
       {
-        secondPlayerId: playerId,
+        secondPlayerUserId: playerId,
         status: GameStatus.active || GameStatus.pending,
       },
     ]);
@@ -45,7 +45,10 @@ export class GamesQuery {
   ): Promise<OutputPairGameDto> {
     const game = await this.gamesRepo.findOneBy({ id: gameId });
     if (isVoid(game)) throw new NotFoundException();
-    if (game.firstPlayerId !== playerId && game.secondPlayerId !== playerId)
+    if (
+      game.firstPlayerUserId !== playerId &&
+      game.secondPlayerUserId !== playerId
+    )
       throw new ForbiddenException();
     const questions = await this.getQuestionsForGame(game);
     return await this.mapGameToOutputModel(game, questions);
@@ -55,21 +58,21 @@ export class GamesQuery {
     game: Game,
     questions: Question[],
   ): Promise<OutputPairGameDto> {
-    const user1 = await this.usersQuery.findUserById(game.firstPlayerId);
-    const user2 = await this.usersQuery.findUserById(game.secondPlayerId);
+    const user1 = await this.usersQuery.findUserById(game.firstPlayerUserId);
+    const user2 = await this.usersQuery.findUserById(game.secondPlayerUserId);
     const firstPlayerAnswers = await this.answersRepo.findBy({
-      playerId: game.firstPlayerId,
+      playerUserId: game.firstPlayerUserId,
       gameId: game.id,
     });
     const secondPlayerAnswers = await this.answersRepo.findBy({
-      playerId: game.secondPlayerId,
+      playerUserId: game.secondPlayerUserId,
       gameId: game.id,
     });
     return {
       firstPlayerProgress: {
         answers: this.mapAnswersToOutputModel(firstPlayerAnswers),
         player: {
-          id: game.firstPlayerId,
+          id: game.firstPlayerUserId,
           login: user1.login,
         },
         score: game.firstPlayerScore,
@@ -77,7 +80,7 @@ export class GamesQuery {
       secondPlayerProgress: {
         answers: this.mapAnswersToOutputModel(secondPlayerAnswers),
         player: {
-          id: game.secondPlayerId,
+          id: game.secondPlayerUserId,
           login: user2.login,
         },
         score: game.secondPlayerScore,
