@@ -1,9 +1,10 @@
 import { AnswerStatus } from '../../application-helpers/statuses';
-import { Column, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Player } from './player.entity';
 import { Question } from '../../superadmin/quiz/entities/question.entity';
 import { Game } from './game.entity';
 
+@Entity()
 export class Answer {
   @PrimaryColumn('uuid')
   id: string;
