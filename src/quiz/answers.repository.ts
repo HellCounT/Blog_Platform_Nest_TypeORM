@@ -16,7 +16,7 @@ export class AnswersRepository {
     gameId: string,
     playerId: string,
     questionId: string,
-  ): Promise<boolean> {
+  ): Promise<Answer> {
     try {
       const answerId = uuidv4();
       const newAnswer = Answer.instantiate(
@@ -27,11 +27,10 @@ export class AnswersRepository {
         givenAnswer,
         answerStatus,
       );
-      await this.answersRepo.save(newAnswer);
-      return true;
+      return await this.answersRepo.save(newAnswer);
     } catch (e) {
       console.log(e);
-      return false;
+      return null;
     }
   }
 }

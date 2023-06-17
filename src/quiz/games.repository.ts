@@ -95,25 +95,57 @@ export class GamesRepository {
   async incrementPlayerScore(
     gameId: string,
     playerOrder: PlayerOrder,
-  ): Promise<boolean> {
+  ): Promise<number> {
     try {
       if (playerOrder === PlayerOrder.first) {
-        const result = await this.gamesRepo
+        await this.gamesRepo
           .createQueryBuilder('g')
           .update(Game)
           .set({ firstPlayerScore: () => 'firstPlayerScore + 1' })
           .where({ id: gameId })
           .execute();
-        return result.affected === 1;
       } else {
-        const result = await this.gamesRepo
+        await this.gamesRepo
           .createQueryBuilder('g')
           .update(Game)
           .set({ secondPlayerScore: () => 'secondPlayerScore + 1' })
           .where({ id: gameId })
           .execute();
-        return result.affected === 1;
       }
+      const game = await this.getGameById(gameId);
+      if (playerOrder === PlayerOrder.first) return game.firstPlayerScore;
+      else return game.secondPlayerScore;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  async getPlayerScore(
+    gameId: string,
+    playerOrder: PlayerOrder,
+  ): Promise<number> {
+    try {
+      const game = await this.getGameById(gameId);
+      if (playerOrder === PlayerOrder.first) {
+        return game.firstPlayerScore;
+      } else {
+        return game.secondPlayerScore;
+      }
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  async finishGameInTenSeconds(gameId: string): Promise<boolean> {
+    try {
+      setTimeout(() => {
+        return this.gamesRepo.update(
+          { id: gameId },
+          { status: GameStatus.finished },
+        );
+      }, 10000);
     } catch (e) {
       console.log(e);
       return false;

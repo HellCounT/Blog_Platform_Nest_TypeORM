@@ -11,12 +11,15 @@ import { UsersQuery } from '../users/users.query';
 import { Question } from '../superadmin/quiz/entities/question.entity';
 import { GameStatus } from '../application-helpers/statuses';
 import { isVoid } from '../application-helpers/void.check.helper';
+import { Answer } from './entities/answer.entity';
+import { OutputAnswerDto } from './dto/output.answer.dto';
 
 @Injectable()
 export class GamesQuery {
   constructor(
     @InjectRepository(Game) protected gamesRepo: Repository<Game>,
     @InjectRepository(Question) protected questionsRepo: Repository<Question>,
+    @InjectRepository(Answer) protected answersRepo: Repository<Answer>,
     protected readonly usersQuery: UsersQuery,
   ) {}
 
@@ -54,9 +57,17 @@ export class GamesQuery {
   ): Promise<OutputPairGameDto> {
     const user1 = await this.usersQuery.findUserById(game.firstPlayerId);
     const user2 = await this.usersQuery.findUserById(game.secondPlayerId);
+    const firstPlayerAnswers = await this.answersRepo.findBy({
+      playerId: game.firstPlayerId,
+      gameId: game.id,
+    });
+    const secondPlayerAnswers = await this.answersRepo.findBy({
+      playerId: game.secondPlayerId,
+      gameId: game.id,
+    });
     return {
       firstPlayerProgress: {
-        answers: [],
+        answers: this.mapAnswersToOutputModel(firstPlayerAnswers),
         player: {
           id: game.firstPlayerId,
           login: user1.login,
@@ -64,7 +75,7 @@ export class GamesQuery {
         score: game.firstPlayerScore,
       },
       secondPlayerProgress: {
-        answers: [],
+        answers: this.mapAnswersToOutputModel(secondPlayerAnswers),
         player: {
           id: game.secondPlayerId,
           login: user2.login,
@@ -77,6 +88,16 @@ export class GamesQuery {
       startGameDate: game.startGameDate.toISOString(),
       finishGameDate: game.finishGameDate.toISOString(),
     };
+  }
+
+  private mapAnswersToOutputModel(answers: Answer[]): OutputAnswerDto[] {
+    return answers.map((a) => {
+      return {
+        questionId: a.questionId,
+        answerStatus: a.status,
+        addedAt: a.addedAt.toISOString(),
+      };
+    });
   }
 
   private async getQuestionsForGame(game: Game): Promise<Question[]> {

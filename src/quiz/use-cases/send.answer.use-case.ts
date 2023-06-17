@@ -6,7 +6,7 @@ import { PlayersRepository } from '../players.repository';
 import { OutputAnswerDto } from '../dto/output.answer.dto';
 import { AnswersRepository } from '../answers.repository';
 import { Game } from '../entities/game.entity';
-import { AnswerStatus } from '../../application-helpers/statuses';
+import { AnswerStatus, PlayerOrder } from '../../application-helpers/statuses';
 import { isVoid } from '../../application-helpers/void.check.helper';
 import { ForbiddenException } from '@nestjs/common';
 import { getPlayerOrder } from '../../application-helpers/get.player.order';
@@ -37,15 +37,57 @@ export class SendAnswerUseCase {
     const currentQuestion = questions[currentQuestionIndex];
     if (givenAnswer in currentQuestion.correctAnswers) {
       const answerStatus = AnswerStatus.correct;
-      await this.gamesRepo.incrementPlayerScore(game.id, playerOrder);
-      await this.answersRepo.saveAnswer(
+      const playerIncrementedScoreInGame =
+        await this.gamesRepo.incrementPlayerScore(game.id, playerOrder);
+      const addedAnswer = await this.answersRepo.saveAnswer(
         givenAnswer,
         answerStatus,
         game.id,
         command.playerId,
         currentQuestion.id,
       );
+      if (currentQuestionIndex === 4)
+        // Добавить логику на проверку, что он первым отвечает на последний вопрос
+        await this.finishGameOnLastQuestionInTenSeconds(game.id, playerOrder);
+      await this.playersRepo.updatePlayerScore(
+        command.playerId,
+        playerIncrementedScoreInGame,
+      );
+      return {
+        questionId: currentQuestion.id,
+        answerStatus: answerStatus,
+        addedAt: addedAnswer.addedAt.toISOString(),
+      };
+    } else {
+      const answerStatus = AnswerStatus.incorrect;
+      const playerScore = await this.gamesRepo.getPlayerScore(
+        game.id,
+        playerOrder,
+      );
+      const addedAnswer = await this.answersRepo.saveAnswer(
+        givenAnswer,
+        answerStatus,
+        game.id,
+        command.playerId,
+        currentQuestion.id,
+      );
+      if (currentQuestionIndex === 4)
+        // Добавить логику на проверку, что он первым отвечает на последний вопрос
+        await this.finishGameOnLastQuestionInTenSeconds(game.id, playerOrder);
+      await this.playersRepo.updatePlayerScore(command.playerId, playerScore);
+      return {
+        questionId: currentQuestion.id,
+        answerStatus: answerStatus,
+        addedAt: addedAnswer.addedAt.toISOString(),
+      };
     }
-    // await this.answersRepo.addAnswer(command.answerDto.answer)
+  }
+
+  async finishGameOnLastQuestionInTenSeconds(
+    gameId: string,
+    playerOrder: PlayerOrder,
+  ): Promise<void> {
+    await this.gamesRepo.incrementPlayerScore(gameId, playerOrder);
+    await this.gamesRepo.finishGameInTenSeconds(gameId);
   }
 }
