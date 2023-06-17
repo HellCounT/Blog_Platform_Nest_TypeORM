@@ -48,6 +48,7 @@ export class SendAnswerUseCase {
       );
       if (currentQuestionIndex === 4)
         // Добавить логику на проверку, что он первым отвечает на последний вопрос
+        // Добавить логику на заканчивание игры, если игрок отвечает на последний вопрос вторым
         await this.finishGameOnLastQuestionInTenSeconds(game.id, playerOrder);
       await this.playersRepo.updatePlayerScore(
         command.playerId,
