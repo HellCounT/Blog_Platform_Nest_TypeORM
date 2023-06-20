@@ -33,7 +33,7 @@ export class Game {
   @Column('uuid', { nullable: true })
   secondPlayerUserId: string | null;
 
-  @Column('int')
+  @Column('int', { nullable: true })
   secondPlayerScore: number | null;
 
   @Column('uuid', { array: true, nullable: true })
