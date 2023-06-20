@@ -7,7 +7,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { OutputPairGameDto } from './dto/output-pair-game.dto';
-import { UsersQuery } from '../users/users.query';
 import { Question } from '../superadmin/quiz/entities/question.entity';
 import { GameStatus } from '../application-helpers/statuses';
 import { isVoid } from '../application-helpers/void.check.helper';
@@ -20,7 +19,6 @@ export class GamesQuery {
     @InjectRepository(Game) protected gamesRepo: Repository<Game>,
     @InjectRepository(Question) protected questionsRepo: Repository<Question>,
     @InjectRepository(Answer) protected answersRepo: Repository<Answer>,
-    protected readonly usersQuery: UsersQuery,
   ) {}
 
   async getCurrentGame(playerId: string): Promise<OutputPairGameDto> {
@@ -43,7 +41,17 @@ export class GamesQuery {
     gameId: string,
     playerId: string,
   ): Promise<OutputPairGameDto> {
-    const game = await this.gamesRepo.findOneBy({ id: gameId });
+    const game = await this.gamesRepo.findOne({
+      where: { id: gameId },
+      relations: {
+        firstPlayer: {
+          user: true,
+        },
+        secondPlayer: {
+          user: true,
+        },
+      },
+    });
     if (isVoid(game)) throw new NotFoundException();
     if (
       game.firstPlayerUserId !== playerId &&
@@ -58,8 +66,6 @@ export class GamesQuery {
     game: Game,
     questions: Question[],
   ): Promise<OutputPairGameDto> {
-    const user1 = await this.usersQuery.findUserById(game.firstPlayerUserId);
-    const user2 = await this.usersQuery.findUserById(game.secondPlayerUserId);
     const firstPlayerAnswers = await this.answersRepo.findBy({
       playerUserId: game.firstPlayerUserId,
       gameId: game.id,
@@ -73,7 +79,7 @@ export class GamesQuery {
         answers: this.mapAnswersToOutputModel(firstPlayerAnswers),
         player: {
           id: game.firstPlayerUserId,
-          login: user1.login,
+          login: game.firstPlayer.user.login,
         },
         score: game.firstPlayerScore,
       },
@@ -81,15 +87,15 @@ export class GamesQuery {
         answers: this.mapAnswersToOutputModel(secondPlayerAnswers),
         player: {
           id: game.secondPlayerUserId,
-          login: user2.login,
+          login: game.secondPlayer.user.login,
         },
         score: game.secondPlayerScore,
       },
       questions: questions,
       status: game.status,
-      pairCreatedDate: game.pairCreatedDate.toISOString(),
-      startGameDate: game.startGameDate.toISOString(),
-      finishGameDate: game.finishGameDate.toISOString(),
+      pairCreatedDate: game.pairCreatedDate?.toISOString() || null,
+      startGameDate: game.startGameDate?.toISOString() || null,
+      finishGameDate: game.finishGameDate?.toISOString() || null,
     };
   }
 

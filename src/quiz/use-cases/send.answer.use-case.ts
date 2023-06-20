@@ -30,7 +30,10 @@ export class SendAnswerUseCase {
     if (isVoid(game)) throw new ForbiddenException();
     const playerOrder = getPlayerOrder(game, command.playerId);
     const givenAnswer = command.answerDto.answer;
-    const currentQuestionIndex = game.firstPlayerAnswersIds.length + 1;
+    const currentQuestionIndex = this.getCurrentQuestionIndex(
+      game,
+      playerOrder,
+    );
     const questions = await this.questionsRepo.getQuestionsForIds(
       game.questionIds,
     );
@@ -85,11 +88,19 @@ export class SendAnswerUseCase {
     }
   }
 
-  async finishGameOnLastQuestionInTenSeconds(
+  private async finishGameOnLastQuestionInTenSeconds(
     gameId: string,
     playerOrder: PlayerOrder,
   ): Promise<void> {
     await this.gamesRepo.incrementPlayerScore(gameId, playerOrder);
     await this.gamesRepo.finishGameInTenSeconds(gameId);
+  }
+
+  private getCurrentQuestionIndex(game: Game, playerOder: PlayerOrder) {
+    let currentQuestionIndex: number;
+    if (playerOder === PlayerOrder.first)
+      currentQuestionIndex = game.firstPlayerAnswersIds.length;
+    else currentQuestionIndex = game.secondPlayerAnswersIds.length;
+    return currentQuestionIndex;
   }
 }

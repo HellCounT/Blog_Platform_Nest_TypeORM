@@ -62,11 +62,11 @@ export class Game {
     game.id = gameId;
     game.firstPlayerUserId = firstPlayerId;
     game.firstPlayerScore = 0;
-    game.firstPlayerAnswersIds = null;
+    game.firstPlayerAnswersIds = [];
     game.secondPlayerUserId = null;
     game.secondPlayerScore = null;
-    game.secondPlayerAnswersIds = null;
-    game.questionIds = null;
+    game.secondPlayerAnswersIds = [];
+    game.questionIds = [];
     game.status = GameStatus.pending;
     game.pairCreatedDate = null;
     game.startGameDate = null;

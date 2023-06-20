@@ -15,6 +15,7 @@ import { OutputPairGameDto } from './dto/output-pair-game.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { JoinOrCreateGameCommand } from './use-cases/join.or.create.game.use-case';
 import { GamesQuery } from './games.query';
+import { SendAnswerCommand } from './use-cases/send.answer.use-case';
 
 @UseGuards(JwtAuthGuard)
 @Controller('pair-game-quiz/pairs')
@@ -36,7 +37,9 @@ export class QuizGameController {
     @Body() answerDto: InputAnswerDto,
     @Req() req,
   ): Promise<OutputAnswerDto> {
-    return null;
+    return await this.commandBus.execute(
+      new SendAnswerCommand(answerDto, req.user.userId),
+    );
   }
   @Get(':id')
   @HttpCode(200)
