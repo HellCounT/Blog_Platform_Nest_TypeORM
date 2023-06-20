@@ -30,19 +30,21 @@ export class SendAnswerUseCase {
     );
     if (isVoid(game)) throw new ForbiddenException();
     const playerOrder = getPlayerOrder(game, command.playerId);
-    const givenAnswer = command.answerDto.answer;
-    const currentAnswersCount = this.getCurrentAnswersCounters(
+    const currentQuestionNumber = this.getCurrentQuestionNumber(
       game,
       playerOrder,
     );
-    const currentQuestionIndex = this.getCurrentQuestionIndex(
+    if (currentQuestionNumber > 5)
+      throw new Error('Player has answered all the questions');
+    const givenAnswer = command.answerDto.answer;
+    const currentAnswersCount = this.getCurrentAnswersCounters(
       game,
       playerOrder,
     );
     const questions = await this.questionsRepo.getQuestionsForIds(
       game.questionIds,
     );
-    const currentQuestion = questions[currentQuestionIndex];
+    const currentQuestion = questions[currentQuestionNumber];
     if (givenAnswer in currentQuestion.correctAnswers) {
       const answerStatus = AnswerStatus.correct;
       const playerIncrementedScoreInGame =
@@ -60,13 +62,13 @@ export class SendAnswerUseCase {
         playerOrder,
       );
       if (
-        currentQuestionIndex === 4 &&
+        currentQuestionNumber === 5 &&
         currentAnswersCount.playerAnswersCount >
           currentAnswersCount.opponentAnswersCount
       )
         await this.finishGameWithBonusInTenSeconds(game.id, playerOrder);
       if (
-        currentQuestionIndex === 4 &&
+        currentQuestionNumber === 5 &&
         currentAnswersCount.playerAnswersCount <
           currentAnswersCount.opponentAnswersCount
       )
@@ -99,13 +101,13 @@ export class SendAnswerUseCase {
         playerOrder,
       );
       if (
-        currentQuestionIndex === 4 &&
+        currentQuestionNumber === 5 &&
         currentAnswersCount.playerAnswersCount >
           currentAnswersCount.opponentAnswersCount
       )
         await this.finishGameWithBonusInTenSeconds(game.id, playerOrder);
       if (
-        currentQuestionIndex === 4 &&
+        currentQuestionNumber === 5 &&
         currentAnswersCount.playerAnswersCount <
           currentAnswersCount.opponentAnswersCount
       )
@@ -135,11 +137,14 @@ export class SendAnswerUseCase {
     return;
   }
 
-  private getCurrentQuestionIndex(game: Game, playerOder: PlayerOrder): number {
+  private getCurrentQuestionNumber(
+    game: Game,
+    playerOder: PlayerOrder,
+  ): number {
     let currentQuestionIndex: number;
     if (playerOder === PlayerOrder.first)
-      currentQuestionIndex = game.firstPlayerAnswersIds.length;
-    else currentQuestionIndex = game.secondPlayerAnswersIds.length;
+      currentQuestionIndex = game.firstPlayerAnswersIds.length + 1;
+    else currentQuestionIndex = game.secondPlayerAnswersIds.length + 1;
     return currentQuestionIndex;
   }
 
