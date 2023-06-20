@@ -16,7 +16,7 @@ export class GamesRepository {
       .createQueryBuilder('g')
       .select()
       .where(`g.status = 'PendingSecondPlayer'`)
-      .andWhere(`g.firstPlayerId != :playerId`, { playerId: playerId })
+      .andWhere(`g."firstPlayerId" != :playerId`, { playerId: playerId })
       .orderBy('RANDOM()')
       .getOne();
   }
