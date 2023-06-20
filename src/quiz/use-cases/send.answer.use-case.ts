@@ -10,6 +10,7 @@ import { AnswerStatus, PlayerOrder } from '../../application-helpers/statuses';
 import { isVoid } from '../../application-helpers/void.check.helper';
 import { ForbiddenException } from '@nestjs/common';
 import { getPlayerOrder } from '../../application-helpers/get.player.order';
+import { AnswersCountersType } from '../types/answers-counters.type';
 
 export class SendAnswerCommand {
   constructor(public answerDto: InputAnswerDto, public playerId: string) {}
@@ -30,6 +31,10 @@ export class SendAnswerUseCase {
     if (isVoid(game)) throw new ForbiddenException();
     const playerOrder = getPlayerOrder(game, command.playerId);
     const givenAnswer = command.answerDto.answer;
+    const currentAnswersCount = this.getCurrentAnswersCounters(
+      game,
+      playerOrder,
+    );
     const currentQuestionIndex = this.getCurrentQuestionIndex(
       game,
       playerOrder,
@@ -49,11 +54,23 @@ export class SendAnswerUseCase {
         command.playerId,
         currentQuestion.id,
       );
-      if (currentQuestionIndex === 4)
-        // Добавить логику на проверку, что он первым отвечает на последний вопрос
-        // Добавить логику на заканчивание игры, если игрок отвечает на последний вопрос вторым
-        // Выяснить, что блокировать, что и как оборачивать в транзакции
-        await this.finishGameOnLastQuestionInTenSeconds(game.id, playerOrder);
+      await this.gamesRepo.addAnswerIdToPlayer(
+        game.id,
+        addedAnswer.id,
+        playerOrder,
+      );
+      if (
+        currentQuestionIndex === 4 &&
+        currentAnswersCount.playerAnswersCount >
+          currentAnswersCount.opponentAnswersCount
+      )
+        await this.finishGameWithBonusInTenSeconds(game.id, playerOrder);
+      if (
+        currentQuestionIndex === 4 &&
+        currentAnswersCount.playerAnswersCount <
+          currentAnswersCount.opponentAnswersCount
+      )
+        await this.finishGame(game.id);
       await this.playersRepo.updatePlayerScore(
         command.playerId,
         playerIncrementedScoreInGame,
@@ -76,9 +93,23 @@ export class SendAnswerUseCase {
         command.playerId,
         currentQuestion.id,
       );
-      if (currentQuestionIndex === 4)
-        // Добавить логику на проверку, что он первым отвечает на последний вопрос
-        await this.finishGameOnLastQuestionInTenSeconds(game.id, playerOrder);
+      await this.gamesRepo.addAnswerIdToPlayer(
+        game.id,
+        addedAnswer.id,
+        playerOrder,
+      );
+      if (
+        currentQuestionIndex === 4 &&
+        currentAnswersCount.playerAnswersCount >
+          currentAnswersCount.opponentAnswersCount
+      )
+        await this.finishGameWithBonusInTenSeconds(game.id, playerOrder);
+      if (
+        currentQuestionIndex === 4 &&
+        currentAnswersCount.playerAnswersCount <
+          currentAnswersCount.opponentAnswersCount
+      )
+        await this.finishGame(game.id);
       await this.playersRepo.updatePlayerScore(command.playerId, playerScore);
       return {
         questionId: currentQuestion.id,
@@ -88,19 +119,49 @@ export class SendAnswerUseCase {
     }
   }
 
-  private async finishGameOnLastQuestionInTenSeconds(
+  private async finishGameWithBonusInTenSeconds(
     gameId: string,
     playerOrder: PlayerOrder,
   ): Promise<void> {
-    await this.gamesRepo.incrementPlayerScore(gameId, playerOrder);
-    await this.gamesRepo.finishGameInTenSeconds(gameId);
+    setTimeout(() => {
+      this.gamesRepo.incrementPlayerScore(gameId, playerOrder);
+      this.gamesRepo.finishGame(gameId);
+    }, 10000);
+    return;
   }
 
-  private getCurrentQuestionIndex(game: Game, playerOder: PlayerOrder) {
+  private async finishGame(gameId: string): Promise<void> {
+    await this.gamesRepo.finishGame(gameId);
+    return;
+  }
+
+  private getCurrentQuestionIndex(game: Game, playerOder: PlayerOrder): number {
     let currentQuestionIndex: number;
     if (playerOder === PlayerOrder.first)
       currentQuestionIndex = game.firstPlayerAnswersIds.length;
     else currentQuestionIndex = game.secondPlayerAnswersIds.length;
     return currentQuestionIndex;
+  }
+
+  private getCurrentAnswersCounters(
+    game: Game,
+    playerOrder: PlayerOrder,
+  ): AnswersCountersType {
+    const currentAnswersCounters: AnswersCountersType = {
+      playerAnswersCount: 0,
+      opponentAnswersCount: 0,
+    };
+    if (playerOrder === PlayerOrder.first) {
+      currentAnswersCounters.playerAnswersCount =
+        game.firstPlayerAnswersIds.length;
+      currentAnswersCounters.opponentAnswersCount =
+        game.secondPlayerAnswersIds.length;
+    } else {
+      currentAnswersCounters.playerAnswersCount =
+        game.secondPlayerAnswersIds.length;
+      currentAnswersCounters.opponentAnswersCount =
+        game.firstPlayerAnswersIds.length;
+    }
+    return currentAnswersCounters;
   }
 }

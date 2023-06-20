@@ -138,14 +138,31 @@ export class GamesRepository {
     }
   }
 
-  async finishGameInTenSeconds(gameId: string): Promise<boolean> {
+  async addAnswerIdToPlayer(
+    gameId: string,
+    answerId: string,
+    playerOrder: PlayerOrder,
+  ) {
     try {
-      setTimeout(() => {
-        return this.gamesRepo.update(
+      const game = await this.getGameById(gameId);
+      let answerIds: string[];
+      if (playerOrder === PlayerOrder.first) {
+        answerIds = game.firstPlayerAnswersIds;
+        answerIds.push(answerId);
+        const result = await this.gamesRepo.update(
           { id: gameId },
-          { status: GameStatus.finished },
+          { firstPlayerAnswersIds: answerIds },
         );
-      }, 10000);
+        return result.affected === 1;
+      } else {
+        answerIds = game.secondPlayerAnswersIds;
+        answerIds.push(answerId);
+        const result = await this.gamesRepo.update(
+          { id: gameId },
+          { secondPlayerAnswersIds: answerIds },
+        );
+        return result.affected === 1;
+      }
     } catch (e) {
       console.log(e);
       return false;
