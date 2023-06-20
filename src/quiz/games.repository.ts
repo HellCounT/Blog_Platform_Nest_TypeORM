@@ -9,7 +9,17 @@ import { GameStatus, PlayerOrder } from '../application-helpers/statuses';
 export class GamesRepository {
   constructor(@InjectRepository(Game) protected gamesRepo: Repository<Game>) {}
   async getGameById(gameId: string): Promise<Game> {
-    return await this.gamesRepo.findOneBy({ id: gameId });
+    return await this.gamesRepo.findOne({
+      where: { id: gameId },
+      relations: {
+        firstPlayer: {
+          user: true,
+        },
+        secondPlayer: {
+          user: true,
+        },
+      },
+    });
   }
   async findRandomOpenedGame(playerId: string): Promise<Game> {
     return await this.gamesRepo

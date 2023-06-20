@@ -22,16 +22,26 @@ export class GamesQuery {
   ) {}
 
   async getCurrentGame(playerId: string): Promise<OutputPairGameDto> {
-    const game = await this.gamesRepo.findOneBy([
-      {
-        firstPlayerUserId: playerId,
-        status: GameStatus.active || GameStatus.pending,
+    const game = await this.gamesRepo.findOne({
+      where: [
+        {
+          firstPlayerUserId: playerId,
+          status: GameStatus.active || GameStatus.pending,
+        },
+        {
+          secondPlayerUserId: playerId,
+          status: GameStatus.active || GameStatus.pending,
+        },
+      ],
+      relations: {
+        firstPlayer: {
+          user: true,
+        },
+        secondPlayer: {
+          user: true,
+        },
       },
-      {
-        secondPlayerUserId: playerId,
-        status: GameStatus.active || GameStatus.pending,
-      },
-    ]);
+    });
     if (isVoid(game)) throw new NotFoundException();
     const questions = await this.getQuestionsForGame(game);
     return await this.mapGameToOutputModel(game, questions);

@@ -5,7 +5,6 @@ import { OutputPairGameDto } from '../dto/output-pair-game.dto';
 import { PlayersRepository } from '../players.repository';
 import { Question } from '../../superadmin/quiz/entities/question.entity';
 import { Game } from '../entities/game.entity';
-import { UsersRepository } from '../../users/users.repository';
 
 export class JoinOrCreateGameCommand {
   constructor(public userId: string) {}
@@ -17,7 +16,6 @@ export class JoinOrCreateGameUseCase {
     protected gamesRepo: GamesRepository,
     protected questionsRepo: QuestionsRepository,
     protected playersRepo: PlayersRepository,
-    protected usersRepo: UsersRepository,
   ) {}
   async execute(command: JoinOrCreateGameCommand): Promise<OutputPairGameDto> {
     const questions = await this.questionsRepo.pickFiveRandomQuestions();
@@ -49,14 +47,12 @@ export class JoinOrCreateGameUseCase {
     game: Game,
     questions: Question[],
   ): Promise<OutputPairGameDto> {
-    const user1 = await this.usersRepo.getUserById(game.firstPlayerUserId);
-    const user2 = await this.usersRepo.getUserById(game.secondPlayerUserId);
     return {
       firstPlayerProgress: {
         answers: [],
         player: {
           id: game.firstPlayerUserId,
-          login: user1.accountData.login,
+          login: game.firstPlayer.user.login,
         },
         score: game.firstPlayerScore,
       },
@@ -64,7 +60,7 @@ export class JoinOrCreateGameUseCase {
         answers: [],
         player: {
           id: game.secondPlayerUserId,
-          login: user2.accountData.login,
+          login: game.secondPlayer.user.login,
         },
         score: game.secondPlayerScore,
       },
