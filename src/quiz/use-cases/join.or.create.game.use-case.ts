@@ -70,9 +70,9 @@ export class JoinOrCreateGameUseCase {
       },
       questions: questions,
       status: game.status,
-      pairCreatedDate: game.pairCreatedDate.toISOString(),
-      startGameDate: game.startGameDate.toISOString(),
-      finishGameDate: game.finishGameDate.toISOString(),
+      pairCreatedDate: game.pairCreatedDate?.toISOString() || null,
+      startGameDate: game.startGameDate?.toISOString() || null,
+      finishGameDate: game.finishGameDate?.toISOString() || null,
     };
   }
 }
