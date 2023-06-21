@@ -68,7 +68,7 @@ export class Game {
     game.secondPlayerAnswersIds = [];
     game.questionIds = [];
     game.status = GameStatus.pending;
-    game.pairCreatedDate = null;
+    game.pairCreatedDate = new Date();
     game.startGameDate = null;
     game.finishGameDate = null;
     return game;

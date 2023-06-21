@@ -61,7 +61,6 @@ export class GamesRepository {
           secondPlayerUserId: secondPlayerId,
           secondPlayerScore: 0,
           status: GameStatus.active,
-          pairCreatedDate: new Date(),
         },
       );
       return result.affected === 1;
