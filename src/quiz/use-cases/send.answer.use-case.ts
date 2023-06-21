@@ -44,7 +44,7 @@ export class SendAnswerUseCase {
       game.questionIds,
     );
     console.log('questions: ', questions);
-    const currentQuestion = questions[currentQuestionNumber];
+    const currentQuestion = questions[currentQuestionNumber - 1];
     console.log('currentQuestion: ', currentQuestion);
     if (givenAnswer in currentQuestion.correctAnswers) {
       const answerStatus = AnswerStatus.correct;
