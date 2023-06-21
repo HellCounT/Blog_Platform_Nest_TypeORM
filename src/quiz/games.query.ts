@@ -92,6 +92,7 @@ export class GamesQuery {
       gameId: game.id,
     });
     return {
+      id: game.id,
       firstPlayerProgress: {
         answers: this.mapAnswersToOutputModel(firstPlayerAnswers),
         player: {

@@ -56,6 +56,7 @@ export class JoinOrCreateGameUseCase {
     questions: Question[],
   ): Promise<OutputPairGameDto> {
     return {
+      id: game.id,
       firstPlayerProgress: {
         answers: [],
         player: {

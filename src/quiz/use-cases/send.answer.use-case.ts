@@ -43,7 +43,9 @@ export class SendAnswerUseCase {
     const questions = await this.questionsRepo.getQuestionsForIds(
       game.questionIds,
     );
+    console.log('questions: ', questions);
     const currentQuestion = questions[currentQuestionNumber];
+    console.log('currentQuestion: ', currentQuestion);
     if (givenAnswer in currentQuestion.correctAnswers) {
       const answerStatus = AnswerStatus.correct;
       const playerIncrementedScoreInGame =
