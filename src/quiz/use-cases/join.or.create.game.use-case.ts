@@ -6,6 +6,7 @@ import { PlayersRepository } from '../players.repository';
 import { Question } from '../../superadmin/quiz/entities/question.entity';
 import { Game } from '../entities/game.entity';
 import { ForbiddenException } from '@nestjs/common';
+import { GameQuestionViewType } from '../types/game-question-view.type';
 
 export class JoinOrCreateGameCommand {
   constructor(public userId: string) {}
@@ -70,7 +71,7 @@ export class JoinOrCreateGameUseCase {
         },
         score: game.secondPlayerScore,
       },
-      questions: questions || null,
+      questions: this.mapQuestionsToViewType(questions) || null,
       status: game.status,
       pairCreatedDate: game.pairCreatedDate?.toISOString() || null,
       startGameDate: game.startGameDate?.toISOString() || null,
@@ -78,5 +79,15 @@ export class JoinOrCreateGameUseCase {
     };
     if (!game.secondPlayerUserId) result.secondPlayerProgress = null;
     return result;
+  }
+  private mapQuestionsToViewType(
+    questions: Question[],
+  ): GameQuestionViewType[] {
+    return questions.map((q) => {
+      return {
+        id: q.id,
+        body: q.body,
+      };
+    });
   }
 }

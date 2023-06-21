@@ -12,6 +12,7 @@ import { GameStatus } from '../application-helpers/statuses';
 import { isVoid } from '../application-helpers/void.check.helper';
 import { Answer } from './entities/answer.entity';
 import { OutputAnswerDto } from './dto/output.answer.dto';
+import { GameQuestionViewType } from './types/game-question-view.type';
 
 @Injectable()
 export class GamesQuery {
@@ -56,9 +57,11 @@ export class GamesQuery {
       relations: {
         firstPlayer: {
           user: true,
+          currentAnswers: true,
         },
         secondPlayer: {
           user: true,
+          currentAnswers: true,
         },
       },
     });
@@ -81,20 +84,20 @@ export class GamesQuery {
 
   private async mapGameToOutputModel(
     game: Game,
-    questions: Question[],
+    questions?: Question[],
   ): Promise<OutputPairGameDto> {
-    const firstPlayerAnswers = await this.answersRepo.findBy({
-      playerUserId: game.firstPlayerUserId,
-      gameId: game.id,
-    });
-    const secondPlayerAnswers = await this.answersRepo.findBy({
-      playerUserId: game.secondPlayerUserId,
-      gameId: game.id,
-    });
+    // const firstPlayerAnswers = await this.answersRepo.findBy({
+    //   playerUserId: game.firstPlayerUserId,
+    //   gameId: game.id,
+    // });
+    // const secondPlayerAnswers = await this.answersRepo.findBy({
+    //   playerUserId: game.secondPlayerUserId,
+    //   gameId: game.id,
+    // });
     return {
       id: game.id,
       firstPlayerProgress: {
-        answers: this.mapAnswersToOutputModel(firstPlayerAnswers),
+        answers: this.mapAnswersToOutputModel(game.firstPlayer.currentAnswers),
         player: {
           id: game.firstPlayerUserId,
           login: game.firstPlayer.user.login,
@@ -102,19 +105,30 @@ export class GamesQuery {
         score: game.firstPlayerScore,
       },
       secondPlayerProgress: {
-        answers: this.mapAnswersToOutputModel(secondPlayerAnswers),
+        answers: this.mapAnswersToOutputModel(game.secondPlayer.currentAnswers),
         player: {
           id: game.secondPlayerUserId,
           login: game.secondPlayer?.user.login || null,
         },
         score: game.secondPlayerScore,
       },
-      questions: questions,
+      questions: this.mapQuestionsToViewType(questions) || null,
       status: game.status,
       pairCreatedDate: game.pairCreatedDate?.toISOString() || null,
       startGameDate: game.startGameDate?.toISOString() || null,
       finishGameDate: game.finishGameDate?.toISOString() || null,
     };
+  }
+
+  private mapQuestionsToViewType(
+    questions: Question[],
+  ): GameQuestionViewType[] {
+    return questions.map((q) => {
+      return {
+        id: q.id,
+        body: q.body,
+      };
+    });
   }
 
   private mapAnswersToOutputModel(answers: Answer[]): OutputAnswerDto[] {
