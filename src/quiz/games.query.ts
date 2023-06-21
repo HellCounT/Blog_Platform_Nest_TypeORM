@@ -68,6 +68,13 @@ export class GamesQuery {
       game.secondPlayerUserId !== playerId
     )
       throw new ForbiddenException();
+    console.log('firstPlayerUserId: ', game.firstPlayerUserId);
+    console.log('secondPlayerUserId: ', game.secondPlayerUserId);
+    console.log('inputPlayerId: ', playerId);
+    console.log(
+      game.firstPlayerUserId !== playerId &&
+        game.secondPlayerUserId !== playerId,
+    );
     const questions = await this.getQuestionsForGame(game);
     return await this.mapGameToOutputModel(game, questions);
   }

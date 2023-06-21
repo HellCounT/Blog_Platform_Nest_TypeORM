@@ -27,7 +27,6 @@ export class AnswersRepository {
         givenAnswer,
         answerStatus,
       );
-
       return await this.answersRepo.save(newAnswer);
     } catch (e) {
       console.log(e);

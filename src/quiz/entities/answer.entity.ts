@@ -51,6 +51,7 @@ export class Answer {
     answer.gameId = gameId;
     answer.body = body;
     answer.status = answerStatus;
+    answer.addedAt = new Date();
     return answer;
   }
 }
