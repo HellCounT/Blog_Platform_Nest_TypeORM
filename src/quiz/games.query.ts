@@ -6,7 +6,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { OutputPairGameDto } from './dto/output-pair-game.dto';
+import { OutputPairGameDto } from './dto/output.pair-game.dto';
 import { Question } from '../superadmin/quiz/entities/question.entity';
 import { GameStatus } from '../application-helpers/statuses';
 import { isVoid } from '../application-helpers/void.check.helper';

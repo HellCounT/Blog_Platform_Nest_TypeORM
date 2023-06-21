@@ -1,7 +1,7 @@
 import { CommandHandler } from '@nestjs/cqrs';
 import { GamesRepository } from '../games.repository';
 import { QuestionsRepository } from '../../superadmin/quiz/questions.repository';
-import { OutputPairGameDto } from '../dto/output-pair-game.dto';
+import { OutputPairGameDto } from '../dto/output.pair-game.dto';
 import { PlayersRepository } from '../players.repository';
 import { Question } from '../../superadmin/quiz/entities/question.entity';
 import { Game } from '../entities/game.entity';
@@ -19,9 +19,7 @@ export class JoinOrCreateGameUseCase {
     protected playersRepo: PlayersRepository,
   ) {}
   async execute(command: JoinOrCreateGameCommand): Promise<OutputPairGameDto> {
-    const questions = await this.questionsRepo.pickFiveRandomQuestions();
-    const questionIds = this.getQuestionIds(questions);
-    let startedGame: Game;
+    let game: Game;
     let player = await this.playersRepo.getPlayerByUserId(command.userId);
     if (!player)
       player = await this.playersRepo.createNewPlayer(command.userId);
@@ -29,19 +27,18 @@ export class JoinOrCreateGameUseCase {
       throw new ForbiddenException();
     const foundGame = await this.gamesRepo.findRandomOpenedGame(player.userId);
     if (foundGame) {
+      const questions = await this.questionsRepo.pickFiveRandomQuestions();
+      const questionIds = this.getQuestionIds(questions);
       await this.gamesRepo.joinGame(foundGame.id, player.userId);
-      startedGame = await this.gamesRepo.addQuestionsAndStartGame(
+      game = await this.gamesRepo.addQuestionsAndStartGame(
         foundGame.id,
         questionIds,
       );
+      return this.mapGameToOutputModel(game, questions);
     } else {
-      const newGame = await this.gamesRepo.createGame(player.userId);
-      startedGame = await this.gamesRepo.addQuestionsAndStartGame(
-        newGame.id,
-        questionIds,
-      );
+      game = await this.gamesRepo.createGame(player.userId);
+      return this.mapGameToOutputModel(game);
     }
-    return this.mapGameToOutputModel(startedGame, questions);
   }
   private getQuestionIds(questions: Question[]): string[] {
     return questions.map((q) => q.id);
@@ -53,9 +50,9 @@ export class JoinOrCreateGameUseCase {
   }
   private async mapGameToOutputModel(
     game: Game,
-    questions: Question[],
+    questions?: Question[],
   ): Promise<OutputPairGameDto> {
-    return {
+    const result: OutputPairGameDto = {
       id: game.id,
       firstPlayerProgress: {
         answers: [],
@@ -73,11 +70,13 @@ export class JoinOrCreateGameUseCase {
         },
         score: game.secondPlayerScore,
       },
-      questions: questions,
+      questions: questions || null,
       status: game.status,
       pairCreatedDate: game.pairCreatedDate?.toISOString() || null,
       startGameDate: game.startGameDate?.toISOString() || null,
       finishGameDate: game.finishGameDate?.toISOString() || null,
     };
+    if (!game.secondPlayerUserId) result.secondPlayerProgress = null;
+    return result;
   }
 }
