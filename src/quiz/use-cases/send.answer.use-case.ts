@@ -34,8 +34,7 @@ export class SendAnswerUseCase {
       game,
       playerOrder,
     );
-    if (currentQuestionNumber > 5)
-      throw new Error('Player has answered all the questions');
+    if (currentQuestionNumber > 5) throw new ForbiddenException();
     const givenAnswer = command.answerDto.answer;
     const currentAnswersCount = this.getCurrentAnswersCounters(
       game,

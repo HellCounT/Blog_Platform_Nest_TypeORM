@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   Param,
+  ParseUUIDPipe,
   Post,
   Req,
   UseGuards,
@@ -44,7 +45,7 @@ export class QuizGameController {
   @Get(':id')
   @HttpCode(200)
   async getGameById(
-    @Param('id') gameId: string,
+    @Param('id', ParseUUIDPipe) gameId: string,
     @Req() req,
   ): Promise<OutputPairGameDto> {
     return await this.gamesQueryRepo.getGameById(gameId, req.user.userId);

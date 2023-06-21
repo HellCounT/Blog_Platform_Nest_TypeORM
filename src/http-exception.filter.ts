@@ -19,9 +19,16 @@ export class HttpExceptionFilter implements ExceptionFilter {
         errorsMessages: [],
       };
       const responseBody: any = exception.getResponse();
-      responseBody.message.forEach((m) => errorResponse.errorsMessages.push(m));
+      if (Array.isArray(responseBody.message)) {
+        responseBody.message.forEach((m) =>
+          errorResponse.errorsMessages.push(m),
+        );
 
-      response.status(status).json(errorResponse);
+        response.status(status).json(errorResponse);
+      } else {
+        errorResponse.errorsMessages.push(responseBody.message);
+        response.status(status).json(errorResponse);
+      }
     } else {
       response.status(status).json({
         statusCode: status,
