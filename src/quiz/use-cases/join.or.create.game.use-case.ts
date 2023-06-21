@@ -5,6 +5,7 @@ import { OutputPairGameDto } from '../dto/output-pair-game.dto';
 import { PlayersRepository } from '../players.repository';
 import { Question } from '../../superadmin/quiz/entities/question.entity';
 import { Game } from '../entities/game.entity';
+import { ForbiddenException } from '@nestjs/common';
 
 export class JoinOrCreateGameCommand {
   constructor(public userId: string) {}
@@ -24,6 +25,8 @@ export class JoinOrCreateGameUseCase {
     let player = await this.playersRepo.getPlayerByUserId(command.userId);
     if (!player)
       player = await this.playersRepo.createNewPlayer(command.userId);
+    if (await this.isPlayerAlreadyParticipatingInAnotherGame(player.userId))
+      throw new ForbiddenException();
     const foundGame = await this.gamesRepo.findRandomOpenedGame(player.userId);
     if (foundGame) {
       await this.gamesRepo.joinGame(foundGame.id, player.userId);
@@ -42,6 +45,11 @@ export class JoinOrCreateGameUseCase {
   }
   private getQuestionIds(questions: Question[]): string[] {
     return questions.map((q) => q.id);
+  }
+  private async isPlayerAlreadyParticipatingInAnotherGame(
+    playerId: string,
+  ): Promise<boolean> {
+    return !!(await this.gamesRepo.getCurrentActiveGame(playerId));
   }
   private async mapGameToOutputModel(
     game: Game,
