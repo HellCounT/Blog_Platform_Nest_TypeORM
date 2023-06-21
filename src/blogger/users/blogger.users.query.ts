@@ -11,7 +11,7 @@ import { Repository } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Blog } from '../../blogs/entities/blog.entity';
 import { UserBannedByBlogger } from './users-banned-by-blogger/entities/user-banned-by-blogger.entity';
-import { emptyPaginatorStab } from '../../application-helpers/empty.paginator.stab';
+import { emptyPaginatorStub } from '../../application-helpers/empty.paginator.stub';
 
 @Injectable()
 export class BloggerUsersQuery {
@@ -58,7 +58,7 @@ export class BloggerUsersQuery {
       .limit(q.pageSize)
       .offset(offsetSize)
       .getManyAndCount();
-    if (bansCount === 0) return emptyPaginatorStab;
+    if (bansCount === 0) return emptyPaginatorStub;
     const items = [];
     for await (const b of reqPageDbBans) {
       const item = await this._mapBanToBannedUserViewType(b);

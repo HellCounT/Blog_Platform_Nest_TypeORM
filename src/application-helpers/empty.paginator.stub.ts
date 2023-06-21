@@ -1,4 +1,4 @@
-export const emptyPaginatorStab = {
+export const emptyPaginatorStub = {
   pagesCount: 0,
   page: 1,
   pageSize: 10,

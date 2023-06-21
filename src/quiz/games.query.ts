@@ -97,7 +97,7 @@ export class GamesQuery {
         answers: this.mapAnswersToOutputModel(secondPlayerAnswers),
         player: {
           id: game.secondPlayerUserId,
-          login: game.secondPlayer.user.login,
+          login: game.secondPlayer?.user.login || null,
         },
         score: game.secondPlayerScore,
       },

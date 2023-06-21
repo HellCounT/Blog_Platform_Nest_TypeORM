@@ -8,7 +8,7 @@ import {
 } from '../../application-helpers/query-parser-type';
 import { PaginatorType } from '../../application-helpers/paginator.type';
 import { OutputQuestionDto } from './dto/output.question.dto';
-import { emptyPaginatorStab } from '../../application-helpers/empty.paginator.stab';
+import { emptyPaginatorStub } from '../../application-helpers/empty.paginator.stub';
 
 @Injectable()
 export class SuperAdminQuestionsQuery {
@@ -29,7 +29,7 @@ export class SuperAdminQuestionsQuery {
         take: q.pageSize,
         skip: offsetSize,
       });
-    if (reqPageQuestions.length === 0) return emptyPaginatorStab;
+    if (reqPageQuestions.length === 0) return emptyPaginatorStub;
     const mappedQuestions = reqPageQuestions.map((q) =>
       this._mapQuestionToViewType(q),
     );

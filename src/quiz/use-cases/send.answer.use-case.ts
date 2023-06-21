@@ -9,7 +9,7 @@ import { Game } from '../entities/game.entity';
 import { AnswerStatus, PlayerOrder } from '../../application-helpers/statuses';
 import { isVoid } from '../../application-helpers/void.check.helper';
 import { ForbiddenException } from '@nestjs/common';
-import { getPlayerOrder } from '../../application-helpers/get.player.order';
+import { getPlayerOrder } from '../helpers/get.player.order';
 import { AnswersCountersType } from '../types/answers-counters.type';
 
 export class SendAnswerCommand {

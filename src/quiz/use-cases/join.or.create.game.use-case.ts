@@ -60,7 +60,7 @@ export class JoinOrCreateGameUseCase {
         answers: [],
         player: {
           id: game.secondPlayerUserId,
-          login: game.secondPlayer.user.login,
+          login: game.secondPlayer?.user.login || null,
         },
         score: game.secondPlayerScore,
       },
