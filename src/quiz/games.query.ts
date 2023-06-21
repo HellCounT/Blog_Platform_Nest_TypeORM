@@ -38,9 +38,11 @@ export class GamesQuery {
       relations: {
         firstPlayer: {
           user: true,
+          currentAnswers: true,
         },
         secondPlayer: {
           user: true,
+          currentAnswers: true,
         },
       },
     });

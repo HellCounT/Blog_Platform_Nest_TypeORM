@@ -44,7 +44,7 @@ export class SendAnswerUseCase {
       game.questionIds,
     );
     const currentQuestion = questions[currentQuestionNumber - 1];
-    if (givenAnswer in currentQuestion.correctAnswers) {
+    if (currentQuestion.correctAnswers.includes(givenAnswer)) {
       const answerStatus = AnswerStatus.correct;
       const playerIncrementedScoreInGame =
         await this.gamesRepo.incrementPlayerScore(game.id, playerOrder);
