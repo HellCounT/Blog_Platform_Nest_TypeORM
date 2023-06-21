@@ -13,6 +13,7 @@ import { isVoid } from '../application-helpers/void.check.helper';
 import { Answer } from './entities/answer.entity';
 import { OutputAnswerDto } from './dto/output.answer.dto';
 import { GameQuestionViewType } from './types/game-question-view.type';
+import { PlayerProgressViewType } from './types/player-progress-view.type';
 
 @Injectable()
 export class GamesQuery {
@@ -45,7 +46,7 @@ export class GamesQuery {
     });
     if (isVoid(game)) throw new NotFoundException();
     const questions = await this.getQuestionsForGame(game);
-    return await this.mapGameToOutputModel(game, questions);
+    return this.mapGameToOutputModel(game, questions);
   }
 
   async getGameById(
@@ -71,21 +72,14 @@ export class GamesQuery {
       game.secondPlayerUserId !== playerId
     )
       throw new ForbiddenException();
-    console.log('firstPlayerUserId: ', game.firstPlayerUserId);
-    console.log('secondPlayerUserId: ', game.secondPlayerUserId);
-    console.log('inputPlayerId: ', playerId);
-    console.log(
-      game.firstPlayerUserId !== playerId &&
-        game.secondPlayerUserId !== playerId,
-    );
     const questions = await this.getQuestionsForGame(game);
-    return await this.mapGameToOutputModel(game, questions);
+    return this.mapGameToOutputModel(game, questions);
   }
 
-  private async mapGameToOutputModel(
+  private mapGameToOutputModel(
     game: Game,
     questions?: Question[],
-  ): Promise<OutputPairGameDto> {
+  ): OutputPairGameDto {
     // const firstPlayerAnswers = await this.answersRepo.findBy({
     //   playerUserId: game.firstPlayerUserId,
     //   gameId: game.id,
@@ -94,7 +88,19 @@ export class GamesQuery {
     //   playerUserId: game.secondPlayerUserId,
     //   gameId: game.id,
     // });
-    return {
+    let questionsField: GameQuestionViewType[] | null = null;
+    if (questions) questionsField = this.mapQuestionsToViewType(questions);
+    let secondPlayerProgressField: PlayerProgressViewType | null = null;
+    if (game.secondPlayer)
+      secondPlayerProgressField = {
+        answers: this.mapAnswersToOutputModel(game.secondPlayer.currentAnswers),
+        player: {
+          id: game.secondPlayerUserId,
+          login: game.secondPlayer?.user.login || null,
+        },
+        score: game.secondPlayerScore,
+      };
+    const result: OutputPairGameDto = {
       id: game.id,
       firstPlayerProgress: {
         answers: this.mapAnswersToOutputModel(game.firstPlayer.currentAnswers),
@@ -104,20 +110,15 @@ export class GamesQuery {
         },
         score: game.firstPlayerScore,
       },
-      secondPlayerProgress: {
-        answers: this.mapAnswersToOutputModel(game.secondPlayer.currentAnswers),
-        player: {
-          id: game.secondPlayerUserId,
-          login: game.secondPlayer?.user.login || null,
-        },
-        score: game.secondPlayerScore,
-      },
-      questions: this.mapQuestionsToViewType(questions) || null,
+      secondPlayerProgress: secondPlayerProgressField,
+      questions: questionsField,
       status: game.status,
       pairCreatedDate: game.pairCreatedDate?.toISOString() || null,
       startGameDate: game.startGameDate?.toISOString() || null,
       finishGameDate: game.finishGameDate?.toISOString() || null,
     };
+    if (!game.secondPlayerUserId) result.secondPlayerProgress = null;
+    return result;
   }
 
   private mapQuestionsToViewType(

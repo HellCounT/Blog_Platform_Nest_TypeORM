@@ -53,6 +53,8 @@ export class JoinOrCreateGameUseCase {
     game: Game,
     questions?: Question[],
   ): Promise<OutputPairGameDto> {
+    let questionsField: GameQuestionViewType[] | null = null;
+    if (questions) questionsField = this.mapQuestionsToViewType(questions);
     const result: OutputPairGameDto = {
       id: game.id,
       firstPlayerProgress: {
@@ -71,7 +73,7 @@ export class JoinOrCreateGameUseCase {
         },
         score: game.secondPlayerScore,
       },
-      questions: this.mapQuestionsToViewType(questions) || null,
+      questions: questionsField,
       status: game.status,
       pairCreatedDate: game.pairCreatedDate?.toISOString() || null,
       startGameDate: game.startGameDate?.toISOString() || null,
