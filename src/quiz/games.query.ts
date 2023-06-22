@@ -48,7 +48,7 @@ export class GamesQuery {
     });
     if (isVoid(game)) throw new NotFoundException();
     const questions = await this.getQuestionsForGame(game);
-    return this.mapGameToOutputModel(game, questions);
+    return await this.mapGameToOutputModel(game, questions);
   }
 
   async getGameById(
@@ -78,25 +78,25 @@ export class GamesQuery {
     return this.mapGameToOutputModel(game, questions);
   }
 
-  private mapGameToOutputModel(
+  private async mapGameToOutputModel(
     game: Game,
     questions?: Question[],
-  ): OutputPairGameDto {
-    // const firstPlayerAnswers = await this.answersRepo.findBy({
-    //   playerUserId: game.firstPlayerUserId,
-    //   gameId: game.id,
-    // });
-    // const secondPlayerAnswers = await this.answersRepo.findBy({
-    //   playerUserId: game.secondPlayerUserId,
-    //   gameId: game.id,
-    // });
+  ): Promise<OutputPairGameDto> {
+    const firstPlayerAnswers = await this.answersRepo.findBy({
+      playerUserId: game.firstPlayerUserId,
+      gameId: game.id,
+    });
+    const secondPlayerAnswers = await this.answersRepo.findBy({
+      playerUserId: game.secondPlayerUserId,
+      gameId: game.id,
+    });
     let questionsField: GameQuestionViewType[] | null = null;
     if (questions && questions.length !== 0)
       questionsField = this.mapQuestionsToViewType(questions);
     let secondPlayerProgressField: PlayerProgressViewType | null = null;
     if (game.secondPlayer)
       secondPlayerProgressField = {
-        answers: this.mapAnswersToOutputModel(game.secondPlayer.currentAnswers),
+        answers: this.mapAnswersToOutputModel(firstPlayerAnswers),
         player: {
           id: game.secondPlayerUserId,
           login: game.secondPlayer?.user.login || null,
@@ -106,7 +106,7 @@ export class GamesQuery {
     const result: OutputPairGameDto = {
       id: game.id,
       firstPlayerProgress: {
-        answers: this.mapAnswersToOutputModel(game.firstPlayer.currentAnswers),
+        answers: this.mapAnswersToOutputModel(secondPlayerAnswers),
         player: {
           id: game.firstPlayerUserId,
           login: game.firstPlayer.user.login,
