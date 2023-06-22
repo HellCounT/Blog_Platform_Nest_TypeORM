@@ -64,8 +64,10 @@ export class SendAnswerUseCase {
         currentQuestionNumber === 5 &&
         currentAnswersCount.playerAnswersCount >
           currentAnswersCount.opponentAnswersCount
-      )
-        await this.finishGameWithBonusInTenSeconds(game.id, playerOrder);
+      ) {
+        await this.setFirstFinishedPlayer(playerOrder, game);
+      }
+      //await this.finishGameWithBonusInTenSeconds(game.id, playerOrder);
       if (
         currentQuestionNumber === 5 &&
         currentAnswersCount.playerAnswersCount <
@@ -103,8 +105,9 @@ export class SendAnswerUseCase {
         currentQuestionNumber === 5 &&
         currentAnswersCount.playerAnswersCount >
           currentAnswersCount.opponentAnswersCount
-      )
-        await this.finishGameWithBonusInTenSeconds(game.id, playerOrder);
+      ) {
+      }
+      // await this.finishGameWithBonusInTenSeconds(game.id, playerOrder);
       if (
         currentQuestionNumber === 5 &&
         currentAnswersCount.playerAnswersCount <
@@ -120,16 +123,16 @@ export class SendAnswerUseCase {
     }
   }
 
-  private async finishGameWithBonusInTenSeconds(
-    gameId: string,
-    playerOrder: PlayerOrder,
-  ): Promise<void> {
-    setTimeout(() => {
-      this.gamesRepo.incrementPlayerScore(gameId, playerOrder); // bonus point
-      this.gamesRepo.finishGame(gameId);
-    }, 10000);
-    return;
-  }
+  // private async finishGameWithBonusInTenSeconds(
+  //   gameId: string,
+  //   playerOrder: PlayerOrder,
+  // ): Promise<void> {
+  //   setTimeout(() => {
+  //     this.gamesRepo.incrementPlayerScore(gameId, playerOrder); // bonus point
+  //     this.gamesRepo.finishGame(gameId);
+  //   }, 10000);
+  //   return;
+  // }
 
   private async finishGame(gameId: string): Promise<void> {
     await this.gamesRepo.finishGame(gameId);
@@ -167,5 +170,13 @@ export class SendAnswerUseCase {
         game.firstPlayerAnswersIds.length;
     }
     return currentAnswersCounters;
+  }
+
+  private async setFirstFinishedPlayer(
+    playerOrder: PlayerOrder,
+    game: Game,
+  ): Promise<void> {
+    await this.gamesRepo.setFirstFinishedPlayer(game.id, playerOrder);
+    return;
   }
 }

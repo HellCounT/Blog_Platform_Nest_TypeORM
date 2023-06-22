@@ -185,4 +185,22 @@ export class GamesRepository {
       return false;
     }
   }
+
+  async setFirstFinishedPlayer(
+    gameId: string,
+    playerOrder: PlayerOrder,
+  ): Promise<void> {
+    try {
+      await this.gamesRepo.update(
+        { id: gameId },
+        {
+          playerFinishedFirst: playerOrder,
+        },
+      );
+      return;
+    } catch (e) {
+      console.log(e);
+      return;
+    }
+  }
 }

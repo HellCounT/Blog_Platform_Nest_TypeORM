@@ -7,7 +7,7 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 import { Player } from './player.entity';
-import { GameStatus } from '../../application-helpers/statuses';
+import { GameStatus, PlayerOrder } from '../../application-helpers/statuses';
 import { Answer } from './answer.entity';
 
 @Entity()
@@ -42,6 +42,9 @@ export class Game {
   @Column('uuid', { array: true, nullable: true })
   questionIds: string[] | null;
 
+  @Column('varchar', { nullable: true })
+  playerFinishedFirst: PlayerOrder | null;
+
   @Column('varchar', { default: GameStatus.pending })
   status: GameStatus;
 
@@ -71,6 +74,7 @@ export class Game {
     game.pairCreatedDate = new Date();
     game.startGameDate = null;
     game.finishGameDate = null;
+    game.playerFinishedFirst = null;
     return game;
   }
 }
