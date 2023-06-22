@@ -37,6 +37,8 @@ export class JoinOrCreateGameUseCase {
       );
       return this.mapGameToOutputModel(game, questions);
     } else {
+      if (await this.isPlayerAlreadyCreatedTheGame(command.userId))
+        throw new ForbiddenException();
       game = await this.gamesRepo.createGame(player.userId);
       return this.mapGameToOutputModel(game);
     }
@@ -48,6 +50,11 @@ export class JoinOrCreateGameUseCase {
     playerId: string,
   ): Promise<boolean> {
     return !!(await this.gamesRepo.getCurrentActiveGame(playerId));
+  }
+  private async isPlayerAlreadyCreatedTheGame(
+    playerId: string,
+  ): Promise<boolean> {
+    return !!(await this.gamesRepo.getAlreadyCreatedPendingGame(playerId));
   }
   private async mapGameToOutputModel(
     game: Game,

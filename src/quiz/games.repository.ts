@@ -42,6 +42,12 @@ export class GamesRepository {
       },
     ]);
   }
+  async getAlreadyCreatedPendingGame(playerId: string): Promise<Game> {
+    return await this.gamesRepo.findOneBy({
+      firstPlayerUserId: playerId,
+      status: GameStatus.pending,
+    });
+  }
   async createGame(firstPlayerId: string): Promise<Game> {
     try {
       const newGameId = uuidv4();
