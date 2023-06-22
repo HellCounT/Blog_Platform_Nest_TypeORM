@@ -99,6 +99,7 @@ export class GamesRepository {
         { id: gameId },
         {
           status: GameStatus.finished,
+          finishGameDate: new Date(),
         },
       );
       return result.affected === 1;

@@ -125,7 +125,7 @@ export class SendAnswerUseCase {
     playerOrder: PlayerOrder,
   ): Promise<void> {
     setTimeout(() => {
-      this.gamesRepo.incrementPlayerScore(gameId, playerOrder);
+      this.gamesRepo.incrementPlayerScore(gameId, playerOrder); // bonus point
       this.gamesRepo.finishGame(gameId);
     }, 10000);
     return;
