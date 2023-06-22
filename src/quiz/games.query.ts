@@ -1,6 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Game } from './entities/game.entity';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import {
   ForbiddenException,
   Injectable,
@@ -28,7 +28,7 @@ export class GamesQuery {
       where: [
         {
           firstPlayerUserId: playerId,
-          status: GameStatus.pending || GameStatus.active,
+          status: Not(GameStatus.finished),
         },
         {
           secondPlayerUserId: playerId,
