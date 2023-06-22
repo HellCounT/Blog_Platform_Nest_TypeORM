@@ -96,7 +96,7 @@ export class GamesQuery {
     let secondPlayerProgressField: PlayerProgressViewType | null = null;
     if (game.secondPlayer)
       secondPlayerProgressField = {
-        answers: this.mapAnswersToOutputModel(firstPlayerAnswers),
+        answers: this.mapAnswersToOutputModel(secondPlayerAnswers),
         player: {
           id: game.secondPlayerUserId,
           login: game.secondPlayer?.user.login || null,
@@ -106,7 +106,7 @@ export class GamesQuery {
     const result: OutputPairGameDto = {
       id: game.id,
       firstPlayerProgress: {
-        answers: this.mapAnswersToOutputModel(secondPlayerAnswers),
+        answers: this.mapAnswersToOutputModel(firstPlayerAnswers),
         player: {
           id: game.firstPlayerUserId,
           login: game.firstPlayer.user.login,
