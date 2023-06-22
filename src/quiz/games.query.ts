@@ -28,11 +28,11 @@ export class GamesQuery {
       where: [
         {
           firstPlayerUserId: playerId,
-          status: GameStatus.active || GameStatus.pending,
+          status: GameStatus.pending || GameStatus.active,
         },
         {
           secondPlayerUserId: playerId,
-          status: GameStatus.active || GameStatus.pending,
+          status: GameStatus.active,
         },
       ],
       relations: {
