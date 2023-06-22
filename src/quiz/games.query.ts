@@ -91,7 +91,8 @@ export class GamesQuery {
     //   gameId: game.id,
     // });
     let questionsField: GameQuestionViewType[] | null = null;
-    if (questions) questionsField = this.mapQuestionsToViewType(questions);
+    if (questions && questions.length !== 0)
+      questionsField = this.mapQuestionsToViewType(questions);
     let secondPlayerProgressField: PlayerProgressViewType | null = null;
     if (game.secondPlayer)
       secondPlayerProgressField = {
