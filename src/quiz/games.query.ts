@@ -82,13 +82,19 @@ export class GamesQuery {
     game: Game,
     questions?: Question[],
   ): Promise<OutputPairGameDto> {
-    const firstPlayerAnswers = await this.answersRepo.findBy({
-      playerUserId: game.firstPlayerUserId,
-      gameId: game.id,
+    const firstPlayerAnswers = await this.answersRepo.find({
+      where: {
+        playerUserId: game.firstPlayerUserId,
+        gameId: game.id,
+      },
+      order: { addedAt: 'ASC' },
     });
-    const secondPlayerAnswers = await this.answersRepo.findBy({
-      playerUserId: game.secondPlayerUserId,
-      gameId: game.id,
+    const secondPlayerAnswers = await this.answersRepo.find({
+      where: {
+        playerUserId: game.secondPlayerUserId,
+        gameId: game.id,
+      },
+      order: { addedAt: 'ASC' },
     });
     let questionsField: GameQuestionViewType[] | null = null;
     if (questions && questions.length !== 0)

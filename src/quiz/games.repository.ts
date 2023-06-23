@@ -129,7 +129,6 @@ export class GamesRepository {
           .execute();
       }
       const game = await this.getGameById(gameId);
-      console.log('game in increment player score: ', game);
       if (playerOrder === PlayerOrder.first) return game.firstPlayerScore;
       else return game.secondPlayerScore;
     } catch (e) {
