@@ -66,6 +66,7 @@ export class SendAnswerUseCase {
         addedAnswer.id,
         playerOrder,
       );
+      currentAnswersCount.playerAnswersCount += 1;
       if (
         currentQuestionNumber === 5 &&
         currentAnswersCount.playerAnswersCount >
@@ -102,6 +103,7 @@ export class SendAnswerUseCase {
         addedAnswer.id,
         playerOrder,
       );
+      currentAnswersCount.playerAnswersCount += 1;
       if (
         currentQuestionNumber === 5 &&
         currentAnswersCount.playerAnswersCount >
