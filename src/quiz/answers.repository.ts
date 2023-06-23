@@ -10,6 +10,20 @@ export class AnswersRepository {
   constructor(
     @InjectRepository(Answer) protected answersRepo: Repository<Answer>,
   ) {}
+  async findCorrectAnswersForPlayerInGame(
+    gameId: string,
+    playerId: string,
+  ): Promise<Answer[]> {
+    try {
+      return await this.answersRepo.findBy({
+        gameId: gameId,
+        playerUserId: playerId,
+      });
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
   async saveAnswer(
     givenAnswer: string,
     answerStatus: AnswerStatus,

@@ -11,6 +11,7 @@ import { isVoid } from '../../application-helpers/void.check.helper';
 import { ForbiddenException } from '@nestjs/common';
 import { getPlayerOrder } from '../helpers/get.player.order';
 import { AnswersCountersType } from '../types/answers-counters.type';
+import { Answer } from '../entities/answer.entity';
 
 export class SendAnswerCommand {
   constructor(public answerDto: InputAnswerDto, public playerId: string) {}
@@ -64,8 +65,11 @@ export class SendAnswerUseCase {
         currentQuestionNumber === 5 &&
         currentAnswersCount.playerAnswersCount >
           currentAnswersCount.opponentAnswersCount
-      )
+      ) {
         await this.setFirstFinishedPlayer(playerOrder, game);
+        if (await this.isPlayerHasAtLeastOneCorrectAnswer(playerOrder, game))
+          await this.gamesRepo.incrementPlayerScore(game.id, playerOrder);
+      }
       if (
         currentQuestionNumber === 5 &&
         currentAnswersCount.playerAnswersCount <
@@ -175,5 +179,23 @@ export class SendAnswerUseCase {
   ): Promise<void> {
     await this.gamesRepo.setFirstFinishedPlayer(game.id, playerOrder);
     return;
+  }
+
+  private async isPlayerHasAtLeastOneCorrectAnswer(
+    playerOrder: PlayerOrder,
+    game: Game,
+  ): Promise<boolean> {
+    let result: Answer[];
+    if (playerOrder === PlayerOrder.first)
+      result = await this.answersRepo.findCorrectAnswersForPlayerInGame(
+        game.id,
+        game.firstPlayerUserId,
+      );
+    else
+      result = await this.answersRepo.findCorrectAnswersForPlayerInGame(
+        game.id,
+        game.secondPlayerUserId,
+      );
+    return result.length >= 1;
   }
 }
