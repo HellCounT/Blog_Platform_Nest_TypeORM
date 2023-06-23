@@ -118,12 +118,7 @@ export class SendAnswerUseCase {
     const updatedGame: Game = await this.gamesRepo.getCurrentActiveGame(
       command.playerId,
     );
-    if (
-      await this.isPlayerHasAtLeastOneCorrectAnswer(
-        updatedGame.playerFinishedFirst,
-        updatedGame,
-      )
-    )
+    if (await this.isFirstFinishedPlayerHasAtLeastOneCorrectAnswer(updatedGame))
       await this.gamesRepo.incrementPlayerGameScore(
         updatedGame.id,
         updatedGame.playerFinishedFirst,
@@ -196,12 +191,12 @@ export class SendAnswerUseCase {
     return;
   }
 
-  private async isPlayerHasAtLeastOneCorrectAnswer(
-    playerOrder: PlayerOrder,
+  private async isFirstFinishedPlayerHasAtLeastOneCorrectAnswer(
     game: Game,
   ): Promise<boolean> {
     let result: Answer[];
-    if (playerOrder === PlayerOrder.first)
+    if (game.playerFinishedFirst === null) return false;
+    if (game.playerFinishedFirst === PlayerOrder.first)
       result = await this.answersRepo.findCorrectAnswersForPlayerInGame(
         game.id,
         game.firstPlayerUserId,
