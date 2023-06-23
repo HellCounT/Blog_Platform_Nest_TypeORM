@@ -41,10 +41,8 @@ export class SendAnswerUseCase {
     );
     if (currentQuestionNumber > 5) throw new ForbiddenException();
     const givenAnswer = command.answerDto.answer;
-    const currentAnswersCountBeforeNewAnswer = this.getCurrentAnswersCounters(
-      game,
-      playerOrder,
-    );
+    const currentAnswersCountBeforeNewAnswer =
+      await this.getCurrentAnswersCounters(game, playerOrder);
     const questions = await this.questionsRepo.getQuestionsForIds(
       game.questionIds,
     );
@@ -169,10 +167,10 @@ export class SendAnswerUseCase {
     return currentQuestionIndex;
   }
 
-  private getCurrentAnswersCounters(
+  private async getCurrentAnswersCounters(
     game: Game,
     playerOrder: PlayerOrder,
-  ): AnswersCountersType {
+  ): Promise<AnswersCountersType> {
     const currentGame = await this.gamesRepo.getGameById(game.id);
     const currentAnswersCounters: AnswersCountersType = {
       playerAnswersCount: 0,
