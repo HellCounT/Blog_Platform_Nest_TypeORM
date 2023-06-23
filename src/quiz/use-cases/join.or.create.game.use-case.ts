@@ -7,6 +7,7 @@ import { Question } from '../../superadmin/quiz/entities/question.entity';
 import { Game } from '../entities/game.entity';
 import { ForbiddenException } from '@nestjs/common';
 import { GameQuestionViewType } from '../types/game-question-view.type';
+import { ConfigService } from '@nestjs/config';
 
 export class JoinOrCreateGameCommand {
   constructor(public userId: string) {}
@@ -18,6 +19,7 @@ export class JoinOrCreateGameUseCase {
     protected gamesRepo: GamesRepository,
     protected questionsRepo: QuestionsRepository,
     protected playersRepo: PlayersRepository,
+    private readonly configService: ConfigService<ConfigurationType>,
   ) {}
   async execute(command: JoinOrCreateGameCommand): Promise<OutputPairGameDto> {
     let game: Game;
@@ -28,7 +30,9 @@ export class JoinOrCreateGameUseCase {
       throw new ForbiddenException();
     const foundGame = await this.gamesRepo.findRandomOpenedGame(player.userId);
     if (foundGame) {
-      const questions = await this.questionsRepo.pickFiveRandomQuestions();
+      const questions = await this.questionsRepo.pickRandomQuestionsForGame(
+        this.configService.get('QUIZ_QUESTIONS_AMOUNT'),
+      );
       const questionIds = this.getQuestionIds(questions);
       await this.gamesRepo.joinGame(foundGame.id, player.userId);
       game = await this.gamesRepo.addQuestionsAndStartGame(

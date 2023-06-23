@@ -16,6 +16,7 @@ export type ConfigurationType = {
   EMAIL_LOGIN: string;
   EMAIL_PASSWORD: string;
   ENV: string;
+  QUIZ_QUESTIONS_AMOUNT;
 };
 
 export default (): ConfigurationType => ({
@@ -34,4 +35,5 @@ export default (): ConfigurationType => ({
   EMAIL_LOGIN: process.env.EMAIL_LOGIN,
   EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
   ENV: process.env.NODE_ENV,
+  QUIZ_QUESTIONS_AMOUNT: 5,
 });
