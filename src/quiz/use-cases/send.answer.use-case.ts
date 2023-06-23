@@ -64,10 +64,8 @@ export class SendAnswerUseCase {
         currentQuestionNumber === 5 &&
         currentAnswersCount.playerAnswersCount >
           currentAnswersCount.opponentAnswersCount
-      ) {
+      )
         await this.setFirstFinishedPlayer(playerOrder, game);
-      }
-      //await this.finishGameWithBonusInTenSeconds(game.id, playerOrder);
       if (
         currentQuestionNumber === 5 &&
         currentAnswersCount.playerAnswersCount <
@@ -105,9 +103,8 @@ export class SendAnswerUseCase {
         currentQuestionNumber === 5 &&
         currentAnswersCount.playerAnswersCount >
           currentAnswersCount.opponentAnswersCount
-      ) {
-      }
-      // await this.finishGameWithBonusInTenSeconds(game.id, playerOrder);
+      )
+        await this.setFirstFinishedPlayer(playerOrder, game);
       if (
         currentQuestionNumber === 5 &&
         currentAnswersCount.playerAnswersCount <
