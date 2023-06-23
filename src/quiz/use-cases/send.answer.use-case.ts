@@ -6,7 +6,11 @@ import { PlayersRepository } from '../players.repository';
 import { OutputAnswerDto } from '../dto/output.answer.dto';
 import { AnswersRepository } from '../answers.repository';
 import { Game } from '../entities/game.entity';
-import { AnswerStatus, PlayerOrder } from '../../application-helpers/statuses';
+import {
+  AnswerStatus,
+  GameStatus,
+  PlayerOrder,
+} from '../../application-helpers/statuses';
 import { isVoid } from '../../application-helpers/void.check.helper';
 import { ForbiddenException } from '@nestjs/common';
 import { getPlayerOrder } from '../helpers/get.player.order';
@@ -116,7 +120,12 @@ export class SendAnswerUseCase {
         await this.finishGame(game.id);
     }
     const updatedGame: Game = await this.gamesRepo.getGameById(game.id);
-    if (await this.isFirstFinishedPlayerHasAtLeastOneCorrectAnswer(updatedGame))
+    if (
+      (await this.isFirstFinishedPlayerHasAtLeastOneCorrectAnswer(
+        updatedGame,
+      )) &&
+      updatedGame.status === GameStatus.finished
+    )
       //bonus point
       await this.gamesRepo.incrementPlayerGameScore(
         updatedGame.id,
@@ -164,20 +173,21 @@ export class SendAnswerUseCase {
     game: Game,
     playerOrder: PlayerOrder,
   ): AnswersCountersType {
+    const currentGame = await this.gamesRepo.getGameById(game.id);
     const currentAnswersCounters: AnswersCountersType = {
       playerAnswersCount: 0,
       opponentAnswersCount: 0,
     };
     if (playerOrder === PlayerOrder.first) {
       currentAnswersCounters.playerAnswersCount =
-        game.firstPlayerAnswersIds.length;
+        currentGame.firstPlayerAnswersIds.length;
       currentAnswersCounters.opponentAnswersCount =
-        game.secondPlayerAnswersIds.length;
+        currentGame.secondPlayerAnswersIds.length;
     } else {
       currentAnswersCounters.playerAnswersCount =
-        game.secondPlayerAnswersIds.length;
+        currentGame.secondPlayerAnswersIds.length;
       currentAnswersCounters.opponentAnswersCount =
-        game.firstPlayerAnswersIds.length;
+        currentGame.firstPlayerAnswersIds.length;
     }
     return currentAnswersCounters;
   }
