@@ -34,35 +34,30 @@ export class SendAnswerUseCase {
       command.playerId,
     );
     if (isVoid(game)) throw new ForbiddenException();
-    console.log({ game });
     const playerOrder = getPlayerOrder(game, command.playerId);
-    console.log({ playerOrder });
     const currentQuestionNumber = this.getCurrentQuestionNumber(
       game,
       playerOrder,
     );
-    console.log({ currentQuestionNumber });
     if (currentQuestionNumber > 5) throw new ForbiddenException();
     const givenAnswer = command.answerDto.answer;
-    const currentAnswersCountBeforeNewAnswer =
-      await this.getCurrentAnswersCounters(game, playerOrder);
-    console.log({ currentAnswersCountBeforeNewAnswer });
+    const currentAnswersCount = await this.getCurrentAnswersCounters(
+      game,
+      playerOrder,
+    );
     const questions = await this.questionsRepo.getQuestionsForIds(
       game.questionIds,
     );
     const currentQuestion = questions[currentQuestionNumber - 1];
-    console.log({ currentQuestion });
     let answerStatus: AnswerStatus;
     let addedAnswer: Answer;
     let playerGameScore: number;
     if (currentQuestion.correctAnswers.includes(givenAnswer)) {
-      console.log('its correct answer');
       answerStatus = AnswerStatus.correct;
       playerGameScore = await this.gamesRepo.incrementPlayerGameScore(
         game.id,
         playerOrder,
       );
-      console.log(playerGameScore);
       addedAnswer = await this.answersRepo.saveAnswer(
         givenAnswer,
         answerStatus,
@@ -75,30 +70,6 @@ export class SendAnswerUseCase {
         addedAnswer.id,
         playerOrder,
       );
-      console.log(
-        currentQuestionNumber,
-        currentAnswersCountBeforeNewAnswer.playerAnswersCount,
-        currentAnswersCountBeforeNewAnswer.opponentAnswersCount,
-      );
-      if (
-        currentQuestionNumber === 5 &&
-        currentAnswersCountBeforeNewAnswer.playerAnswersCount >
-          currentAnswersCountBeforeNewAnswer.opponentAnswersCount
-      ) {
-        console.log('set ffp');
-        await this.setFirstFinishedPlayer(playerOrder, game);
-      }
-      if (
-        currentQuestionNumber === 5 &&
-        currentAnswersCountBeforeNewAnswer.playerAnswersCount <
-          currentAnswersCountBeforeNewAnswer.opponentAnswersCount
-      )
-        await this.finishGame(game.id);
-      // return {
-      //   questionId: currentQuestion.id,
-      //   answerStatus: answerStatus,
-      //   addedAt: addedAnswer.addedAt.toISOString(),
-      // };
     } else {
       answerStatus = AnswerStatus.incorrect;
       playerGameScore = await this.gamesRepo.getPlayerScore(
@@ -117,21 +88,21 @@ export class SendAnswerUseCase {
         addedAnswer.id,
         playerOrder,
       );
-      if (
-        currentQuestionNumber === 5 &&
-        currentAnswersCountBeforeNewAnswer.playerAnswersCount >
-          currentAnswersCountBeforeNewAnswer.opponentAnswersCount
-      )
-        await this.setFirstFinishedPlayer(playerOrder, game);
-      if (
-        currentQuestionNumber === 5 &&
-        currentAnswersCountBeforeNewAnswer.playerAnswersCount <
-          currentAnswersCountBeforeNewAnswer.opponentAnswersCount
-      )
-        await this.finishGame(game.id);
+    }
+    if (
+      currentAnswersCount.playerAnswersCount === 5 &&
+      currentAnswersCount.opponentAnswersCount !== 5
+    ) {
+      await this.setFirstFinishedPlayer(playerOrder, game);
+    }
+    if (
+      currentAnswersCount.playerAnswersCount +
+        currentAnswersCount.opponentAnswersCount ===
+      10
+    ) {
+      await this.finishGame(game.id);
     }
     const updatedGame: Game = await this.gamesRepo.getGameById(game.id);
-    console.log('updated game', updatedGame);
     if (
       (await this.isFirstFinishedPlayerHasAtLeastOneCorrectAnswer(
         updatedGame,
@@ -139,11 +110,10 @@ export class SendAnswerUseCase {
       updatedGame.status === GameStatus.finished
     ) {
       //bonus point
-      const result = await this.gamesRepo.incrementPlayerGameScore(
+      await this.gamesRepo.incrementPlayerGameScore(
         updatedGame.id,
         updatedGame.playerFinishedFirst,
       );
-      console.log(result);
     }
     await this.playersRepo.updatePlayerTotalScore(
       command.playerId,
@@ -194,12 +164,12 @@ export class SendAnswerUseCase {
     };
     if (playerOrder === PlayerOrder.first) {
       currentAnswersCounters.playerAnswersCount =
-        currentGame.firstPlayerAnswersIds.length;
+        currentGame.firstPlayerAnswersIds.length + 1;
       currentAnswersCounters.opponentAnswersCount =
         currentGame.secondPlayerAnswersIds.length;
     } else {
       currentAnswersCounters.playerAnswersCount =
-        currentGame.secondPlayerAnswersIds.length;
+        currentGame.secondPlayerAnswersIds.length + 1;
       currentAnswersCounters.opponentAnswersCount =
         currentGame.firstPlayerAnswersIds.length;
     }
