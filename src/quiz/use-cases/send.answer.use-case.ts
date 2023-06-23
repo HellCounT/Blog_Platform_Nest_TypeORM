@@ -45,11 +45,16 @@ export class SendAnswerUseCase {
       game.questionIds,
     );
     const currentQuestion = questions[currentQuestionNumber - 1];
+    let answerStatus: AnswerStatus;
+    let addedAnswer: Answer;
+    let playerGameScore: number;
     if (currentQuestion.correctAnswers.includes(givenAnswer)) {
-      const answerStatus = AnswerStatus.correct;
-      const playerIncrementedScoreInGame =
-        await this.gamesRepo.incrementPlayerScore(game.id, playerOrder);
-      const addedAnswer = await this.answersRepo.saveAnswer(
+      answerStatus = AnswerStatus.correct;
+      playerGameScore = await this.gamesRepo.incrementPlayerGameScore(
+        game.id,
+        playerOrder,
+      );
+      addedAnswer = await this.answersRepo.saveAnswer(
         givenAnswer,
         answerStatus,
         game.id,
@@ -74,22 +79,18 @@ export class SendAnswerUseCase {
           currentAnswersCount.opponentAnswersCount
       )
         await this.finishGame(game.id);
-      await this.playersRepo.updatePlayerScore(
-        command.playerId,
-        playerIncrementedScoreInGame,
-      );
       return {
         questionId: currentQuestion.id,
         answerStatus: answerStatus,
         addedAt: addedAnswer.addedAt.toISOString(),
       };
     } else {
-      const answerStatus = AnswerStatus.incorrect;
-      const playerScore = await this.gamesRepo.getPlayerScore(
+      answerStatus = AnswerStatus.incorrect;
+      playerGameScore = await this.gamesRepo.getPlayerScore(
         game.id,
         playerOrder,
       );
-      const addedAnswer = await this.answersRepo.saveAnswer(
+      addedAnswer = await this.answersRepo.saveAnswer(
         givenAnswer,
         answerStatus,
         game.id,
@@ -113,23 +114,29 @@ export class SendAnswerUseCase {
           currentAnswersCount.opponentAnswersCount
       )
         await this.finishGame(game.id);
-      if (
-        await this.isPlayerHasAtLeastOneCorrectAnswer(
-          game.playerFinishedFirst,
-          game,
-        )
-      )
-        await this.gamesRepo.incrementPlayerScore(
-          game.id,
-          game.playerFinishedFirst,
-        );
-      await this.playersRepo.updatePlayerScore(command.playerId, playerScore);
-      return {
-        questionId: currentQuestion.id,
-        answerStatus: answerStatus,
-        addedAt: addedAnswer.addedAt.toISOString(),
-      };
     }
+    const updatedGame: Game = await this.gamesRepo.getCurrentActiveGame(
+      command.playerId,
+    );
+    if (
+      await this.isPlayerHasAtLeastOneCorrectAnswer(
+        updatedGame.playerFinishedFirst,
+        updatedGame,
+      )
+    )
+      await this.gamesRepo.incrementPlayerGameScore(
+        updatedGame.id,
+        updatedGame.playerFinishedFirst,
+      );
+    await this.playersRepo.updatePlayerTotalScore(
+      command.playerId,
+      playerGameScore,
+    );
+    return {
+      questionId: currentQuestion.id,
+      answerStatus: answerStatus,
+      addedAt: addedAnswer.addedAt.toISOString(),
+    };
   }
 
   // private async finishGameWithBonusInTenSeconds(

@@ -23,7 +23,10 @@ export class PlayersRepository {
     }
   }
 
-  async updatePlayerScore(userId: string, score: number): Promise<boolean> {
+  async updatePlayerTotalScore(
+    userId: string,
+    score: number,
+  ): Promise<boolean> {
     try {
       const result = await this.playersRepo
         .createQueryBuilder('p')

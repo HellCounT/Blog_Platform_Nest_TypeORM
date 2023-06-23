@@ -108,7 +108,7 @@ export class GamesRepository {
       return false;
     }
   }
-  async incrementPlayerScore(
+  async incrementPlayerGameScore(
     gameId: string,
     playerOrder: PlayerOrder,
   ): Promise<number> {
