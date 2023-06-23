@@ -117,6 +117,7 @@ export class SendAnswerUseCase {
     }
     const updatedGame: Game = await this.gamesRepo.getGameById(game.id);
     if (await this.isFirstFinishedPlayerHasAtLeastOneCorrectAnswer(updatedGame))
+      //bonus point
       await this.gamesRepo.incrementPlayerGameScore(
         updatedGame.id,
         updatedGame.playerFinishedFirst,
@@ -199,7 +200,7 @@ export class SendAnswerUseCase {
         game.id,
         game.firstPlayerUserId,
       );
-    else
+    if (game.playerFinishedFirst === PlayerOrder.second)
       result = await this.answersRepo.findCorrectAnswersForPlayerInGame(
         game.id,
         game.secondPlayerUserId,
