@@ -8,6 +8,7 @@ import { Game } from '../entities/game.entity';
 import { ForbiddenException } from '@nestjs/common';
 import { GameQuestionViewType } from '../types/game-question-view.type';
 import { ConfigService } from '@nestjs/config';
+import { ConfigurationType } from '../../configuration/configuration';
 
 export class JoinOrCreateGameCommand {
   constructor(public userId: string) {}
