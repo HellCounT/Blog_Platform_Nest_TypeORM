@@ -67,8 +67,6 @@ export class SendAnswerUseCase {
           currentAnswersCount.opponentAnswersCount
       ) {
         await this.setFirstFinishedPlayer(playerOrder, game);
-        if (await this.isPlayerHasAtLeastOneCorrectAnswer(playerOrder, game))
-          await this.gamesRepo.incrementPlayerScore(game.id, playerOrder);
       }
       if (
         currentQuestionNumber === 5 &&
@@ -115,6 +113,16 @@ export class SendAnswerUseCase {
           currentAnswersCount.opponentAnswersCount
       )
         await this.finishGame(game.id);
+      if (
+        await this.isPlayerHasAtLeastOneCorrectAnswer(
+          game.playerFinishedFirst,
+          game,
+        )
+      )
+        await this.gamesRepo.incrementPlayerScore(
+          game.id,
+          game.playerFinishedFirst,
+        );
       await this.playersRepo.updatePlayerScore(command.playerId, playerScore);
       return {
         questionId: currentQuestion.id,
