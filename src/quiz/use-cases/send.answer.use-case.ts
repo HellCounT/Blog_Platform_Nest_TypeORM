@@ -115,9 +115,7 @@ export class SendAnswerUseCase {
       )
         await this.finishGame(game.id);
     }
-    const updatedGame: Game = await this.gamesRepo.getCurrentActiveGame(
-      command.playerId,
-    );
+    const updatedGame: Game = await this.gamesRepo.getGameById(game.id);
     if (await this.isFirstFinishedPlayerHasAtLeastOneCorrectAnswer(updatedGame))
       await this.gamesRepo.incrementPlayerGameScore(
         updatedGame.id,
