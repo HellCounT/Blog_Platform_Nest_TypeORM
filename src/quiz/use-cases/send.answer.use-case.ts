@@ -37,7 +37,7 @@ export class SendAnswerUseCase {
     );
     if (currentQuestionNumber > 5) throw new ForbiddenException();
     const givenAnswer = command.answerDto.answer;
-    const currentAnswersCount = this.getCurrentAnswersCounters(
+    const currentAnswersCountBeforeNewAnswer = this.getCurrentAnswersCounters(
       game,
       playerOrder,
     );
@@ -66,18 +66,17 @@ export class SendAnswerUseCase {
         addedAnswer.id,
         playerOrder,
       );
-      currentAnswersCount.playerAnswersCount += 1;
       if (
         currentQuestionNumber === 5 &&
-        currentAnswersCount.playerAnswersCount >
-          currentAnswersCount.opponentAnswersCount
+        currentAnswersCountBeforeNewAnswer.playerAnswersCount >
+          currentAnswersCountBeforeNewAnswer.opponentAnswersCount
       ) {
         await this.setFirstFinishedPlayer(playerOrder, game);
       }
       if (
         currentQuestionNumber === 5 &&
-        currentAnswersCount.playerAnswersCount <
-          currentAnswersCount.opponentAnswersCount
+        currentAnswersCountBeforeNewAnswer.playerAnswersCount <
+          currentAnswersCountBeforeNewAnswer.opponentAnswersCount
       )
         await this.finishGame(game.id);
       return {
@@ -103,17 +102,16 @@ export class SendAnswerUseCase {
         addedAnswer.id,
         playerOrder,
       );
-      currentAnswersCount.playerAnswersCount += 1;
       if (
         currentQuestionNumber === 5 &&
-        currentAnswersCount.playerAnswersCount >
-          currentAnswersCount.opponentAnswersCount
+        currentAnswersCountBeforeNewAnswer.playerAnswersCount >
+          currentAnswersCountBeforeNewAnswer.opponentAnswersCount
       )
         await this.setFirstFinishedPlayer(playerOrder, game);
       if (
         currentQuestionNumber === 5 &&
-        currentAnswersCount.playerAnswersCount <
-          currentAnswersCount.opponentAnswersCount
+        currentAnswersCountBeforeNewAnswer.playerAnswersCount <
+          currentAnswersCountBeforeNewAnswer.opponentAnswersCount
       )
         await this.finishGame(game.id);
     }
