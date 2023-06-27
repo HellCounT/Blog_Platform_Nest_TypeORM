@@ -13,7 +13,6 @@ import {
 } from '../../application-helpers/statuses';
 import { isVoid } from '../../application-helpers/void.check.helper';
 import { ForbiddenException } from '@nestjs/common';
-import { getPlayerOrder } from '../helpers/get.player.order';
 import { AnswersCountersType } from '../types/answers-counters.type';
 import { Answer } from '../entities/answer.entity';
 
@@ -34,7 +33,7 @@ export class SendAnswerUseCase {
       command.playerId,
     );
     if (isVoid(game)) throw new ForbiddenException();
-    const playerOrder = getPlayerOrder(game, command.playerId);
+    const playerOrder = game.getPlayerOrder(command.playerId);
     const currentQuestionNumber = this.getCurrentQuestionNumber(
       game,
       playerOrder,
@@ -89,17 +88,10 @@ export class SendAnswerUseCase {
         playerOrder,
       );
     }
-    if (
-      currentAnswersCount.playerAnswersCount === 5 &&
-      currentAnswersCount.opponentAnswersCount !== 5
-    ) {
+    if (this.playerIsFinishingFirst(currentAnswersCount)) {
       await this.setFirstFinishedPlayer(playerOrder, game);
     }
-    if (
-      currentAnswersCount.playerAnswersCount +
-        currentAnswersCount.opponentAnswersCount ===
-      10
-    ) {
+    if (this.playerIsFinishing(currentAnswersCount)) {
       await this.finishGame(game.id);
     }
     const updatedGame: Game = await this.gamesRepo.getGameById(game.id);
@@ -174,6 +166,23 @@ export class SendAnswerUseCase {
         currentGame.firstPlayerAnswersIds.length;
     }
     return currentAnswersCounters;
+  }
+
+  private playerIsFinishingFirst(
+    currentAnswersCount: AnswersCountersType,
+  ): boolean {
+    return (
+      currentAnswersCount.playerAnswersCount === 5 &&
+      currentAnswersCount.opponentAnswersCount !== 5
+    );
+  }
+
+  private playerIsFinishing(currentAnswersCount: AnswersCountersType): boolean {
+    return (
+      currentAnswersCount.playerAnswersCount +
+        currentAnswersCount.opponentAnswersCount ===
+      10
+    );
   }
 
   private async setFirstFinishedPlayer(

@@ -60,6 +60,13 @@ export class Game {
   @OneToMany(() => Answer, (a) => a.game)
   allAnswersInGame: Answer[];
 
+  getPlayerOrder(playerId: string): PlayerOrder {
+    let playerOrder;
+    if (playerId === this.firstPlayerUserId) playerOrder = PlayerOrder.first;
+    if (playerId === this.secondPlayerUserId) playerOrder = PlayerOrder.second;
+    return playerOrder;
+  }
+
   static instantiate(gameId: string, firstPlayerId: string) {
     const game = new Game();
     game.id = gameId;
