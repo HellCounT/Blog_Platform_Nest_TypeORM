@@ -23,12 +23,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
         responseBody.message.forEach((m) =>
           errorResponse.errorsMessages.push(m),
         );
-
-        response.status(status).json(errorResponse);
       } else {
         errorResponse.errorsMessages.push(responseBody.message);
-        response.status(status).json(errorResponse);
       }
+      response.status(status).json(errorResponse);
     } else {
       response.status(status).json({
         statusCode: status,
