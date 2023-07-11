@@ -163,7 +163,7 @@ export class SendAnswerUseCase {
       10
     );
   }
-
+  // Get for update, setLock
   private async setFirstFinishedPlayer(
     playerOrder: PlayerOrder,
     game: Game,

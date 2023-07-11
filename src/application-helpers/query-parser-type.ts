@@ -24,6 +24,12 @@ export type QuestionQueryParserType = {
   pageNumber: number;
   pageSize: number;
 };
+export type GamesQueryParserType = {
+  sortBy: string;
+  sortDirection: 'ASC' | 'DESC';
+  pageNumber: number;
+  pageSize: number;
+};
 
 export const parseQueryPagination = (query): QueryParserType => {
   const queryParamsParser: QueryParserType = {
@@ -91,6 +97,21 @@ export const parseQuestionQueryPagination = (
     queryQuestionParamsParser.pageNumber = +query.pageNumber;
   if (query.pageSize) queryQuestionParamsParser.pageSize = +query.pageSize;
   return queryQuestionParamsParser;
+};
+
+export const parseGameQueryPagination = (query): GamesQueryParserType => {
+  const queryGamesParamsParser: GamesQueryParserType = {
+    sortBy: 'pairCreatedDate',
+    sortDirection: 'DESC',
+    pageNumber: 1,
+    pageSize: 10,
+  };
+  if (query.sortBy) queryGamesParamsParser.sortBy = query.sortBy.toString();
+  if (query.sortDirection && query.sortDirection.toString() === 'asc')
+    queryGamesParamsParser.sortDirection = 'ASC';
+  if (query.pageNumber) queryGamesParamsParser.pageNumber = +query.pageNumber;
+  if (query.pageSize) queryGamesParamsParser.pageSize = +query.pageSize;
+  return queryGamesParamsParser;
 };
 
 export const getBanStatusForQuery = (banStatus: BanStatus): string => {

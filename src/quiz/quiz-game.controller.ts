@@ -6,6 +6,7 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -17,6 +18,8 @@ import { CommandBus } from '@nestjs/cqrs';
 import { JoinOrCreateGameCommand } from './use-cases/join.or.create.game.use-case';
 import { GamesQuery } from './games.query';
 import { SendAnswerCommand } from './use-cases/send.answer.use-case';
+import { PaginatorType } from '../application-helpers/paginator.type';
+import { GamesQueryParserType } from '../application-helpers/query-parser-type';
 
 @UseGuards(JwtAuthGuard)
 @Controller('pair-game-quiz/pairs')
@@ -27,6 +30,15 @@ export class QuizGameController {
   ) {
     return null;
   }
+  @Get('my')
+  @HttpCode(200)
+  async getAllGames(
+    @Req() req,
+    @Query() query: GamesQueryParserType,
+  ): Promise<PaginatorType<OutputPairGameDto>> {
+    return await this.gamesQueryRepo.getAllGames(req.user.userId, query);
+  }
+
   @Get('my-current')
   @HttpCode(200)
   async getCurrentGame(@Req() req): Promise<OutputPairGameDto> {

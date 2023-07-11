@@ -14,6 +14,9 @@ import { Answer } from './entities/answer.entity';
 import { OutputAnswerDto } from './dto/output.answer.dto';
 import { GameQuestionViewType } from './types/game-question-view.type';
 import { PlayerProgressViewType } from './types/player-progress-view.type';
+import { PaginatorType } from '../application-helpers/paginator.type';
+import { emptyPaginatorStub } from '../application-helpers/empty.paginator.stub';
+import { GamesQueryParserType } from '../application-helpers/query-parser-type';
 
 @Injectable()
 export class GamesQuery {
@@ -22,6 +25,50 @@ export class GamesQuery {
     @InjectRepository(Question) protected questionsRepo: Repository<Question>,
     @InjectRepository(Answer) protected answersRepo: Repository<Answer>,
   ) {}
+
+  async getAllGames(
+    playerId: string,
+    q: GamesQueryParserType,
+  ): Promise<PaginatorType<OutputPairGameDto>> {
+    const offsetSize = (q.pageNumber - 1) * q.pageSize;
+    const [games, allGamesCount] = await this.gamesRepo.findAndCount({
+      where: [
+        {
+          firstPlayerUserId: playerId,
+        },
+        {
+          secondPlayerUserId: playerId,
+        },
+      ],
+      order: { [q.sortBy]: q.sortDirection },
+      take: q.pageSize,
+      skip: offsetSize,
+      relations: {
+        firstPlayer: {
+          user: true,
+          currentAnswers: true,
+        },
+        secondPlayer: {
+          user: true,
+          currentAnswers: true,
+        },
+      },
+    });
+    if (games.length === 0) return emptyPaginatorStub;
+    const gameItems = [];
+    for await (const g of games) {
+      const questions = await this.getQuestionsForGame(g);
+      const mappedGame = await this.mapGameToOutputModel(g, questions);
+      gameItems.push(mappedGame);
+    }
+    return {
+      pagesCount: Math.ceil(allGamesCount / q.pageSize),
+      page: q.pageNumber,
+      pageSize: q.pageSize,
+      totalCount: allGamesCount,
+      items: gameItems,
+    };
+  }
 
   async getCurrentGame(playerId: string): Promise<OutputPairGameDto> {
     const game = await this.gamesRepo.findOne({
