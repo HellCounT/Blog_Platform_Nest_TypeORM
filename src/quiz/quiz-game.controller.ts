@@ -19,7 +19,10 @@ import { JoinOrCreateGameCommand } from './use-cases/join.or.create.game.use-cas
 import { GamesQuery } from './games.query';
 import { SendAnswerCommand } from './use-cases/send.answer.use-case';
 import { PaginatorType } from '../application-helpers/paginator.type';
-import { GamesQueryParserType } from '../application-helpers/query-parser-type';
+import {
+  GamesQueryParserType,
+  parseGameQueryPagination,
+} from '../application-helpers/query-parser-type';
 
 @UseGuards(JwtAuthGuard)
 @Controller('pair-game-quiz/pairs')
@@ -36,7 +39,8 @@ export class QuizGameController {
     @Req() req,
     @Query() query: GamesQueryParserType,
   ): Promise<PaginatorType<OutputPairGameDto>> {
-    return await this.gamesQueryRepo.getAllGames(req.user.userId, query);
+    const queryParams = parseGameQueryPagination(query);
+    return await this.gamesQueryRepo.getAllGames(req.user.userId, queryParams);
   }
 
   @Get('my-current')
