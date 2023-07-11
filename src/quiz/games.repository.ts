@@ -3,11 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Game } from './entities/game.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
-import { GameStatus, PlayerOrder } from '../application-helpers/statuses';
+import { GameStatus } from '../application-helpers/statuses';
 
 @Injectable()
 export class GamesRepository {
   constructor(@InjectRepository(Game) protected gamesRepo: Repository<Game>) {}
+  async saveGame(game: Game): Promise<Game> {
+    return await this.gamesRepo.save(game);
+  }
   async getGameById(gameId: string): Promise<Game> {
     return await this.gamesRepo.findOne({
       where: { id: gameId },
@@ -93,113 +96,98 @@ export class GamesRepository {
       return null;
     }
   }
-  async finishGame(gameId: string): Promise<boolean> {
-    try {
-      const result = await this.gamesRepo.update(
-        { id: gameId },
-        {
-          status: GameStatus.finished,
-          finishGameDate: new Date(),
-        },
-      );
-      return result.affected === 1;
-    } catch (e) {
-      console.log(e);
-      return false;
-    }
-  }
-  async incrementPlayerGameScore(
-    gameId: string,
-    playerOrder: PlayerOrder,
-  ): Promise<number> {
-    try {
-      if (playerOrder === PlayerOrder.first) {
-        await this.gamesRepo
-          .createQueryBuilder('g')
-          .update(Game)
-          .set({ firstPlayerScore: () => 'firstPlayerScore + 1' })
-          .where({ id: gameId })
-          .execute();
-      } else {
-        await this.gamesRepo
-          .createQueryBuilder('g')
-          .update(Game)
-          .set({ secondPlayerScore: () => 'secondPlayerScore + 1' })
-          .where({ id: gameId })
-          .execute();
-      }
-      const game = await this.getGameById(gameId);
-      if (playerOrder === PlayerOrder.first) return game.firstPlayerScore;
-      else return game.secondPlayerScore;
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
 
-  async getPlayerScore(
-    gameId: string,
-    playerOrder: PlayerOrder,
-  ): Promise<number> {
-    try {
-      const game = await this.getGameById(gameId);
-      if (playerOrder === PlayerOrder.first) {
-        return game.firstPlayerScore;
-      } else {
-        return game.secondPlayerScore;
-      }
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
+  // async finishGame(gameId: string): Promise<boolean> {
+  //   try {
+  //     const result = await this.gamesRepo.update(
+  //       { id: gameId },
+  //       {
+  //         status: GameStatus.finished,
+  //         finishGameDate: new Date(),
+  //       },
+  //     );
+  //     return result.affected === 1;
+  //   } catch (e) {
+  //     console.log(e);
+  //     return false;
+  //   }
+  // }
 
-  async addAnswerIdToPlayer(
-    gameId: string,
-    answerId: string,
-    playerOrder: PlayerOrder,
-  ) {
-    try {
-      const game = await this.getGameById(gameId);
-      let answerIds: string[];
-      if (playerOrder === PlayerOrder.first) {
-        answerIds = game.firstPlayerAnswersIds;
-        answerIds.push(answerId);
-        const result = await this.gamesRepo.update(
-          { id: gameId },
-          { firstPlayerAnswersIds: answerIds },
-        );
-        return result.affected === 1;
-      } else {
-        answerIds = game.secondPlayerAnswersIds;
-        answerIds.push(answerId);
-        const result = await this.gamesRepo.update(
-          { id: gameId },
-          { secondPlayerAnswersIds: answerIds },
-        );
-        return result.affected === 1;
-      }
-    } catch (e) {
-      console.log(e);
-      return false;
-    }
-  }
+  // async incrementPlayerGameScore(
+  //   gameId: string,
+  //   playerOrder: PlayerOrder,
+  // ): Promise<number> {
+  //   try {
+  //     if (playerOrder === PlayerOrder.first) {
+  //       await this.gamesRepo
+  //         .createQueryBuilder('g')
+  //         .update(Game)
+  //         .set({ firstPlayerScore: () => 'firstPlayerScore + 1' })
+  //         .where({ id: gameId })
+  //         .execute();
+  //     } else {
+  //       await this.gamesRepo
+  //         .createQueryBuilder('g')
+  //         .update(Game)
+  //         .set({ secondPlayerScore: () => 'secondPlayerScore + 1' })
+  //         .where({ id: gameId })
+  //         .execute();
+  //     }
+  //     const game = await this.getGameById(gameId);
+  //     if (playerOrder === PlayerOrder.first) return game.firstPlayerScore;
+  //     else return game.secondPlayerScore;
+  //   } catch (e) {
+  //     console.log(e);
+  //     return null;
+  //   }
+  // }
 
-  async setFirstFinishedPlayer(
-    gameId: string,
-    playerOrder: PlayerOrder,
-  ): Promise<void> {
-    try {
-      await this.gamesRepo.update(
-        { id: gameId },
-        {
-          playerFinishedFirst: playerOrder,
-        },
-      );
-      return;
-    } catch (e) {
-      console.log(e);
-      return;
-    }
-  }
+  // async addAnswerIdToPlayer(
+  //   gameId: string,
+  //   answerId: string,
+  //   playerOrder: PlayerOrder,
+  // ) {
+  //   try {
+  //     const game = await this.getGameById(gameId);
+  //     let answerIds: string[];
+  //     if (playerOrder === PlayerOrder.first) {
+  //       answerIds = game.firstPlayerAnswersIds;
+  //       answerIds.push(answerId);
+  //       const result = await this.gamesRepo.update(
+  //         { id: gameId },
+  //         { firstPlayerAnswersIds: answerIds },
+  //       );
+  //       return result.affected === 1;
+  //     } else {
+  //       answerIds = game.secondPlayerAnswersIds;
+  //       answerIds.push(answerId);
+  //       const result = await this.gamesRepo.update(
+  //         { id: gameId },
+  //         { secondPlayerAnswersIds: answerIds },
+  //       );
+  //       return result.affected === 1;
+  //     }
+  //   } catch (e) {
+  //     console.log(e);
+  //     return false;
+  //   }
+  // }
+
+  // async setFirstFinishedPlayer(
+  //   gameId: string,
+  //   playerOrder: PlayerOrder,
+  // ): Promise<void> {
+  //   try {
+  //     await this.gamesRepo.update(
+  //       { id: gameId },
+  //       {
+  //         playerFinishedFirst: playerOrder,
+  //       },
+  //     );
+  //     return;
+  //   } catch (e) {
+  //     console.log(e);
+  //     return;
+  //   }
+  // }
 }

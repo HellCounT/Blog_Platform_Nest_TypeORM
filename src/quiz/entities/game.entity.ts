@@ -9,6 +9,7 @@ import {
 import { Player } from './player.entity';
 import { GameStatus, PlayerOrder } from '../../application-helpers/statuses';
 import { Answer } from './answer.entity';
+import { AnswersCountersType } from '../types/answers-counters.type';
 
 @Entity()
 export class Game {
@@ -65,6 +66,41 @@ export class Game {
     if (playerId === this.firstPlayerUserId) playerOrder = PlayerOrder.first;
     if (playerId === this.secondPlayerUserId) playerOrder = PlayerOrder.second;
     return playerOrder;
+  }
+
+  getCurrentQuestionNumber(playerOder: PlayerOrder): number {
+    let currentQuestionIndex: number;
+    if (playerOder === PlayerOrder.first)
+      currentQuestionIndex = this.firstPlayerAnswersIds.length + 1;
+    else currentQuestionIndex = this.secondPlayerAnswersIds.length + 1;
+    return currentQuestionIndex;
+  }
+
+  getCurrentAnswersCounters(playerOrder: PlayerOrder): AnswersCountersType {
+    const currentAnswersCounters: AnswersCountersType = {
+      playerAnswersCount: 0,
+      opponentAnswersCount: 0,
+    };
+    if (playerOrder === PlayerOrder.first) {
+      currentAnswersCounters.playerAnswersCount =
+        this.firstPlayerAnswersIds.length + 1;
+      currentAnswersCounters.opponentAnswersCount =
+        this.secondPlayerAnswersIds.length;
+    } else {
+      currentAnswersCounters.playerAnswersCount =
+        this.secondPlayerAnswersIds.length + 1;
+      currentAnswersCounters.opponentAnswersCount =
+        this.firstPlayerAnswersIds.length;
+    }
+    return currentAnswersCounters;
+  }
+
+  getPlayerScore(playerOrder: PlayerOrder): number {
+    if (playerOrder === PlayerOrder.first) {
+      return this.firstPlayerScore;
+    } else {
+      return this.secondPlayerScore;
+    }
   }
 
   static instantiate(gameId: string, firstPlayerId: string) {
