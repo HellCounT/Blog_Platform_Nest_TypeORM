@@ -2,16 +2,16 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   pickOrderForPostsQuery,
   QueryParserType,
-} from '../application-helpers/query-parser-type';
+} from '../base/application-helpers/query-parser-type';
 import { PostJoinedType, PostViewModelType } from './types/posts.types';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
 import { Blog } from '../blogs/entities/blog.entity';
 import { PostLike } from '../likes/entities/post-like.entity';
-import { PaginatorType } from '../application-helpers/paginator.type';
-import { emptyPaginatorStub } from '../application-helpers/empty.paginator.stub';
-import { LikeStatus } from '../application-helpers/statuses';
+import { PaginatorType } from '../base/application-helpers/paginator.type';
+import { emptyPaginatorStub } from '../base/application-helpers/empty.paginator.stub';
+import { LikeStatus } from '../base/application-helpers/statuses';
 
 @Injectable()
 export class PostsQuery {

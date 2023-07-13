@@ -10,8 +10,8 @@ import {
   AnswerStatus,
   GameStatus,
   PlayerOrder,
-} from '../../application-helpers/statuses';
-import { isVoid } from '../../application-helpers/void.check.helper';
+} from '../../base/application-helpers/statuses';
+import { isVoid } from '../../base/application-helpers/void.check.helper';
 import { ForbiddenException } from '@nestjs/common';
 import { AnswersCountersType } from '../types/answers-counters.type';
 import { Answer } from '../entities/answer.entity';

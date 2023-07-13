@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { ExpiredTokenType } from './types/expired.token.type';
 import { v4 as uuidv4 } from 'uuid';
 import { ExpiredToken } from './entities/expired-token.entity';
-import { isVoid } from '../../application-helpers/void.check.helper';
+import { isVoid } from '../../base/application-helpers/void.check.helper';
 
 @Injectable()
 export class ExpiredTokensRepository {

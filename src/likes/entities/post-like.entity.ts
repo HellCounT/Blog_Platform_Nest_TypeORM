@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Post } from '../../posts/entities/post.entity';
 import { User } from '../../users/entities/user.entity';
-import { LikeStatus } from '../../application-helpers/statuses';
+import { LikeStatus } from '../../base/application-helpers/statuses';
 
 @Entity()
 export class PostLike {

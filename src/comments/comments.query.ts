@@ -1,13 +1,13 @@
-import { QueryParserType } from '../application-helpers/query-parser-type';
+import { QueryParserType } from '../base/application-helpers/query-parser-type';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CommentViewDto } from './dto/output.comment.view.dto';
 import { CommentPaginatorDto } from './dto/output.comment-paginator.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Comment } from './entities/comment.entity';
-import { isVoid } from '../application-helpers/void.check.helper';
+import { isVoid } from '../base/application-helpers/void.check.helper';
 import { CommentLike } from '../likes/entities/comment-like.entity';
-import { LikeStatus } from '../application-helpers/statuses';
+import { LikeStatus } from '../base/application-helpers/statuses';
 
 @Injectable()
 export class CommentsQuery {

@@ -4,7 +4,7 @@ import request from 'supertest';
 import { blogsPath, superAdminBlogsPath } from '../../helpers/paths';
 import { blogsFactory, usersFactory } from '../../helpers/factory';
 import { superAdminLogin, superAdminPassword } from '../../helpers/auth';
-import { PaginatorType } from '../../../src/application-helpers/paginator.type';
+import { PaginatorType } from '../../../src/base/application-helpers/paginator.type';
 import { OutputSuperAdminBlogDto } from '../../../src/superadmin/blogs/dto/output.super-admin.blog.dto';
 import { correctBlog } from '../../test-entities/blog.test-entities';
 import { errorsMessageForBanBlog } from '../../test-entities/errors.test-entities';

@@ -3,7 +3,7 @@ import { PostsRepository } from '../posts.repository';
 import { LikesForPostsService } from '../../likes/likes-for-posts.service';
 import { PostsQuery } from '../posts.query';
 import { NotFoundException } from '@nestjs/common';
-import { LikeStatus } from '../../application-helpers/statuses';
+import { LikeStatus } from '../../base/application-helpers/statuses';
 
 export class UpdatePostLikeStatusCommand {
   constructor(

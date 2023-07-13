@@ -3,7 +3,7 @@ import { DeviceData } from './types/devices.types';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Device } from './entities/device.entity';
-import { isVoid } from '../../application-helpers/void.check.helper';
+import { isVoid } from '../../base/application-helpers/void.check.helper';
 
 @Injectable()
 export class DevicesRepository {

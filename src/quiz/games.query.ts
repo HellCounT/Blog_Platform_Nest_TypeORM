@@ -8,15 +8,15 @@ import {
 } from '@nestjs/common';
 import { OutputPairGameDto } from './dto/output.pair-game.dto';
 import { Question } from '../superadmin/quiz/entities/question.entity';
-import { GameStatus } from '../application-helpers/statuses';
-import { isVoid } from '../application-helpers/void.check.helper';
+import { GameStatus } from '../base/application-helpers/statuses';
+import { isVoid } from '../base/application-helpers/void.check.helper';
 import { Answer } from './entities/answer.entity';
 import { OutputAnswerDto } from './dto/output.answer.dto';
 import { GameQuestionViewType } from './types/game-question-view.type';
 import { PlayerProgressViewType } from './types/player-progress-view.type';
-import { PaginatorType } from '../application-helpers/paginator.type';
-import { emptyPaginatorStub } from '../application-helpers/empty.paginator.stub';
-import { GamesQueryParserType } from '../application-helpers/query-parser-type';
+import { PaginatorType } from '../base/application-helpers/paginator.type';
+import { emptyPaginatorStub } from '../base/application-helpers/empty.paginator.stub';
+import { GamesQueryParserType } from '../base/application-helpers/query-parser-type';
 
 @Injectable()
 export class GamesQuery {

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Post } from './entities/post.entity';
-import { isVoid } from '../application-helpers/void.check.helper';
+import { isVoid } from '../base/application-helpers/void.check.helper';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()

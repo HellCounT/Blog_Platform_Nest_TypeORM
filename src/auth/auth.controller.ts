@@ -38,7 +38,7 @@ import { JwtAdapter } from './jwt.adapter';
 import { StartNewSessionCommand } from '../security/devices/use-cases/start.new.session.use-case';
 import { LogoutSessionCommand } from '../security/devices/use-cases/logout.session.use-case';
 import { UpdateSessionWithDeviceIdCommand } from '../security/devices/use-cases/update.session.with.device.id.use-case';
-import { isVoid } from '../application-helpers/void.check.helper';
+import { isVoid } from '../base/application-helpers/void.check.helper';
 
 const refreshTokenCookieOptions = {
   httpOnly: true,

@@ -2,7 +2,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Answer } from './entities/answer.entity';
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
-import { AnswerStatus } from '../application-helpers/statuses';
+import { AnswerStatus } from '../base/application-helpers/statuses';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()

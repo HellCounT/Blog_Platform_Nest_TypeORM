@@ -11,7 +11,7 @@ import {
 import {
   parseQueryPagination,
   QueryParserType,
-} from '../application-helpers/query-parser-type';
+} from '../base/application-helpers/query-parser-type';
 import { BlogsQuery } from './blogs.query';
 import { PostsQuery } from '../posts/posts.query';
 import { GuestGuard } from '../auth/guards/guest.guard';

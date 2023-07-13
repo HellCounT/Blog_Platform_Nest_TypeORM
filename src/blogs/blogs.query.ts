@@ -1,10 +1,10 @@
-import { QueryParserType } from '../application-helpers/query-parser-type';
+import { QueryParserType } from '../base/application-helpers/query-parser-type';
 import { BlogViewModelType } from './types/blogs.types';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { Blog } from './entities/blog.entity';
-import { PaginatorType } from '../application-helpers/paginator.type';
+import { PaginatorType } from '../base/application-helpers/paginator.type';
 
 @Injectable()
 export class BlogsQuery {

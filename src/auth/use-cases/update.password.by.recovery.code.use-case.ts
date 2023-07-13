@@ -2,7 +2,7 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { InputNewPasswordDto } from '../dto/input.newpassword.dto';
 import { UsersRepository } from '../../users/users.repository';
 import { BadRequestException } from '@nestjs/common';
-import { generateHash } from '../../application-helpers/generate.hash';
+import { generateHash } from '../../base/application-helpers/generate.hash';
 
 export class UpdatePasswordByRecoveryCodeCommand {
   constructor(public newPasswordDto: InputNewPasswordDto) {}

@@ -17,7 +17,7 @@ import { BloggerUsersQuery } from './blogger.users.query';
 import {
   parseUserQueryPagination,
   UserQueryParserType,
-} from '../../application-helpers/query-parser-type';
+} from '../../base/application-helpers/query-parser-type';
 
 @UseGuards(JwtAuthGuard)
 @Controller('blogger/users')

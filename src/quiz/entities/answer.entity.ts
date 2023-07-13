@@ -1,4 +1,4 @@
-import { AnswerStatus } from '../../application-helpers/statuses';
+import { AnswerStatus } from '../../base/application-helpers/statuses';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Player } from './player.entity';
 import { Question } from '../../superadmin/quiz/entities/question.entity';

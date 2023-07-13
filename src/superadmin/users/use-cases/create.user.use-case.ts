@@ -5,7 +5,7 @@ import {
   UserViewModelType,
 } from '../../../users/types/users.types';
 import { CommandHandler } from '@nestjs/cqrs';
-import { generateHash } from '../../../application-helpers/generate.hash';
+import { generateHash } from '../../../base/application-helpers/generate.hash';
 import { v4 as uuidv4 } from 'uuid';
 
 export class CreateUserCommand {

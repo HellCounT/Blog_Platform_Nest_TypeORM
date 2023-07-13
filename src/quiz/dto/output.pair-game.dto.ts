@@ -1,5 +1,5 @@
 import { GameQuestionViewType } from '../types/game-question-view.type';
-import { GameStatus } from '../../application-helpers/statuses';
+import { GameStatus } from '../../base/application-helpers/statuses';
 import { PlayerProgressViewType } from '../types/player-progress-view.type';
 
 export type OutputPairGameDto = {

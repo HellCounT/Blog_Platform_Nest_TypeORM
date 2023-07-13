@@ -7,7 +7,7 @@ import { User } from './entities/user.entity';
 import { UserGlobalBan } from './entities/user-global-ban.entity';
 import { UserConfirmation } from './entities/user-confirmation.entity';
 import { UserRecovery } from './entities/user-recovery.entity';
-import { isVoid } from '../application-helpers/void.check.helper';
+import { isVoid } from '../base/application-helpers/void.check.helper';
 
 @Injectable()
 export class UsersRepository {

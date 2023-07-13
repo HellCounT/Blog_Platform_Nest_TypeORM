@@ -9,7 +9,7 @@ import {
   correctUserUnbanByBlogger,
 } from '../../test-entities/blogger.user.test-entities';
 import { authHeader, getBearerAccessToken } from '../../helpers/auth';
-import { PaginatorType } from '../../../src/application-helpers/paginator.type';
+import { PaginatorType } from '../../../src/base/application-helpers/paginator.type';
 import { OutputBannedUserByBloggerDto } from '../../../src/blogger/users/dto/output.user-banned-by-blogger.dto';
 
 describe('Blogger Users Controller (e2e)', () => {

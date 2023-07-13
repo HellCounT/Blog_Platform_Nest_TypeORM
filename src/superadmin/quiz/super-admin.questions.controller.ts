@@ -15,10 +15,10 @@ import { BasicAuthGuard } from '../../auth/guards/basic-auth.guard';
 import {
   parseQuestionQueryPagination,
   QuestionQueryParserType,
-} from '../../application-helpers/query-parser-type';
+} from '../../base/application-helpers/query-parser-type';
 import { InputCreateQuestionDto } from './dto/input.create-question.dto';
 import { OutputQuestionDto } from './dto/output.question.dto';
-import { PaginatorType } from '../../application-helpers/paginator.type';
+import { PaginatorType } from '../../base/application-helpers/paginator.type';
 import { InputPublishedStatusDto } from './dto/input.published-status.dto';
 import { CreateQuestionCommand } from './use-cases/create.question.use-case';
 import { DeleteQuestionCommand } from './use-cases/delete.question.use-case';

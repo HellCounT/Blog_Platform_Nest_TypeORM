@@ -10,7 +10,7 @@ import { NotFoundException } from '@nestjs/common';
 import { ExpiredTokensRepository } from '../../../security/tokens/expired.tokens.repository';
 import { CommentLike } from '../../../likes/entities/comment-like.entity';
 import { PostLike } from '../../../likes/entities/post-like.entity';
-import { LikeStatus } from '../../../application-helpers/statuses';
+import { LikeStatus } from '../../../base/application-helpers/statuses';
 
 export class BanUserCommand {
   constructor(public banUserDto: InputBanUserDto, public userId: string) {}

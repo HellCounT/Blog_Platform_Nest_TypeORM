@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserBannedByBlogger } from './entities/user-banned-by-blogger.entity';
-import { isVoid } from '../../../application-helpers/void.check.helper';
+import { isVoid } from '../../../base/application-helpers/void.check.helper';
 
 @Injectable()
 export class UsersBannedByBloggerRepository {

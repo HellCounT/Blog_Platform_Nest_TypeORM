@@ -1,4 +1,4 @@
-import { LikeStatus } from '../../application-helpers/statuses';
+import { LikeStatus } from '../../base/application-helpers/statuses';
 
 export type CommentLikeJoinedType = {
   id: string;

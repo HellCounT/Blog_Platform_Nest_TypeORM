@@ -1,4 +1,4 @@
-import { AnswerStatus } from '../../application-helpers/statuses';
+import { AnswerStatus } from '../../base/application-helpers/statuses';
 
 export type OutputAnswerDto = {
   questionId: string;

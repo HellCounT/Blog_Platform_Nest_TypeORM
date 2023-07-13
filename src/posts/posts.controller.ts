@@ -15,7 +15,7 @@ import { PostsQuery } from './posts.query';
 import {
   parseQueryPagination,
   QueryParserType,
-} from '../application-helpers/query-parser-type';
+} from '../base/application-helpers/query-parser-type';
 import { CommentsQuery } from '../comments/comments.query';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { InputCommentDto } from '../comments/dto/input-comment.dto';

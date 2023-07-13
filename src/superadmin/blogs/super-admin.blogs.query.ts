@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { QueryParserType } from '../../application-helpers/query-parser-type';
+import { QueryParserType } from '../../base/application-helpers/query-parser-type';
 import { OutputSuperAdminBlogDto } from './dto/output.super-admin.blog.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { Blog } from '../../blogs/entities/blog.entity';
-import { PaginatorType } from '../../application-helpers/paginator.type';
+import { PaginatorType } from '../../base/application-helpers/paginator.type';
 
 @Injectable()
 export class SuperAdminBlogsQuery {

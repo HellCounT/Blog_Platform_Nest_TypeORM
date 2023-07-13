@@ -3,7 +3,7 @@ import { CommentsRepository } from '../comments.repository';
 import { CommentsQuery } from '../comments.query';
 import { LikesForCommentsService } from '../../likes/likes-for-comments.service';
 import { NotFoundException } from '@nestjs/common';
-import { LikeStatus } from '../../application-helpers/statuses';
+import { LikeStatus } from '../../base/application-helpers/statuses';
 
 export class UpdateCommentLikeStatusCommand {
   constructor(

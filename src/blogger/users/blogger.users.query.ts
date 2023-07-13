@@ -3,15 +3,15 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PaginatorType } from '../../application-helpers/paginator.type';
+import { PaginatorType } from '../../base/application-helpers/paginator.type';
 import { OutputBannedUserByBloggerDto } from './dto/output.user-banned-by-blogger.dto';
-import { UserQueryParserType } from '../../application-helpers/query-parser-type';
+import { UserQueryParserType } from '../../base/application-helpers/query-parser-type';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Blog } from '../../blogs/entities/blog.entity';
 import { UserBannedByBlogger } from './users-banned-by-blogger/entities/user-banned-by-blogger.entity';
-import { emptyPaginatorStub } from '../../application-helpers/empty.paginator.stub';
+import { emptyPaginatorStub } from '../../base/application-helpers/empty.paginator.stub';
 
 @Injectable()
 export class BloggerUsersQuery {

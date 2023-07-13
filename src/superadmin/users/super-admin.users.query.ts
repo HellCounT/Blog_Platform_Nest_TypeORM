@@ -1,7 +1,7 @@
 import {
   getBanStatusForQuery,
   UserQueryParserType,
-} from '../../application-helpers/query-parser-type';
+} from '../../base/application-helpers/query-parser-type';
 import { UserPaginatorType } from '../../users/types/users.types';
 import { OutputSuperAdminUserDto } from './dto/output.super-admin.user.dto';
 import { Injectable } from '@nestjs/common';

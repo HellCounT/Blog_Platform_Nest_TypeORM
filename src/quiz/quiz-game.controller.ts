@@ -18,11 +18,11 @@ import { CommandBus } from '@nestjs/cqrs';
 import { JoinOrCreateGameCommand } from './use-cases/join.or.create.game.use-case';
 import { GamesQuery } from './games.query';
 import { SendAnswerCommand } from './use-cases/send.answer.use-case';
-import { PaginatorType } from '../application-helpers/paginator.type';
+import { PaginatorType } from '../base/application-helpers/paginator.type';
 import {
   GamesQueryParserType,
   parseGameQueryPagination,
-} from '../application-helpers/query-parser-type';
+} from '../base/application-helpers/query-parser-type';
 
 @UseGuards(JwtAuthGuard)
 @Controller('pair-game-quiz/pairs')

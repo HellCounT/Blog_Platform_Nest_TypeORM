@@ -4,7 +4,7 @@ import request from 'supertest';
 import { superAdminUsersPath } from '../../helpers/paths';
 import { usersFactory } from '../../helpers/factory';
 import { superAdminLogin, superAdminPassword } from '../../helpers/auth';
-import { PaginatorType } from '../../../src/application-helpers/paginator.type';
+import { PaginatorType } from '../../../src/base/application-helpers/paginator.type';
 import { OutputSuperAdminUserDto } from '../../../src/superadmin/users/dto/output.super-admin.user.dto';
 import { InputCreateUserDto } from '../../../src/superadmin/users/dto/input.create-user.dto';
 

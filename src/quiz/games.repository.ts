@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Game } from './entities/game.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
-import { GameStatus } from '../application-helpers/statuses';
+import { GameStatus } from '../base/application-helpers/statuses';
 
 @Injectable()
 export class GamesRepository {

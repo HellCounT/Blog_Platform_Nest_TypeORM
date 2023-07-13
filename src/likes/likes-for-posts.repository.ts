@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PostLike } from './entities/post-like.entity';
 import { v4 as uuidv4 } from 'uuid';
-import { LikeStatus } from '../application-helpers/statuses';
+import { LikeStatus } from '../base/application-helpers/statuses';
 
 @Injectable()
 export class LikesForPostsRepository {

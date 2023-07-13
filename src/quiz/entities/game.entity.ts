@@ -7,7 +7,10 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 import { Player } from './player.entity';
-import { GameStatus, PlayerOrder } from '../../application-helpers/statuses';
+import {
+  GameStatus,
+  PlayerOrder,
+} from '../../base/application-helpers/statuses';
 import { Answer } from './answer.entity';
 import { AnswersCountersType } from '../types/answers-counters.type';
 

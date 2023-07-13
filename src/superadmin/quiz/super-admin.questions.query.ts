@@ -5,10 +5,10 @@ import { Question } from './entities/question.entity';
 import {
   getPublishedStatusForQuery,
   QuestionQueryParserType,
-} from '../../application-helpers/query-parser-type';
-import { PaginatorType } from '../../application-helpers/paginator.type';
+} from '../../base/application-helpers/query-parser-type';
+import { PaginatorType } from '../../base/application-helpers/paginator.type';
 import { OutputQuestionDto } from './dto/output.question.dto';
-import { emptyPaginatorStub } from '../../application-helpers/empty.paginator.stub';
+import { emptyPaginatorStub } from '../../base/application-helpers/empty.paginator.stub';
 
 @Injectable()
 export class SuperAdminQuestionsQuery {

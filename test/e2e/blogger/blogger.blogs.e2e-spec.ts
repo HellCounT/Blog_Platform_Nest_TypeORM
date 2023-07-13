@@ -9,7 +9,7 @@ import {
   usersFactory,
 } from '../../helpers/factory';
 import { authHeader, getBearerAccessToken } from '../../helpers/auth';
-import { PaginatorType } from '../../../src/application-helpers/paginator.type';
+import { PaginatorType } from '../../../src/base/application-helpers/paginator.type';
 import { OutputSuperAdminBlogDto } from '../../../src/superadmin/blogs/dto/output.super-admin.blog.dto';
 import {
   correctBlog,
@@ -20,7 +20,7 @@ import { errorsMessageForIncorrectBlog } from '../../test-entities/errors.test-e
 import { correctComment } from '../../test-entities/comment.test-entities';
 import { correctPost } from '../../test-entities/post.test-entities';
 import { CommentForBloggerViewType } from '../../../src/blogger/blogs/dto/output.comments.paginator.blogger.dto';
-import { LikeStatus } from '../../../src/application-helpers/statuses';
+import { LikeStatus } from '../../../src/base/application-helpers/statuses';
 
 describe('Blogger Blogs Controller (e2e)', () => {
   jest.setTimeout(10000);
