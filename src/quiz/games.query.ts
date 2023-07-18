@@ -30,6 +30,9 @@ export class GamesQuery {
     playerId: string,
     q: GamesQueryParserType,
   ): Promise<PaginatorType<OutputPairGameDto>> {
+    let orderObject = { [q.sortBy]: q.sortDirection };
+    if (q.sortBy == 'status')
+      orderObject = { status: q.sortDirection, pairCreatedDate: 'DESC' };
     const offsetSize = (q.pageNumber - 1) * q.pageSize;
     const [games, allGamesCount] = await this.gamesRepo.findAndCount({
       where: [
@@ -40,7 +43,7 @@ export class GamesQuery {
           secondPlayerUserId: playerId,
         },
       ],
-      order: { [q.sortBy]: q.sortDirection },
+      order: { ...orderObject },
       take: q.pageSize,
       skip: offsetSize,
       relations: {
