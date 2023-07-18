@@ -31,7 +31,7 @@ export class PlayersRepository {
       const result = await this.playersRepo
         .createQueryBuilder('p')
         .update(Player)
-        .set({ totalScore: () => `totalScore + ${score}` })
+        .set({ sumScore: () => `totalScore + ${score}` })
         .execute();
       return result.affected === 1;
     } catch (e) {
