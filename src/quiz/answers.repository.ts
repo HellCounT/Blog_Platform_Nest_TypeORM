@@ -18,6 +18,7 @@ export class AnswersRepository {
       return await this.answersRepo.findBy({
         gameId: gameId,
         playerUserId: playerId,
+        status: AnswerStatus.correct,
       });
     } catch (e) {
       console.log(e);
