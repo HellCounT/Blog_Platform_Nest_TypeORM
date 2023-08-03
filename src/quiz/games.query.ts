@@ -142,23 +142,24 @@ export class GamesQuery {
         { secondPlayerUserId: playerId },
       ],
     });
-    games.forEach((game) => {
-      if (game.firstPlayerUserId === playerId) {
-        sumScore += game.firstPlayerScore;
+    games.forEach((g) => {
+      if (g.firstPlayerUserId === playerId) {
+        sumScore += g.firstPlayerScore;
         gamesCount++;
-        if (game.firstPlayerScore > game.secondPlayerScore) {
+        if (g.firstPlayerScore > g.secondPlayerScore) {
           winsCount++;
-        } else if (game.firstPlayerScore < game.secondPlayerScore) {
+        } else if (g.firstPlayerScore < g.secondPlayerScore) {
           lossesCount++;
         } else {
           drawsCount++;
         }
-      } else {
-        sumScore += game.secondPlayerScore;
+      }
+      if (g.secondPlayerUserId === playerId) {
+        sumScore += g.secondPlayerScore;
         gamesCount++;
-        if (game.secondPlayerScore > game.firstPlayerScore) {
+        if (g.secondPlayerScore > g.firstPlayerScore) {
           winsCount++;
-        } else if (game.secondPlayerScore < game.firstPlayerScore) {
+        } else if (g.secondPlayerScore < g.firstPlayerScore) {
           lossesCount++;
         } else {
           drawsCount++;
