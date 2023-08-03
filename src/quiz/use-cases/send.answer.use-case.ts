@@ -46,10 +46,9 @@ export class SendAnswerUseCase {
     const currentQuestion = questions[currentQuestionNumber - 1];
     let answerStatus: AnswerStatus;
     let addedAnswer: Answer;
-    let playerGameScore: number;
     if (currentQuestion.correctAnswers.includes(givenAnswer)) {
       answerStatus = AnswerStatus.correct;
-      playerGameScore = await this.incrementPlayerGameScore(game, playerOrder);
+      await this.incrementPlayerGameScore(game, playerOrder);
       addedAnswer = await this.answersRepo.saveAnswer(
         givenAnswer,
         answerStatus,
@@ -60,7 +59,6 @@ export class SendAnswerUseCase {
       await this.addAnswerIdToPlayer(game, playerOrder, addedAnswer.id);
     } else {
       answerStatus = AnswerStatus.incorrect;
-      playerGameScore = game.getPlayerScore(playerOrder);
       addedAnswer = await this.answersRepo.saveAnswer(
         givenAnswer,
         answerStatus,
@@ -84,10 +82,6 @@ export class SendAnswerUseCase {
       //bonus point
       await this.incrementPlayerGameScore(game, game.playerFinishedFirst);
     }
-    await this.playersRepo.updatePlayerTotalScore(
-      command.playerId,
-      playerGameScore,
-    );
     return {
       questionId: currentQuestion.id,
       answerStatus: answerStatus,

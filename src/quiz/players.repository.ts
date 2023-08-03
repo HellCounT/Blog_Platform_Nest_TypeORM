@@ -22,21 +22,4 @@ export class PlayersRepository {
       return null;
     }
   }
-
-  async updatePlayerTotalScore(
-    userId: string,
-    score: number,
-  ): Promise<boolean> {
-    try {
-      const result = await this.playersRepo
-        .createQueryBuilder('p')
-        .update(Player)
-        .set({ sumScore: () => `totalScore + ${score}` })
-        .execute();
-      return result.affected === 1;
-    } catch (e) {
-      console.log(e);
-      return false;
-    }
-  }
 }

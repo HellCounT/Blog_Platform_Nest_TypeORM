@@ -17,16 +17,6 @@ export class Player {
   user: User;
   @PrimaryColumn('uuid')
   userId: string;
-  @Column('int')
-  sumScore: number;
-  @Column('int')
-  gamesCount: number;
-  @Column('int')
-  winsCount: number;
-  @Column('int')
-  lossesCount: number;
-  @Column('int')
-  drawsCount: number;
   @Column('timestamp')
   addedAt: Date;
   @OneToMany(() => Game, (g) => g.firstPlayer)
@@ -39,11 +29,6 @@ export class Player {
   static instantiate(userId: string) {
     const player = new Player();
     player.userId = userId;
-    player.sumScore = 0;
-    player.gamesCount = 0;
-    player.winsCount = 0;
-    player.lossesCount = 0;
-    player.drawsCount = 0;
     player.addedAt = new Date();
     return player;
   }
