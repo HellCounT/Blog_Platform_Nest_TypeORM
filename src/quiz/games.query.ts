@@ -17,6 +17,7 @@ import { PlayerProgressViewType } from './types/player-progress-view.type';
 import { PaginatorType } from '../base/application-helpers/paginator.type';
 import { emptyPaginatorStub } from '../base/application-helpers/empty.paginator.stub';
 import { GamesQueryParserType } from '../base/application-helpers/query-parser-type';
+import { OutputStatisticDto } from './dto/output.statistic.dto';
 
 @Injectable()
 export class GamesQuery {
@@ -126,6 +127,54 @@ export class GamesQuery {
       throw new ForbiddenException();
     const questions = await this.getQuestionsForGame(game);
     return this.mapGameToOutputModel(game, questions);
+  }
+
+  async getPlayerStatistic(playerId: string): Promise<OutputStatisticDto> {
+    let sumScore = 0;
+    let gamesCount = 0;
+    let winsCount = 0;
+    let lossesCount = 0;
+    let drawsCount = 0;
+    let averageScore;
+    const games = await this.gamesRepo.find({
+      where: [
+        { firstPlayerUserId: playerId },
+        { secondPlayerUserId: playerId },
+      ],
+    });
+    games.forEach((game) => {
+      if (game.firstPlayerUserId === playerId) {
+        sumScore += game.firstPlayerScore;
+        gamesCount++;
+        if (game.firstPlayerScore > game.secondPlayerScore) {
+          winsCount++;
+        } else if (game.firstPlayerScore < game.secondPlayerScore) {
+          lossesCount++;
+        } else {
+          drawsCount++;
+        }
+      } else {
+        sumScore += game.secondPlayerScore;
+        gamesCount++;
+        if (game.secondPlayerScore > game.firstPlayerScore) {
+          winsCount++;
+        } else if (game.secondPlayerScore < game.firstPlayerScore) {
+          lossesCount++;
+        } else {
+          drawsCount++;
+        }
+      }
+    });
+    if (gamesCount === 0) averageScore = 0;
+    else averageScore = parseFloat((sumScore / gamesCount).toFixed(2));
+    return {
+      sumScore: sumScore,
+      avgScores: averageScore,
+      gamesCount: gamesCount,
+      winsCount: winsCount,
+      lossesCount: lossesCount,
+      drawsCount: drawsCount,
+    };
   }
 
   private async mapGameToOutputModel(

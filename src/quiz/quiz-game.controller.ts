@@ -23,9 +23,10 @@ import {
   GamesQueryParserType,
   parseGameQueryPagination,
 } from '../base/application-helpers/query-parser-type';
+import { OutputStatisticDto } from './dto/output.statistic.dto';
 
 @UseGuards(JwtAuthGuard)
-@Controller('pair-game-quiz/pairs')
+@Controller('pair-game-quiz')
 export class QuizGameController {
   constructor(
     protected commandBus: CommandBus,
@@ -33,7 +34,7 @@ export class QuizGameController {
   ) {
     return null;
   }
-  @Get('my')
+  @Get('/pairs/my')
   @HttpCode(200)
   async getAllGames(
     @Req() req,
@@ -43,12 +44,13 @@ export class QuizGameController {
     return await this.gamesQueryRepo.getAllGames(req.user.userId, queryParams);
   }
 
-  @Get('my-current')
+  @Get('/pairs/my-current')
   @HttpCode(200)
   async getCurrentGame(@Req() req): Promise<OutputPairGameDto> {
     return await this.gamesQueryRepo.getCurrentGame(req.user.userId);
   }
-  @Post('my-current/answers')
+
+  @Post('/pairs/my-current/answers')
   @HttpCode(200)
   async sendAnswer(
     @Body() answerDto: InputAnswerDto,
@@ -58,7 +60,8 @@ export class QuizGameController {
       new SendAnswerCommand(answerDto, req.user.userId),
     );
   }
-  @Get(':id')
+
+  @Get('/pairs/:id')
   @HttpCode(200)
   async getGameById(
     @Param('id', ParseUUIDPipe) gameId: string,
@@ -66,11 +69,18 @@ export class QuizGameController {
   ): Promise<OutputPairGameDto> {
     return await this.gamesQueryRepo.getGameById(gameId, req.user.userId);
   }
-  @Post('connection')
+
+  @Post('/pairs/connection')
   @HttpCode(200)
   async joinOrCreate(@Req() req): Promise<OutputPairGameDto> {
     return await this.commandBus.execute(
       new JoinOrCreateGameCommand(req.user.userId),
     );
+  }
+
+  @Get('/users/my-statistic')
+  @HttpCode(200)
+  async getPlayerStatistic(@Req() req): Promise<OutputStatisticDto> {
+    return await this.gamesQueryRepo.getPlayerStatistic(req.user.userId);
   }
 }
