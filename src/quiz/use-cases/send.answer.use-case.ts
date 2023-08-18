@@ -19,6 +19,8 @@ export class SendAnswerCommand {
   constructor(public answerDto: InputAnswerDto, public playerId: string) {}
 }
 
+// todo: wrap into transaction based on BaseTransactionUseCase
+
 @CommandHandler(SendAnswerCommand)
 export class SendAnswerUseCase {
   constructor(
@@ -26,6 +28,9 @@ export class SendAnswerUseCase {
     protected questionsRepo: QuestionsRepository,
     protected answersRepo: AnswersRepository,
   ) {}
+
+  // todo: lower down amount of save operations for each entity
+
   async execute(command: SendAnswerCommand): Promise<OutputAnswerDto> {
     const game: Game = await this.gamesRepo.getCurrentActiveGame(
       command.playerId,

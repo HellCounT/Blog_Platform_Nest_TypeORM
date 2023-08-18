@@ -31,6 +31,8 @@ export type TopPlayersQueryParserType = {
   pageSize: number;
 };
 
+// todo: refactor all repetitive parsing actions
+
 export const parseQueryPagination = (query): QueryParserType => {
   const queryParamsParser: QueryParserType = {
     searchNameTerm: '',
