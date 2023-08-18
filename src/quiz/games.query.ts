@@ -261,7 +261,7 @@ export class GamesQuery {
     return items;
   }
 
-  async getTopPlayers(): Promise<PaginatorType<OutputTopPlayersDto>> {
+  async getTopPlayers(query): Promise<PaginatorType<OutputTopPlayersDto>> {
     return undefined;
   }
 }

@@ -87,7 +87,9 @@ export class QuizGameController {
 
   @Get('/users/top')
   @HttpCode(200)
-  async getTopPlayers(): Promise<PaginatorType<OutputTopPlayersDto>> {
-    return await this.gamesQueryRepo.getTopPlayers();
+  async getTopPlayers(
+    @Query() query,
+  ): Promise<PaginatorType<OutputTopPlayersDto>> {
+    return await this.gamesQueryRepo.getTopPlayers(query);
   }
 }
