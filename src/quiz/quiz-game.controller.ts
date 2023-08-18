@@ -22,6 +22,7 @@ import { PaginatorType } from '../base/application-helpers/paginator.type';
 import {
   GamesQueryParserType,
   parseGameQueryPagination,
+  parseTopPlayersQueryPagination,
 } from '../base/application-helpers/query-parser-type';
 import { OutputStatisticDto } from './dto/output.statistic.dto';
 import { OutputTopPlayersDto } from './dto/output.top-players.dto';
@@ -90,6 +91,7 @@ export class QuizGameController {
   async getTopPlayers(
     @Query() query,
   ): Promise<PaginatorType<OutputTopPlayersDto>> {
-    return await this.gamesQueryRepo.getTopPlayers(query);
+    const queryParams = parseTopPlayersQueryPagination(query);
+    return await this.gamesQueryRepo.getTopPlayers(queryParams);
   }
 }
