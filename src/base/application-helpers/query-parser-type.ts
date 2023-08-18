@@ -1,4 +1,6 @@
 import { BanStatus, PublishedStatus } from './statuses';
+import { isArray, IsOptional } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 type PagingType = {
   sortBy: string;
@@ -25,11 +27,19 @@ export type QuestionQueryParserType = PagingType & {
   publishedStatus: PublishedStatus;
 };
 export type GamesQueryParserType = PagingType;
-export type TopPlayersQueryParserType = {
-  sort: string | string[];
+export class TopPlayersQueryParserType {
+  @Transform(({ value }) => {
+    if (typeof value === 'string') return [value];
+    if (isArray(value)) return value;
+    return ['avgScores desc', 'sumScore desc'];
+  })
+  @IsOptional()
+  sort = ['avgScores desc', 'sumScore desc'];
+  @IsOptional()
   pageNumber: number;
+  @IsOptional()
   pageSize: number;
-};
+}
 
 // todo: refactor all repetitive parsing actions
 
@@ -113,6 +123,9 @@ export const parseTopPlayersQueryPagination = (
     pageNumber: 1,
     pageSize: 10,
   };
+  const sortingProperties = pickSortingPropertiesForTopPlayers(
+    queryTopPlayersParamsParser.sort,
+  );
   return queryTopPlayersParamsParser;
 };
 
@@ -170,4 +183,11 @@ export const pickOrderForPostsQuery = (
     orderString += ' DESC';
   }
   return orderString;
+};
+
+const pickSortingPropertiesForTopPlayers = (sortingArray: string[]) => {
+  return sortingArray.map((s) => {
+    const [sortBy, order] = s.split(' ');
+    return { sortBy, order };
+  });
 };
