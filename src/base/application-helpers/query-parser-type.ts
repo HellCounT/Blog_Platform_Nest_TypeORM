@@ -41,15 +41,7 @@ export class TopPlayersQueryParserType {
   pageSize: number;
 }
 
-// todo: refactor all repetitive parsing actions
-
-export const parseQueryPagination = (query): QueryParserType => {
-  const queryParamsParser: QueryParserType = {
-    searchNameTerm: '',
-    ...paginatorDefaults,
-  };
-  if (query.searchNameTerm)
-    queryParamsParser.searchNameTerm = query.searchNameTerm.toString();
+const assignCommonPaginationFieldsValues = (query, queryParamsParser) => {
   if (query.sortBy) queryParamsParser.sortBy = query.sortBy.toString();
   if (query.sortDirection && query.sortDirection.toString() === 'asc')
     queryParamsParser.sortDirection = 'ASC';
@@ -58,8 +50,22 @@ export const parseQueryPagination = (query): QueryParserType => {
   return queryParamsParser;
 };
 
+export const parseQueryPagination = (query): QueryParserType => {
+  let queryParamsParser: QueryParserType = {
+    searchNameTerm: '',
+    ...paginatorDefaults,
+  };
+  if (query.searchNameTerm)
+    queryParamsParser.searchNameTerm = query.searchNameTerm.toString();
+  queryParamsParser = assignCommonPaginationFieldsValues(
+    query,
+    queryParamsParser,
+  );
+  return queryParamsParser;
+};
+
 export const parseUserQueryPagination = (query): UserQueryParserType => {
-  const queryUserParamsParser: UserQueryParserType = {
+  let queryUserParamsParser: UserQueryParserType = {
     banStatus: BanStatus.all,
     ...paginatorDefaults,
     searchEmailTerm: null,
@@ -71,11 +77,10 @@ export const parseUserQueryPagination = (query): UserQueryParserType => {
   if (query.searchEmailTerm)
     queryUserParamsParser.searchEmailTerm = query.searchEmailTerm.toString();
   else queryUserParamsParser.searchLoginTerm = '';
-  if (query.sortBy) queryUserParamsParser.sortBy = query.sortBy.toString();
-  if (query.sortDirection && query.sortDirection.toString() === 'asc')
-    queryUserParamsParser.sortDirection = 'ASC';
-  if (query.pageNumber) queryUserParamsParser.pageNumber = +query.pageNumber;
-  if (query.pageSize) queryUserParamsParser.pageSize = +query.pageSize;
+  queryUserParamsParser = assignCommonPaginationFieldsValues(
+    query,
+    queryUserParamsParser,
+  );
   if (query.banStatus) queryUserParamsParser.banStatus = query.banStatus;
   return queryUserParamsParser;
 };
@@ -83,7 +88,7 @@ export const parseUserQueryPagination = (query): UserQueryParserType => {
 export const parseQuestionQueryPagination = (
   query,
 ): QuestionQueryParserType => {
-  const queryQuestionParamsParser: QuestionQueryParserType = {
+  let queryQuestionParamsParser: QuestionQueryParserType = {
     bodySearchTerm: null,
     publishedStatus: PublishedStatus.all,
     ...paginatorDefaults,
@@ -93,28 +98,25 @@ export const parseQuestionQueryPagination = (
   if (query.publishedStatus)
     queryQuestionParamsParser.publishedStatus = query.publishedStatus;
   else queryQuestionParamsParser.bodySearchTerm = '';
-  if (query.sortBy) queryQuestionParamsParser.sortBy = query.sortBy.toString();
-  if (query.sortDirection && query.sortDirection.toString() === 'asc')
-    queryQuestionParamsParser.sortDirection = 'ASC';
-  if (query.pageNumber)
-    queryQuestionParamsParser.pageNumber = +query.pageNumber;
-  if (query.pageSize) queryQuestionParamsParser.pageSize = +query.pageSize;
+  queryQuestionParamsParser = assignCommonPaginationFieldsValues(
+    query,
+    queryQuestionParamsParser,
+  );
   return queryQuestionParamsParser;
 };
 
 export const parseGameQueryPagination = (query): GamesQueryParserType => {
-  const queryGamesParamsParser: GamesQueryParserType = {
+  let queryGamesParamsParser: GamesQueryParserType = {
     ...paginatorDefaults,
     sortBy: 'pairCreatedDate',
   };
-  if (query.sortBy) queryGamesParamsParser.sortBy = query.sortBy.toString();
-  if (query.sortDirection && query.sortDirection.toString() === 'asc')
-    queryGamesParamsParser.sortDirection = 'ASC';
-  if (query.pageNumber) queryGamesParamsParser.pageNumber = +query.pageNumber;
-  if (query.pageSize) queryGamesParamsParser.pageSize = +query.pageSize;
+  queryGamesParamsParser = assignCommonPaginationFieldsValues(
+    query,
+    queryGamesParamsParser,
+  );
   return queryGamesParamsParser;
 };
-
+//todo: complete parseTopPlayersQueryPagination
 export const parseTopPlayersQueryPagination = (
   query,
 ): TopPlayersQueryParserType => {
