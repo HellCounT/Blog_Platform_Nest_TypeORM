@@ -1,32 +1,32 @@
 import { BanStatus, PublishedStatus } from './statuses';
 
-export type QueryParserType = {
-  searchNameTerm: string;
+type PagingType = {
   sortBy: string;
   sortDirection: 'ASC' | 'DESC';
   pageNumber: number;
   pageSize: number;
 };
-export type UserQueryParserType = {
+const paginatorDefaults: PagingType = {
+  sortBy: 'createdAt',
+  sortDirection: 'DESC',
+  pageNumber: 1,
+  pageSize: 10,
+};
+export type QueryParserType = PagingType & {
+  searchNameTerm: string;
+};
+export type UserQueryParserType = PagingType & {
   banStatus: BanStatus;
-  sortBy: string;
-  sortDirection: 'ASC' | 'DESC';
-  pageNumber: number;
-  pageSize: number;
   searchLoginTerm: string | null;
   searchEmailTerm: string | null;
 };
-export type QuestionQueryParserType = {
+export type QuestionQueryParserType = PagingType & {
   bodySearchTerm: string;
   publishedStatus: PublishedStatus;
-  sortBy: string;
-  sortDirection: 'ASC' | 'DESC';
-  pageNumber: number;
-  pageSize: number;
 };
-export type GamesQueryParserType = {
-  sortBy: string;
-  sortDirection: 'ASC' | 'DESC';
+export type GamesQueryParserType = PagingType;
+export type TopPlayersQueryParserType = {
+  sort: string | string[];
   pageNumber: number;
   pageSize: number;
 };
@@ -34,10 +34,7 @@ export type GamesQueryParserType = {
 export const parseQueryPagination = (query): QueryParserType => {
   const queryParamsParser: QueryParserType = {
     searchNameTerm: '',
-    sortBy: 'createdAt',
-    sortDirection: 'DESC',
-    pageNumber: 1,
-    pageSize: 10,
+    ...paginatorDefaults,
   };
   if (query.searchNameTerm)
     queryParamsParser.searchNameTerm = query.searchNameTerm.toString();
@@ -52,10 +49,7 @@ export const parseQueryPagination = (query): QueryParserType => {
 export const parseUserQueryPagination = (query): UserQueryParserType => {
   const queryUserParamsParser: UserQueryParserType = {
     banStatus: BanStatus.all,
-    sortBy: 'createdAt',
-    sortDirection: 'DESC',
-    pageNumber: 1,
-    pageSize: 10,
+    ...paginatorDefaults,
     searchEmailTerm: null,
     searchLoginTerm: null,
   };
@@ -80,10 +74,7 @@ export const parseQuestionQueryPagination = (
   const queryQuestionParamsParser: QuestionQueryParserType = {
     bodySearchTerm: null,
     publishedStatus: PublishedStatus.all,
-    sortBy: 'createdAt',
-    sortDirection: 'DESC',
-    pageNumber: 1,
-    pageSize: 10,
+    ...paginatorDefaults,
   };
   if (query.bodySearchTerm)
     queryQuestionParamsParser.bodySearchTerm = query.bodySearchTerm.toString();
@@ -101,10 +92,8 @@ export const parseQuestionQueryPagination = (
 
 export const parseGameQueryPagination = (query): GamesQueryParserType => {
   const queryGamesParamsParser: GamesQueryParserType = {
+    ...paginatorDefaults,
     sortBy: 'pairCreatedDate',
-    sortDirection: 'DESC',
-    pageNumber: 1,
-    pageSize: 10,
   };
   if (query.sortBy) queryGamesParamsParser.sortBy = query.sortBy.toString();
   if (query.sortDirection && query.sortDirection.toString() === 'asc')
@@ -112,6 +101,17 @@ export const parseGameQueryPagination = (query): GamesQueryParserType => {
   if (query.pageNumber) queryGamesParamsParser.pageNumber = +query.pageNumber;
   if (query.pageSize) queryGamesParamsParser.pageSize = +query.pageSize;
   return queryGamesParamsParser;
+};
+
+export const parseTopPlayersQueryPagination = (
+  query,
+): TopPlayersQueryParserType => {
+  const queryTopPlayersParamsParser: TopPlayersQueryParserType = {
+    sort: ['avgScores desc', 'sumScore desc'],
+    pageNumber: 1,
+    pageSize: 10,
+  };
+  return queryTopPlayersParamsParser;
 };
 
 export const getBanStatusForQuery = (banStatus: BanStatus): string => {
