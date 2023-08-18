@@ -24,6 +24,7 @@ import {
   parseGameQueryPagination,
 } from '../base/application-helpers/query-parser-type';
 import { OutputStatisticDto } from './dto/output.statistic.dto';
+import { OutputTopPlayersDto } from './dto/output.top-players.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('pair-game-quiz')
@@ -82,5 +83,11 @@ export class QuizGameController {
   @HttpCode(200)
   async getPlayerStatistic(@Req() req): Promise<OutputStatisticDto> {
     return await this.gamesQueryRepo.getPlayerStatistic(req.user.userId);
+  }
+
+  @Get('/users/top')
+  @HttpCode(200)
+  async getTopPlayers(): Promise<PaginatorType<OutputTopPlayersDto>> {
+    return await this.gamesQueryRepo.getTopPlayers();
   }
 }

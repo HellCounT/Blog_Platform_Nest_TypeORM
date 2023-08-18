@@ -18,6 +18,7 @@ import { PaginatorType } from '../base/application-helpers/paginator.type';
 import { emptyPaginatorStub } from '../base/application-helpers/empty.paginator.stub';
 import { GamesQueryParserType } from '../base/application-helpers/query-parser-type';
 import { OutputStatisticDto } from './dto/output.statistic.dto';
+import { OutputTopPlayersDto } from './dto/output.top-players.dto';
 
 @Injectable()
 export class GamesQuery {
@@ -258,5 +259,9 @@ export class GamesQuery {
       items.push(question);
     }
     return items;
+  }
+
+  async getTopPlayers(): Promise<PaginatorType<OutputTopPlayersDto>> {
+    return undefined;
   }
 }

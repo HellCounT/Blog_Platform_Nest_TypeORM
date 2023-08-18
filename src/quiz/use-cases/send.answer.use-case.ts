@@ -2,7 +2,6 @@ import { CommandHandler } from '@nestjs/cqrs';
 import { InputAnswerDto } from '../dto/input.answer.dto';
 import { GamesRepository } from '../games.repository';
 import { QuestionsRepository } from '../../superadmin/quiz/questions.repository';
-import { PlayersRepository } from '../players.repository';
 import { OutputAnswerDto } from '../dto/output.answer.dto';
 import { AnswersRepository } from '../answers.repository';
 import { Game } from '../entities/game.entity';
@@ -25,7 +24,6 @@ export class SendAnswerUseCase {
   constructor(
     protected gamesRepo: GamesRepository,
     protected questionsRepo: QuestionsRepository,
-    protected playersRepo: PlayersRepository,
     protected answersRepo: AnswersRepository,
   ) {}
   async execute(command: SendAnswerCommand): Promise<OutputAnswerDto> {
