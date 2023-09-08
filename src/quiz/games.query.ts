@@ -16,7 +16,10 @@ import { GameQuestionViewType } from './types/game-question-view.type';
 import { PlayerProgressViewType } from './types/player-progress-view.type';
 import { PaginatorType } from '../base/application-helpers/paginator.type';
 import { emptyPaginatorStub } from '../base/application-helpers/empty.paginator.stub';
-import { GamesQueryParserType } from '../base/application-helpers/query-parser-type';
+import {
+  GamesQueryParserType,
+  TopPlayersQueryParserType,
+} from '../base/application-helpers/query-parser-type';
 import { OutputStatisticDto } from './dto/output.statistic.dto';
 import { OutputTopPlayersDto } from './dto/output.top-players.dto';
 import { Player } from './entities/player.entity';
@@ -263,31 +266,43 @@ export class GamesQuery {
     return items;
   }
   //todo: Finish request
-  async getTopPlayers(query): Promise<PaginatorType<OutputTopPlayersDto>> {
+  async getTopPlayers(
+    q: TopPlayersQueryParserType,
+  ): Promise<PaginatorType<OutputTopPlayersDto>> {
     const [result, count] = await this.playersRepo
       .createQueryBuilder('player')
       .leftJoinAndSelect('player.gamesAsFirstPlayer', 'game1')
       .leftJoinAndSelect('player.gamesAsSecondPlayer', 'game2')
+      .leftJoinAndSelect('player.user', 'user')
       .loadRelationCountAndMap(
         'player.winsCount',
         'player.gamesAsFirstPlayer',
         'game1',
-        'game1.status = :status AND game1.firstPlayerScore > game1.secondPlayerScore',
-        { status: GameStatus.finished },
+        (qb) =>
+          qb.where(
+            'game1.status = :status AND game1.firstPlayerScore > game1.secondPlayerScore',
+            { status: GameStatus.finished },
+          ),
       )
       .loadRelationCountAndMap(
         'player.lossesCount',
         'player.gamesAsFirstPlayer',
         'game1',
-        'game1.status = :status AND game1.firstPlayerScore < game1.secondPlayerScore',
-        { status: GameStatus.finished },
+        (qb) =>
+          qb.where(
+            'game1.status = :status AND game1.firstPlayerScore < game1.secondPlayerScore',
+            { status: GameStatus.finished },
+          ),
       )
       .loadRelationCountAndMap(
         'player.drawsCount',
         'player.gamesAsFirstPlayer',
         'game1',
-        'game1.status = :status AND game1.firstPlayerScore = game1.secondPlayerScore',
-        { status: GameStatus.finished },
+        (qb) =>
+          qb.where(
+            'game1.status = :status AND game1.firstPlayerScore = game1.secondPlayerScore',
+            { status: GameStatus.finished },
+          ),
       )
       .loadRelationCountAndMap(
         'player.gamesCount',
@@ -305,11 +320,14 @@ export class GamesQuery {
       .addSelect(
         '(COALESCE(SUM(game1.firstPlayerScore), 0) + COALESCE(SUM(game2.secondPlayerScore), 0)) / (COALESCE(COUNT(game1.id), 0) + COALESCE(COUNT(game2.id), 0)) as avgScore',
       )
+      .addSelect('user.login', 'login')
       .orderBy('avgScore', 'DESC')
       .addOrderBy('sumScore', 'DESC')
-      .skip((page - 1) * take)
-      .take(take)
+      .skip((q.pageNumber - 1) * q.pageSize)
+      .take(q.pageSize)
       .getManyAndCount();
+    console.log(result);
+    console.log(count);
     return undefined;
   }
 }
