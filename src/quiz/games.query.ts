@@ -19,6 +19,7 @@ import { emptyPaginatorStub } from '../base/application-helpers/empty.paginator.
 import { GamesQueryParserType } from '../base/application-helpers/query-parser-type';
 import { OutputStatisticDto } from './dto/output.statistic.dto';
 import { OutputTopPlayersDto } from './dto/output.top-players.dto';
+import { Player } from './entities/player.entity';
 
 @Injectable()
 export class GamesQuery {
@@ -26,6 +27,7 @@ export class GamesQuery {
     @InjectRepository(Game) protected gamesRepo: Repository<Game>,
     @InjectRepository(Question) protected questionsRepo: Repository<Question>,
     @InjectRepository(Answer) protected answersRepo: Repository<Answer>,
+    @InjectRepository(Player) protected playersRepo: Repository<Player>,
   ) {}
 
   async getAllGames(
@@ -260,8 +262,54 @@ export class GamesQuery {
     }
     return items;
   }
-
+  //todo: Finish request
   async getTopPlayers(query): Promise<PaginatorType<OutputTopPlayersDto>> {
+    const [result, count] = await this.playersRepo
+      .createQueryBuilder('player')
+      .leftJoinAndSelect('player.gamesAsFirstPlayer', 'game1')
+      .leftJoinAndSelect('player.gamesAsSecondPlayer', 'game2')
+      .loadRelationCountAndMap(
+        'player.winsCount',
+        'player.gamesAsFirstPlayer',
+        'game1',
+        'game1.status = :status AND game1.firstPlayerScore > game1.secondPlayerScore',
+        { status: GameStatus.finished },
+      )
+      .loadRelationCountAndMap(
+        'player.lossesCount',
+        'player.gamesAsFirstPlayer',
+        'game1',
+        'game1.status = :status AND game1.firstPlayerScore < game1.secondPlayerScore',
+        { status: GameStatus.finished },
+      )
+      .loadRelationCountAndMap(
+        'player.drawsCount',
+        'player.gamesAsFirstPlayer',
+        'game1',
+        'game1.status = :status AND game1.firstPlayerScore = game1.secondPlayerScore',
+        { status: GameStatus.finished },
+      )
+      .loadRelationCountAndMap(
+        'player.gamesCount',
+        'player.gamesAsFirstPlayer',
+        'game1',
+      )
+      .loadRelationCountAndMap(
+        'player.gamesCount',
+        'player.gamesAsSecondPlayer',
+        'game2',
+      )
+      .addSelect(
+        '(COALESCE(SUM(game1.firstPlayerScore), 0) + COALESCE(SUM(game2.secondPlayerScore), 0)) as sumScore',
+      )
+      .addSelect(
+        '(COALESCE(SUM(game1.firstPlayerScore), 0) + COALESCE(SUM(game2.secondPlayerScore), 0)) / (COALESCE(COUNT(game1.id), 0) + COALESCE(COUNT(game2.id), 0)) as avgScore',
+      )
+      .orderBy('avgScore', 'DESC')
+      .addOrderBy('sumScore', 'DESC')
+      .skip((page - 1) * take)
+      .take(take)
+      .getManyAndCount();
     return undefined;
   }
 }
