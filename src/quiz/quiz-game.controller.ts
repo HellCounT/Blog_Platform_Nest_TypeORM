@@ -27,7 +27,6 @@ import {
 import { OutputStatisticDto } from './dto/output.statistic.dto';
 import { OutputTopPlayersDto } from './dto/output.top-players.dto';
 
-@UseGuards(JwtAuthGuard)
 @Controller('pair-game-quiz')
 export class QuizGameController {
   constructor(
@@ -36,6 +35,8 @@ export class QuizGameController {
   ) {
     return null;
   }
+
+  @UseGuards(JwtAuthGuard)
   @Get('/pairs/my')
   @HttpCode(200)
   async getAllGames(
@@ -46,12 +47,14 @@ export class QuizGameController {
     return await this.gamesQueryRepo.getAllGames(req.user.userId, queryParams);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/pairs/my-current')
   @HttpCode(200)
   async getCurrentGame(@Req() req): Promise<OutputPairGameDto> {
     return await this.gamesQueryRepo.getCurrentGame(req.user.userId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('/pairs/my-current/answers')
   @HttpCode(200)
   async sendAnswer(
@@ -63,6 +66,7 @@ export class QuizGameController {
     );
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/pairs/:id')
   @HttpCode(200)
   async getGameById(
@@ -72,6 +76,7 @@ export class QuizGameController {
     return await this.gamesQueryRepo.getGameById(gameId, req.user.userId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('/pairs/connection')
   @HttpCode(200)
   async joinOrCreate(@Req() req): Promise<OutputPairGameDto> {
@@ -80,6 +85,7 @@ export class QuizGameController {
     );
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/users/my-statistic')
   @HttpCode(200)
   async getPlayerStatistic(@Req() req): Promise<OutputStatisticDto> {
