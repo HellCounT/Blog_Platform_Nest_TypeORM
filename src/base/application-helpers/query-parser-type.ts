@@ -193,6 +193,7 @@ export const pickOrderForPostsQuery = (
 
 export const pickSortingStringForRanks = (sortingArray: string[]) => {
   let orderString = 'ORDER BY';
+  // console.log(sortingArray);
   for (const s of sortingArray) {
     const sortElements = s.split(' ');
     switch (sortElements[0]) {
@@ -218,11 +219,15 @@ export const pickSortingStringForRanks = (sortingArray: string[]) => {
         orderString = 'ORDER BY pr."avgScores" DESC, pr."sumScore" DESC,';
         break;
     }
-    if (sortElements[1] === 'asc' || sortElements[1] === 'ASC') {
-      orderString += ' ASC,';
-    } else {
-      orderString += ' DESC,';
+    switch (sortElements[1]) {
+      case 'asc' || 'ASC':
+        orderString += ' ASC,';
+        break;
+      case 'desc' || 'DESC':
+        orderString += ' DESC,';
+        break;
     }
   }
+  // console.log(orderString.slice(0, -1));
   return orderString.slice(0, -1);
 };
