@@ -132,6 +132,7 @@ export const parseTopPlayersQueryPagination = (
   //   queryTopPlayersParamsParser.sort,
   // );
   if (query.sort) queryTopPlayersParamsParser.sort = query.sort;
+  console.log(queryTopPlayersParamsParser);
   return queryTopPlayersParamsParser;
 };
 
@@ -218,11 +219,11 @@ export const pickSortingStringForRanks = (sortingArray: string[]) => {
         orderString = 'ORDER BY pr."avgScores" DESC, pr."sumScore" DESC';
         break;
     }
-    if (sortElements[1] === 'ASC') {
-      orderString += ' ASC';
+    if (sortElements[1].toUpperCase() === 'ASC') {
+      orderString += ' ASC,';
     } else {
-      orderString += ' DESC';
+      orderString += ' DESC,';
     }
   }
-  return orderString;
+  return orderString.slice(0, -1);
 };

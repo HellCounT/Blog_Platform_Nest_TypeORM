@@ -311,9 +311,10 @@ export class GamesQuery {
          SELECT COUNT(*)
          FROM "player"
     `;
+    console.log(queryString);
     const reqPlayerRanks: PlayerRank[] = await this.dataSource.query(
       queryString,
-      [offsetSize, offsetSize + q.pageSize],
+      [q.pageSize, offsetSize],
     );
     const allPlayersCount: number = parseInt(
       (await this.dataSource.query(countString))[0].count,
