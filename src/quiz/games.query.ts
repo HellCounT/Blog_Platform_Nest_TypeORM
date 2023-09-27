@@ -269,63 +269,6 @@ export class GamesQuery {
   async getTopPlayers(
     q: TopPlayersQueryParserType,
   ): Promise<PaginatorType<OutputTopPlayersDto>> {
-    const [result, count] = await this.playersRepo
-      .createQueryBuilder('player')
-      .leftJoinAndSelect('player.gamesAsFirstPlayer', 'game1')
-      .leftJoinAndSelect('player.gamesAsSecondPlayer', 'game2')
-      .leftJoinAndSelect('player.user', 'user')
-      .loadRelationCountAndMap(
-        'player.winsCount',
-        'player.gamesAsFirstPlayer',
-        'game1',
-        (qb) =>
-          qb.where(
-            'game1.status = :status AND game1.firstPlayerScore > game1.secondPlayerScore',
-            { status: GameStatus.finished },
-          ),
-      )
-      .loadRelationCountAndMap(
-        'player.lossesCount',
-        'player.gamesAsFirstPlayer',
-        'game1',
-        (qb) =>
-          qb.where(
-            'game1.status = :status AND game1.firstPlayerScore < game1.secondPlayerScore',
-            { status: GameStatus.finished },
-          ),
-      )
-      .loadRelationCountAndMap(
-        'player.drawsCount',
-        'player.gamesAsFirstPlayer',
-        'game1',
-        (qb) =>
-          qb.where(
-            'game1.status = :status AND game1.firstPlayerScore = game1.secondPlayerScore',
-            { status: GameStatus.finished },
-          ),
-      )
-      .loadRelationCountAndMap(
-        'player.gamesCount',
-        'player.gamesAsFirstPlayer',
-        'game1',
-      )
-      .loadRelationCountAndMap(
-        'player.gamesCount',
-        'player.gamesAsSecondPlayer',
-        'game2',
-      )
-      .addSelect(
-        '(COALESCE(SUM(game1.firstPlayerScore), 0) + COALESCE(SUM(game2.secondPlayerScore), 0)) as sumScore',
-      )
-      .addSelect(
-        '(COALESCE(SUM(game1.firstPlayerScore), 0) + COALESCE(SUM(game2.secondPlayerScore), 0)) / (COALESCE(COUNT(game1.id), 0) + COALESCE(COUNT(game2.id), 0)) as avgScore',
-      )
-      .addSelect('user.login', 'login')
-      .orderBy('avgScore', 'DESC')
-      .addOrderBy('sumScore', 'DESC')
-      .skip((q.pageNumber - 1) * q.pageSize)
-      .take(q.pageSize)
-      .getManyAndCount();
     console.log(result);
     console.log(count);
     return undefined;
@@ -336,58 +279,116 @@ export class GamesQuery {
 
 // `
 // SELECT
-//   p.user_id AS id,
+//   p."userId" AS id,
 //   u.login,
-//   SUM(fg.first_player_score) + SUM(sg.second_player_score) AS sum_score,
-//   AVG(fg.first_player_score + sg.second_player_score) AS avg_score,
-//   COUNT(fg.id) + COUNT(sg.id) AS games_count,
-//   SUM(CASE WHEN fg.player_finished_first = 'FIRST_PLAYER' THEN 1 ELSE 0 END) +
-//   SUM(CASE WHEN sg.player_finished_first = 'SECOND_PLAYER' THEN 1 ELSE 0 END) AS wins_count,
-//   SUM(CASE WHEN fg.player_finished_first = 'SECOND_PLAYER' THEN 1 ELSE 0 END) +
-//   SUM(CASE WHEN sg.player_finished_first = 'FIRST_PLAYER' THEN 1 ELSE 0 END) AS losses_count,
-//   SUM(CASE WHEN fg.player_finished_first IS NULL THEN 1 ELSE 0 END) +
-//   SUM(CASE WHEN sg.player_finished_first IS NULL THEN 1 ELSE 0 END) AS draws_count
+//   SUM(fg."firstPlayerScore") + SUM(sg."secondPlayerScore") AS "sumScore",
+//   AVG(fg."firstPlayerScore" + sg."secondPlayerScore") AS "avgScores",
+//   COUNT(fg.id) + COUNT(sg.id) AS "gamesCount",
+//   SUM(CASE WHEN fg."playerFinishedFirst" = 'firstPlayer' THEN 1 ELSE 0 END) +
+//   SUM(CASE WHEN sg."playerFinishedFirst" = 'secondPlayer' THEN 1 ELSE 0 END) AS "winsCount",
+//   SUM(CASE WHEN fg."playerFinishedFirst" = 'secondPlayer' THEN 1 ELSE 0 END) +
+//   SUM(CASE WHEN sg."playerFinishedFirst" = 'firstPlayer' THEN 1 ELSE 0 END) AS "lossesCount",
+//   SUM(CASE WHEN fg."playerFinishedFirst" IS NULL THEN 1 ELSE 0 END) +
+//   SUM(CASE WHEN sg."playerFinishedFirst" IS NULL THEN 1 ELSE 0 END) AS "drawsCount"
 // FROM player p
-// LEFT JOIN "user" u ON u.id = p.user_id
-// LEFT JOIN game fg ON fg.first_player_user_id = p.user_id
-// LEFT JOIN game sg ON sg.second_player_user_id = p.user_id
-// GROUP BY p.user_id, u.login
-// ORDER BY avg_score DESC, sum_score DESC
+// LEFT JOIN "user" u ON u.id = p."userId"
+// LEFT JOIN game fg ON fg."firstPlayerUserId" = p."userId"
+// LEFT JOIN game sg ON sg."secondPlayerUserId" = p."userId"
+// GROUP BY p."userId", u.login
+// ORDER BY "avgScores" DESC, "sumScore" DESC
 // LIMIT 10;
 // `;
 //
-// `
-// WITH player_scores AS (
-//   SELECT
-//     p."userId" AS player_id,
-//     p."userId" AS user_id,
-//     SUM(CASE WHEN g."firstPlayerUserId" = p."userId" THEN g."firstPlayerScore" ELSE g."secondPlayerScore" END) as total_score,
-//     COUNT(g.id) as games_count,
-//     AVG(CASE WHEN g."firstPlayerUserId" = p."userId" THEN g."firstPlayerScore" ELSE g."secondPlayerScore" END) as average_score,
-//     COUNT(CASE WHEN ((g."firstPlayerUserId" = p."userId" AND g."playerFinishedFirst" = 'first') OR
-//                      (g."secondPlayerUserId" = p."userId" AND g."playerFinishedFirst" = 'second')) THEN 1 END) as wins_count,
-//     COUNT(CASE WHEN ((g."firstPlayerUserId" = p."userId" AND g."playerFinishedFirst" = 'second') OR
-//                      (g."secondPlayerUserId" = p."userId" AND g."playerFinishedFirst" = 'first')) THEN 1 END) as losses_count,
-//     COUNT(CASE WHEN g."playerFinishedFirst" = 'draw' THEN 1 END) as draws_count
-//   FROM
-//     "Player" p
-//     LEFT JOIN "Game" g ON g."firstPlayerUserId" = p."userId" OR g."secondPlayerUserId" = p."userId"
-//   GROUP BY
-//     p."userId"
-// ),
-// player_ranks AS (
-//   SELECT
-//     ps.*,
-//     u.login,
-//     ROW_NUMBER() OVER(ORDER BY ps.average_score DESC, ps.total_score DESC) as rank
-//   FROM
-//     player_scores ps
-//     INNER JOIN "User" u ON u.id = ps.user_id
-// )
-// SELECT
-//   *
-// FROM
-//   player_ranks
-// WHERE
-//   rank > $1 AND rank <= $2;
-// `
+`
+WITH player_scores AS (
+  SELECT
+    p."userId" AS player_id,
+    p."userId" AS user_id,
+    SUM(CASE WHEN g."firstPlayerUserId" = p."userId" THEN g."firstPlayerScore" ELSE g."secondPlayerScore" END) as "sumScore",
+    COUNT(g.id) as "gamesCount",
+    AVG(CASE WHEN g."firstPlayerUserId" = p."userId" THEN g."firstPlayerScore" ELSE g."secondPlayerScore" END) as "avgScores",
+    COUNT(CASE WHEN ((g."firstPlayerUserId" = p."userId" AND g."firstPlayerScore" > g."secondPlayerScore") OR
+                     (g."secondPlayerUserId" = p."userId" AND g."secondPlayerScore" > g."firstPlayerScore")) THEN 1 END) as "winsCount",
+    COUNT(CASE WHEN ((g."firstPlayerUserId" = p."userId" AND g."firstPlayerScore" < g."secondPlayerScore") OR
+                     (g."secondPlayerUserId" = p."userId" AND g."secondPlayerScore" < g."firstPlayerScore")) THEN 1 END) as "lossesCount",
+    COUNT(CASE WHEN g."firstPlayerScore" = g."secondPlayerScore" THEN 1 END) as "drawsCount"
+  FROM
+    "player" p
+    LEFT JOIN "game" g ON g."firstPlayerUserId" = p."userId" OR g."secondPlayerUserId" = p."userId"
+  GROUP BY
+    p."userId"
+),
+player_ranks AS (
+  SELECT
+    ps.*,
+    u.login,
+    ROW_NUMBER() OVER(ORDER BY 'ps.avgScores' DESC, 'sumScore' DESC) as rank
+  FROM
+    player_scores ps
+    INNER JOIN "user" u ON u.id = ps.user_id
+)
+SELECT
+  *
+FROM
+  player_ranks
+WHERE
+rank > $1 AND rank <= $2;
+`;
+
+// const [result, count] = await this.playersRepo
+//     .createQueryBuilder('player')
+//     .leftJoinAndSelect('player.gamesAsFirstPlayer', 'game1')
+//     .leftJoinAndSelect('player.gamesAsSecondPlayer', 'game2')
+//     .leftJoinAndSelect('player.user', 'user')
+//     .loadRelationCountAndMap(
+//         'player.winsCount',
+//         'player.gamesAsFirstPlayer',
+//         'game1',
+//         (qb) =>
+//             qb.where(
+//                 'game1.status = :status AND game1.firstPlayerScore > game1.secondPlayerScore',
+//                 { status: GameStatus.finished },
+//             ),
+//     )
+//     .loadRelationCountAndMap(
+//         'player.lossesCount',
+//         'player.gamesAsFirstPlayer',
+//         'game1',
+//         (qb) =>
+//             qb.where(
+//                 'game1.status = :status AND game1.firstPlayerScore < game1.secondPlayerScore',
+//                 { status: GameStatus.finished },
+//             ),
+//     )
+//     .loadRelationCountAndMap(
+//         'player.drawsCount',
+//         'player.gamesAsFirstPlayer',
+//         'game1',
+//         (qb) =>
+//             qb.where(
+//                 'game1.status = :status AND game1.firstPlayerScore = game1.secondPlayerScore',
+//                 { status: GameStatus.finished },
+//             ),
+//     )
+//     .loadRelationCountAndMap(
+//         'player.gamesCount',
+//         'player.gamesAsFirstPlayer',
+//         'game1',
+//     )
+//     .loadRelationCountAndMap(
+//         'player.gamesCount',
+//         'player.gamesAsSecondPlayer',
+//         'game2',
+//     )
+//     .addSelect(
+//         '(COALESCE(SUM(game1.firstPlayerScore), 0) + COALESCE(SUM(game2.secondPlayerScore), 0)) as sumScore',
+//     )
+//     .addSelect(
+//         '(COALESCE(SUM(game1.firstPlayerScore), 0) + COALESCE(SUM(game2.secondPlayerScore), 0)) / (COALESCE(COUNT(game1.id), 0) + COALESCE(COUNT(game2.id), 0)) as avgScore',
+//     )
+//     .addSelect('user.login', 'login')
+//     .orderBy('avgScore', 'DESC')
+//     .addOrderBy('sumScore', 'DESC')
+//     .skip((q.pageNumber - 1) * q.pageSize)
+//     .take(q.pageSize)
+//     .getManyAndCount();
