@@ -132,7 +132,6 @@ export const parseTopPlayersQueryPagination = (
   //   queryTopPlayersParamsParser.sort,
   // );
   if (query.sort) queryTopPlayersParamsParser.sort = query.sort;
-  console.log(queryTopPlayersParamsParser);
   return queryTopPlayersParamsParser;
 };
 
