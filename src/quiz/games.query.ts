@@ -1,6 +1,6 @@
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { Game } from './entities/game.entity';
-import { Not, Repository } from 'typeorm';
+import { DataSource, Not, Repository } from 'typeorm';
 import {
   ForbiddenException,
   Injectable,
@@ -23,6 +23,7 @@ import {
 import { OutputStatisticDto } from './dto/output.statistic.dto';
 import { OutputTopPlayersDto } from './dto/output.top-players.dto';
 import { Player } from './entities/player.entity';
+import { PlayerRank } from './types/player-rank-type';
 
 @Injectable()
 export class GamesQuery {
@@ -31,6 +32,7 @@ export class GamesQuery {
     @InjectRepository(Question) protected questionsRepo: Repository<Question>,
     @InjectRepository(Answer) protected answersRepo: Repository<Answer>,
     @InjectRepository(Player) protected playersRepo: Repository<Player>,
+    @InjectDataSource() protected dataSource: DataSource,
   ) {}
 
   async getAllGames(
@@ -265,15 +267,83 @@ export class GamesQuery {
     }
     return items;
   }
-  //todo: Finish request
+  //todo: Finish request. Implement sorting from query
   async getTopPlayers(
     q: TopPlayersQueryParserType,
   ): Promise<PaginatorType<OutputTopPlayersDto>> {
-    return undefined;
+    const offsetSize = (q.pageNumber - 1) * q.pageSize;
+    const queryString = `
+        WITH player_scores AS (
+          SELECT
+            p."userId" AS "playerId",
+            SUM(CASE WHEN g."firstPlayerUserId" = p."userId" THEN g."firstPlayerScore" ELSE g."secondPlayerScore" END) as "sumScore",
+            COUNT(g.id) as "gamesCount",
+            AVG(CASE WHEN g."firstPlayerUserId" = p."userId" THEN g."firstPlayerScore" ELSE g."secondPlayerScore" END) as "avgScores",
+            COUNT(CASE WHEN ((g."firstPlayerUserId" = p."userId" AND g."firstPlayerScore" > g."secondPlayerScore") OR
+                             (g."secondPlayerUserId" = p."userId" AND g."secondPlayerScore" > g."firstPlayerScore")) THEN 1 END) as "winsCount",
+            COUNT(CASE WHEN ((g."firstPlayerUserId" = p."userId" AND g."firstPlayerScore" < g."secondPlayerScore") OR
+                             (g."secondPlayerUserId" = p."userId" AND g."secondPlayerScore" < g."firstPlayerScore")) THEN 1 END) as "lossesCount",
+            COUNT(CASE WHEN g."firstPlayerScore" = g."secondPlayerScore" THEN 1 END) as "drawsCount"
+          FROM
+            "player" p
+            LEFT JOIN "game" g ON g."firstPlayerUserId" = p."userId" OR g."secondPlayerUserId" = p."userId"
+          GROUP BY
+            p."userId"
+        ),
+        player_ranks AS (
+          SELECT
+            ps.*,
+            u.login,
+            ROW_NUMBER() OVER(ORDER BY 'ps.avgScores' DESC, 'sumScore' DESC) as rank
+          FROM
+            player_scores ps
+            INNER JOIN "user" u ON u.id = ps."playerId"
+        )
+        SELECT
+          *
+        FROM
+          player_ranks
+        WHERE
+        rank > $1 AND rank <= $2;
+        `;
+    const countString = `
+         SELECT COUNT(*)
+         FROM "player"
+    `;
+    const reqPlayerRanks: PlayerRank[] = await this.dataSource.query(
+      queryString,
+      [offsetSize, offsetSize + q.pageSize],
+    );
+    const allPlayersCount: number = parseInt(
+      (await this.dataSource.query(countString))[0].count,
+      10,
+    );
+    if (allPlayersCount === 0) return emptyPaginatorStub;
+    const items = [];
+    for await (const r of reqPlayerRanks) {
+      const playerRank: OutputTopPlayersDto = {
+        player: {
+          id: r.playerId,
+          login: r.login,
+        },
+        sumScore: r.sumScore,
+        avgScores: r.avgScores,
+        gamesCount: r.gamesCount,
+        winsCount: r.winsCount,
+        lossesCount: r.lossesCount,
+        drawsCount: r.drawsCount,
+      };
+      items.push(playerRank);
+    }
+    return {
+      pagesCount: Math.ceil(allPlayersCount / q.pageSize),
+      page: q.pageNumber,
+      pageSize: q.pageSize,
+      totalCount: allPlayersCount,
+      items: items,
+    };
   }
 }
-
-//todo: select the appropriate sql query and implement in ranking code
 
 // `
 // SELECT
@@ -297,41 +367,6 @@ export class GamesQuery {
 // LIMIT 10;
 // `;
 //
-`
-WITH player_scores AS (
-  SELECT
-    p."userId" AS player_id,
-    p."userId" AS user_id,
-    SUM(CASE WHEN g."firstPlayerUserId" = p."userId" THEN g."firstPlayerScore" ELSE g."secondPlayerScore" END) as "sumScore",
-    COUNT(g.id) as "gamesCount",
-    AVG(CASE WHEN g."firstPlayerUserId" = p."userId" THEN g."firstPlayerScore" ELSE g."secondPlayerScore" END) as "avgScores",
-    COUNT(CASE WHEN ((g."firstPlayerUserId" = p."userId" AND g."firstPlayerScore" > g."secondPlayerScore") OR
-                     (g."secondPlayerUserId" = p."userId" AND g."secondPlayerScore" > g."firstPlayerScore")) THEN 1 END) as "winsCount",
-    COUNT(CASE WHEN ((g."firstPlayerUserId" = p."userId" AND g."firstPlayerScore" < g."secondPlayerScore") OR
-                     (g."secondPlayerUserId" = p."userId" AND g."secondPlayerScore" < g."firstPlayerScore")) THEN 1 END) as "lossesCount",
-    COUNT(CASE WHEN g."firstPlayerScore" = g."secondPlayerScore" THEN 1 END) as "drawsCount"
-  FROM
-    "player" p
-    LEFT JOIN "game" g ON g."firstPlayerUserId" = p."userId" OR g."secondPlayerUserId" = p."userId"
-  GROUP BY
-    p."userId"
-),
-player_ranks AS (
-  SELECT
-    ps.*,
-    u.login,
-    ROW_NUMBER() OVER(ORDER BY 'ps.avgScores' DESC, 'sumScore' DESC) as rank
-  FROM
-    player_scores ps
-    INNER JOIN "user" u ON u.id = ps.user_id
-)
-SELECT
-  *
-FROM
-  player_ranks
-WHERE
-rank > $1 AND rank <= $2;
-`;
 
 // const [result, count] = await this.playersRepo
 //     .createQueryBuilder('player')
