@@ -215,7 +215,7 @@ export const pickSortingStringForRanks = (sortingArray: string[]) => {
         orderString += ' pr."drawsCount"';
         break;
       default:
-        orderString = 'ORDER BY pr."avgScores" DESC, pr."sumScore" DESC';
+        orderString = 'ORDER BY pr."avgScores" DESC, pr."sumScore" DESC ';
         break;
     }
     if (sortElements[1] === 'asc' || sortElements[1] === 'ASC') {
