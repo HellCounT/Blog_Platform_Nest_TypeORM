@@ -307,6 +307,7 @@ export class GamesQuery {
         ${pickSortingStringForRanks(q.sort)}
         LIMIT $1 OFFSET $2
         `;
+    console.log(queryString);
     const countString = `
          SELECT COUNT(*)
          FROM "player"
