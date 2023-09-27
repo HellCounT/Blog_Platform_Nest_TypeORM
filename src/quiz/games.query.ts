@@ -269,8 +269,6 @@ export class GamesQuery {
   async getTopPlayers(
     q: TopPlayersQueryParserType,
   ): Promise<PaginatorType<OutputTopPlayersDto>> {
-    console.log(result);
-    console.log(count);
     return undefined;
   }
 }
