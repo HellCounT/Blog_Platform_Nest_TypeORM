@@ -327,7 +327,7 @@ export class GamesQuery {
           login: r.login,
         },
         sumScore: r.sumScore,
-        avgScores: r.avgScores,
+        avgScores: +parseFloat(r.avgScores.toString()).toFixed(2),
         gamesCount: r.gamesCount,
         winsCount: r.winsCount,
         lossesCount: r.lossesCount,

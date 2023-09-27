@@ -1062,6 +1062,28 @@ window.onload = function() {
             }
           }
         }
+      },
+      "/pair-game-quiz/users/my-statistic": {
+        "get": {
+          "operationId": "QuizGameController_getPlayerStatistic",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          }
+        }
+      },
+      "/pair-game-quiz/users/top": {
+        "get": {
+          "operationId": "QuizGameController_getTopPlayers",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          }
+        }
       }
     },
     "info": {

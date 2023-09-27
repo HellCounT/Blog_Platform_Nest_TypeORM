@@ -125,9 +125,13 @@ export const parseTopPlayersQueryPagination = (
     pageNumber: 1,
     pageSize: 10,
   };
-  const sortingProperties = pickSortingPropertiesForTopPlayers(
-    queryTopPlayersParamsParser.sort,
-  );
+  if (query.pageNumber)
+    queryTopPlayersParamsParser.pageNumber = +query.pageNumber;
+  if (query.pageSize) queryTopPlayersParamsParser.pageSize = +query.pageSize;
+  // const sortingProperties = pickSortingPropertiesForTopPlayers(
+  //   queryTopPlayersParamsParser.sort,
+  // );
+  if (query.sort) queryTopPlayersParamsParser.sort = query.sort;
   return queryTopPlayersParamsParser;
 };
 
@@ -187,9 +191,9 @@ export const pickOrderForPostsQuery = (
   return orderString;
 };
 
-const pickSortingPropertiesForTopPlayers = (sortingArray: string[]) => {
-  return sortingArray.map((s) => {
-    const [sortBy, order] = s.split(' ');
-    return { sortBy, order };
-  });
-};
+// const pickSortingPropertiesForTopPlayers = (sortingArray: string[]) => {
+//   return sortingArray.map((s) => {
+//     const [sortBy, order] = s.split(' ');
+//     return { sortBy: sortBy, order: order };
+//   });
+// };
