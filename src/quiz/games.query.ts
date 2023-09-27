@@ -18,6 +18,7 @@ import { PaginatorType } from '../base/application-helpers/paginator.type';
 import { emptyPaginatorStub } from '../base/application-helpers/empty.paginator.stub';
 import {
   GamesQueryParserType,
+  pickSortingStringForRanks,
   TopPlayersQueryParserType,
 } from '../base/application-helpers/query-parser-type';
 import { OutputStatisticDto } from './dto/output.statistic.dto';
@@ -302,9 +303,9 @@ export class GamesQuery {
         SELECT
           *
         FROM
-          player_ranks
-        WHERE
-        rank > $1 AND rank <= $2;
+          player_ranks pr
+        ${pickSortingStringForRanks(q.sort)}
+        LIMIT $1 OFFSET $2
         `;
     const countString = `
          SELECT COUNT(*)

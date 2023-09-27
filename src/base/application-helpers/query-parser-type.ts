@@ -191,9 +191,38 @@ export const pickOrderForPostsQuery = (
   return orderString;
 };
 
-// const pickSortingPropertiesForTopPlayers = (sortingArray: string[]) => {
-//   return sortingArray.map((s) => {
-//     const [sortBy, order] = s.split(' ');
-//     return { sortBy: sortBy, order: order };
-//   });
-// };
+export const pickSortingStringForRanks = (sortingArray: string[]) => {
+  let orderString = 'ORDER BY';
+  for (const s of sortingArray) {
+    const sortElements = s.split(' ');
+    switch (sortElements[0]) {
+      case 'avgScores':
+        orderString += ' pr."avgScores"';
+        break;
+      case 'sumScore':
+        orderString += ' pr."sumScore"';
+        break;
+      case 'gamesCount':
+        orderString += ' pr."gamesCount"';
+        break;
+      case 'winsCount':
+        orderString += ' pr."winsCount"';
+        break;
+      case 'lossesCount':
+        orderString += ' pr."lossesCount"';
+        break;
+      case 'drawsCount':
+        orderString += ' pr."drawsCount"';
+        break;
+      default:
+        orderString = 'ORDER BY pr."avgScores" DESC, pr."sumScore" DESC';
+        break;
+    }
+    if (sortElements[1] === 'ASC') {
+      orderString += ' ASC';
+    } else {
+      orderString += ' DESC';
+    }
+  }
+  return orderString;
+};
