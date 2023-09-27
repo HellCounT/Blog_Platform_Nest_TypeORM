@@ -8,6 +8,7 @@ import { UserGlobalBan } from './entities/user-global-ban.entity';
 import { UserConfirmation } from './entities/user-confirmation.entity';
 import { UserRecovery } from './entities/user-recovery.entity';
 import { isVoid } from '../base/application-helpers/void.check.helper';
+import { OutputSuperAdminUserSimpleDto } from '../superadmin/users/dto/output.super-admin.user.simple.dto';
 
 @Injectable()
 export class UsersRepository {
@@ -44,7 +45,7 @@ export class UsersRepository {
   }
   async createUser(
     newUser: UserCollectedData,
-  ): Promise<OutputSuperAdminUserDto> {
+  ): Promise<OutputSuperAdminUserSimpleDto> {
     const user = new User();
     user.id = newUser.id;
     user.login = newUser.accountData.login;
@@ -79,11 +80,11 @@ export class UsersRepository {
       login: createdUser.accountData.login,
       email: createdUser.accountData.email,
       createdAt: createdUser.accountData.createdAt,
-      banInfo: {
-        isBanned: createdUser.globalBanInfo.isBanned,
-        banDate: null,
-        banReason: createdUser.globalBanInfo.banReason,
-      },
+      // banInfo: {
+      //   isBanned: createdUser.globalBanInfo.isBanned,
+      //   banDate: null,
+      //   banReason: createdUser.globalBanInfo.banReason,
+      // },
     };
   }
   catch(e) {

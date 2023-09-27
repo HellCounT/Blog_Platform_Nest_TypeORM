@@ -7,6 +7,7 @@ import {
 import { CommandHandler } from '@nestjs/cqrs';
 import { generateHash } from '../../../base/application-helpers/generate.hash';
 import { v4 as uuidv4 } from 'uuid';
+import { OutputSuperAdminUserSimpleDto } from '../dto/output.super-admin.user.simple.dto';
 
 export class CreateUserCommand {
   constructor(public userCreateDto: InputCreateUserDto) {}
@@ -16,7 +17,9 @@ export class CreateUserCommand {
 export class CreateUserUseCase {
   constructor(protected usersRepo: UsersRepository) {}
 
-  async execute(command: CreateUserCommand): Promise<UserViewModelType | null> {
+  async execute(
+    command: CreateUserCommand,
+  ): Promise<OutputSuperAdminUserSimpleDto | null> {
     const passwordHash = await generateHash(command.userCreateDto.password);
     const currentDate = new Date();
     const newUser = new UserCollectedData(

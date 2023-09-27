@@ -22,6 +22,7 @@ import {
 import { SuperAdminUsersQuery } from './super-admin.users.query';
 import { InputBanUserDto } from './dto/input.ban-user.dto';
 import { BanUserCommand } from './use-cases/ban.user.use-case';
+import { OutputSuperAdminUserSimpleDto } from './dto/output.super-admin.user.simple.dto';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/users')
@@ -39,7 +40,9 @@ export class SuperAdminUsersController {
 
   @Post()
   @HttpCode(201)
-  async createUser(@Body() userCreateDto: InputCreateUserDto) {
+  async createUser(
+    @Body() userCreateDto: InputCreateUserDto,
+  ): Promise<OutputSuperAdminUserSimpleDto> {
     return await this.commandBus.execute(new CreateUserCommand(userCreateDto));
   }
 
