@@ -327,12 +327,12 @@ export class GamesQuery {
           id: r.playerId,
           login: r.login,
         },
-        sumScore: r.sumScore,
+        sumScore: +r.sumScore,
         avgScores: +parseFloat(r.avgScores.toString()).toFixed(2),
-        gamesCount: r.gamesCount,
-        winsCount: r.winsCount,
-        lossesCount: r.lossesCount,
-        drawsCount: r.drawsCount,
+        gamesCount: +r.gamesCount,
+        winsCount: +r.winsCount,
+        lossesCount: +r.lossesCount,
+        drawsCount: +r.drawsCount,
       };
       items.push(playerRank);
     }
