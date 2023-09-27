@@ -218,7 +218,7 @@ export const pickSortingStringForRanks = (sortingArray: string[]) => {
         orderString = 'ORDER BY pr."avgScores" DESC, pr."sumScore" DESC';
         break;
     }
-    if (sortElements[1] === 'ASC' || 'asc') {
+    if (sortElements[1] === 'asc' || sortElements[1] === 'ASC') {
       orderString += ' ASC,';
     } else {
       orderString += ' DESC,';
