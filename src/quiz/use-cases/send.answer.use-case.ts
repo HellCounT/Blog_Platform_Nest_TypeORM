@@ -14,6 +14,7 @@ import { isVoid } from '../../base/application-helpers/void.check.helper';
 import { ForbiddenException } from '@nestjs/common';
 import { AnswersCountersType } from '../types/answers-counters.type';
 import { Answer } from '../entities/answer.entity';
+import { Question } from '../../superadmin/quiz/entities/question.entity';
 
 export class SendAnswerCommand {
   constructor(public answerDto: InputAnswerDto, public playerId: string) {}
@@ -47,11 +48,22 @@ export class SendAnswerUseCase {
       game.questionIds,
     );
     const currentQuestion = questions[currentQuestionNumber - 1];
+    // Close game if time is up
+    if (game.status === GameStatus.finished && currentQuestionNumber <= 5) {
+      await this.closeAllUnansweredQuestionsWhenGameIsFinished(
+        game,
+        currentQuestionNumber,
+        command.playerId,
+        questions,
+      );
+      throw new ForbiddenException();
+    }
     let answerStatus: AnswerStatus;
     let addedAnswer: Answer;
+    // incrementing score if player gives correct answer
     if (currentQuestion.correctAnswers.includes(givenAnswer)) {
       answerStatus = AnswerStatus.correct;
-      await this.incrementPlayerGameScore(game, playerOrder);
+      game.incrementPlayerGameScore(playerOrder);
       addedAnswer = await this.answersRepo.saveAnswer(
         givenAnswer,
         answerStatus,
@@ -59,7 +71,8 @@ export class SendAnswerUseCase {
         command.playerId,
         currentQuestion.id,
       );
-      await this.addAnswerIdToPlayer(game, playerOrder, addedAnswer.id);
+      await game.addAnswerIdToGame(playerOrder, addedAnswer.id);
+      // not incrementing score if player gives incorrect answer
     } else {
       answerStatus = AnswerStatus.incorrect;
       addedAnswer = await this.answersRepo.saveAnswer(
@@ -69,22 +82,25 @@ export class SendAnswerUseCase {
         command.playerId,
         currentQuestion.id,
       );
-      await this.addAnswerIdToPlayer(game, playerOrder, addedAnswer.id);
+      await game.addAnswerIdToGame(playerOrder, addedAnswer.id);
     }
+    // starting 10sec timer after one player answered 5 questions
     if (this.playerIsFinishingFirst(currentAnswersCount)) {
-      await this.setFirstFinishedPlayer(playerOrder, game);
+      game.setFirstFinishedPlayer(playerOrder);
+      this.finishGameInTenSeconds(game);
     }
+    // finishing game when last question (10th) is answered
     if (this.playerIsFinishing(currentAnswersCount)) {
-      await this.finishGame(game);
+      await game.finishGame();
     }
-    // const updatedGame: Game = await this.gamesRepo.getGameById(game.id);
+    // bonus point logic
     if (
       (await this.isFirstFinishedPlayerHasAtLeastOneCorrectAnswer(game)) &&
       game.status === GameStatus.finished
     ) {
-      //bonus point
-      await this.incrementPlayerGameScore(game, game.playerFinishedFirst);
+      game.incrementPlayerGameScore(game.playerFinishedFirst);
     }
+    await this.gamesRepo.saveGame(game);
     return {
       questionId: currentQuestion.id,
       answerStatus: answerStatus,
@@ -92,42 +108,11 @@ export class SendAnswerUseCase {
     };
   }
 
-  private async incrementPlayerGameScore(
-    game: Game,
-    playerOrder: PlayerOrder,
-  ): Promise<number> {
-    if (playerOrder === PlayerOrder.first) {
-      game.firstPlayerScore += 1;
-      await this.gamesRepo.saveGame(game);
-      return game.firstPlayerScore;
-    } else {
-      game.secondPlayerScore += 1;
-      await this.gamesRepo.saveGame(game);
-      return game.secondPlayerScore;
-    }
-  }
-
-  // private async finishGameWithBonusInTenSeconds(
-  //   gameId: string,
-  //   playerOrder: PlayerOrder,
-  // ): Promise<void> {
-  //   setTimeout(() => {
-  //     this.gamesRepo.incrementPlayerScore(gameId, playerOrder); // bonus point
-  //     this.gamesRepo.finishGame(gameId);
-  //   }, 10000);
-  //   return;
-  // }
-
-  private async finishGame(game: Game): Promise<void> {
-    game.status = GameStatus.finished;
-    game.finishGameDate = new Date();
-    try {
-      await this.gamesRepo.saveGame(game);
-      return;
-    } catch (e) {
-      console.log(e);
-      return;
-    }
+  private finishGameInTenSeconds(game: Game): void {
+    setTimeout(() => {
+      game.finishGame();
+    }, 10000);
+    return;
   }
 
   private playerIsFinishingFirst(
@@ -139,40 +124,12 @@ export class SendAnswerUseCase {
     );
   }
 
-  private async addAnswerIdToPlayer(
-    game: Game,
-    playerOrder: PlayerOrder,
-    answerId: string,
-  ): Promise<Game> {
-    if (playerOrder === PlayerOrder.first) {
-      game.firstPlayerAnswersIds.push(answerId);
-      return await this.gamesRepo.saveGame(game);
-    } else {
-      game.secondPlayerAnswersIds.push(answerId);
-      return await this.gamesRepo.saveGame(game);
-    }
-  }
-
   private playerIsFinishing(currentAnswersCount: AnswersCountersType): boolean {
     return (
       currentAnswersCount.playerAnswersCount +
         currentAnswersCount.opponentAnswersCount ===
       10
     );
-  }
-  // Get for update, setLock
-  private async setFirstFinishedPlayer(
-    playerOrder: PlayerOrder,
-    game: Game,
-  ): Promise<void> {
-    game.playerFinishedFirst = playerOrder;
-    try {
-      await this.gamesRepo.saveGame(game);
-      return;
-    } catch (e) {
-      console.log(e);
-      return;
-    }
   }
 
   private async isFirstFinishedPlayerHasAtLeastOneCorrectAnswer(
@@ -191,5 +148,24 @@ export class SendAnswerUseCase {
         game.secondPlayerUserId,
       );
     return result.length >= 1;
+  }
+
+  private async closeAllUnansweredQuestionsWhenGameIsFinished(
+    game: Game,
+    currentQuestionNumber: number,
+    playerId: string,
+    questions: Question[],
+  ): Promise<void> {
+    const incorrectAnswer = 'time expired';
+    for (let i = currentQuestionNumber; i <= 5; i++) {
+      await this.answersRepo.saveAnswer(
+        incorrectAnswer,
+        AnswerStatus.incorrect,
+        game.id,
+        playerId,
+        questions[i].id,
+      );
+    }
+    return;
   }
 }

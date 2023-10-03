@@ -98,12 +98,35 @@ export class Game {
     return currentAnswersCounters;
   }
 
-  getPlayerScore(playerOrder: PlayerOrder): number {
+  incrementPlayerGameScore(playerOrder: PlayerOrder): number {
     if (playerOrder === PlayerOrder.first) {
+      this.firstPlayerScore += 1;
       return this.firstPlayerScore;
     } else {
+      this.secondPlayerScore += 1;
       return this.secondPlayerScore;
     }
+  }
+
+  addAnswerIdToGame(playerOrder: PlayerOrder, answerId: string): void {
+    if (playerOrder === PlayerOrder.first) {
+      this.firstPlayerAnswersIds.push(answerId);
+      return;
+    } else {
+      this.secondPlayerAnswersIds.push(answerId);
+      return;
+    }
+  }
+
+  setFirstFinishedPlayer(playerOrder: PlayerOrder): void {
+    this.playerFinishedFirst = playerOrder;
+    return;
+  }
+
+  finishGame(): void {
+    this.status = GameStatus.finished;
+    this.finishGameDate = new Date();
+    return;
   }
 
   static instantiate(gameId: string, firstPlayerId: string) {
