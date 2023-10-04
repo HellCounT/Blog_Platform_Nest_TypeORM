@@ -48,16 +48,16 @@ export class SendAnswerUseCase {
       game.questionIds,
     );
     const currentQuestion = questions[currentQuestionNumber - 1];
-    // Close game if time is up
-    if (game.status === GameStatus.finished && currentQuestionNumber <= 5) {
-      await this.closeAllUnansweredQuestionsWhenGameIsFinished(
-        game,
-        currentQuestionNumber,
-        command.playerId,
-        questions,
-      );
-      throw new ForbiddenException();
-    }
+    // // Close game if time is up
+    // if (game.status === GameStatus.finished && currentQuestionNumber <= 5) {
+    //   await this.closeAllUnansweredQuestionsWhenGameIsFinished(
+    //     game,
+    //     currentQuestionNumber,
+    //     command.playerId,
+    //     questions,
+    //   );
+    //   throw new ForbiddenException();
+    // }
     let answerStatus: AnswerStatus;
     let addedAnswer: Answer;
     // incrementing score if player gives correct answer
@@ -87,18 +87,11 @@ export class SendAnswerUseCase {
     // starting 10sec timer after one player answered 5 questions
     if (this.playerIsFinishingFirst(currentAnswersCount)) {
       game.setFirstFinishedPlayer(playerOrder);
-      this.finishGameInTenSeconds(game);
+      await this.finishGameInTenSeconds(game, questions);
     }
     // finishing game when last question (10th) is answered
     if (this.playerIsFinishing(currentAnswersCount)) {
       await game.finishGame();
-    }
-    // bonus point logic
-    if (
-      (await this.isFirstFinishedPlayerHasAtLeastOneCorrectAnswer(game)) &&
-      game.status === GameStatus.finished
-    ) {
-      game.incrementPlayerGameScore(game.playerFinishedFirst);
     }
     await this.gamesRepo.saveGame(game);
     return {
@@ -108,11 +101,42 @@ export class SendAnswerUseCase {
     };
   }
 
-  private finishGameInTenSeconds(game: Game): void {
-    setTimeout(() => {
+  async finishGameInTenSeconds(
+    game: Game,
+    questions: Question[],
+  ): Promise<void> {
+    console.log('Timer has started');
+    setTimeout(async () => {
+      // ответил ли второй игрок на все вопросы
+      const incorrectAnswer = 'time expired';
+      let playerId: string;
+      if (game.playerFinishedFirst === PlayerOrder.first)
+        playerId = game.secondPlayerUserId;
+      else playerId = game.firstPlayerUserId;
+      // пометка неотвеченных вопросов как неверные ответы
+      const unansweredQuestionsCount = 5 - game.secondPlayerAnswersIds.length;
+      for (let i = 0; i < unansweredQuestionsCount; i++) {
+        await this.answersRepo.saveAnswer(
+          incorrectAnswer,
+          AnswerStatus.incorrect,
+          game.id,
+          playerId,
+          questions[i].id,
+        );
+      }
+      // завершение игры
       game.finishGame();
+      // bonus point logic
+      if (
+        (await this.isFirstFinishedPlayerHasAtLeastOneCorrectAnswer(game)) &&
+        game.status === GameStatus.finished
+      ) {
+        game.incrementPlayerGameScore(game.playerFinishedFirst);
+      }
+      console.log('Game is finished', game.status);
+      await this.gamesRepo.saveGame(game);
+      console.log('Game saved');
     }, 10000);
-    return;
   }
 
   private playerIsFinishingFirst(
@@ -150,22 +174,22 @@ export class SendAnswerUseCase {
     return result.length >= 1;
   }
 
-  private async closeAllUnansweredQuestionsWhenGameIsFinished(
-    game: Game,
-    currentQuestionNumber: number,
-    playerId: string,
-    questions: Question[],
-  ): Promise<void> {
-    const incorrectAnswer = 'time expired';
-    for (let i = currentQuestionNumber; i <= 5; i++) {
-      await this.answersRepo.saveAnswer(
-        incorrectAnswer,
-        AnswerStatus.incorrect,
-        game.id,
-        playerId,
-        questions[i].id,
-      );
-    }
-    return;
-  }
+  // private async closeAllUnansweredQuestionsWhenGameIsFinished(
+  //   game: Game,
+  //   currentQuestionNumber: number,
+  //   playerId: string,
+  //   questions: Question[],
+  // ): Promise<void> {
+  //   const incorrectAnswer = 'time expired';
+  //   for (let i = currentQuestionNumber; i <= 5; i++) {
+  //     await this.answersRepo.saveAnswer(
+  //       incorrectAnswer,
+  //       AnswerStatus.incorrect,
+  //       game.id,
+  //       playerId,
+  //       questions[i].id,
+  //     );
+  //   }
+  //   return;
+  // }
 }
