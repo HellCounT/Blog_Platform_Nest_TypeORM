@@ -64,6 +64,14 @@ export class SendAnswerUseCase {
     if (currentQuestion.correctAnswers.includes(givenAnswer)) {
       answerStatus = AnswerStatus.correct;
       game.incrementPlayerGameScore(playerOrder);
+      console.log(
+        playerOrder,
+        'Player has given the correct answer',
+        'First player score: ',
+        game.firstPlayerScore,
+        'Second player score: ',
+        game.secondPlayerScore,
+      );
       addedAnswer = await this.answersRepo.saveAnswer(
         givenAnswer,
         answerStatus,
@@ -102,12 +110,13 @@ export class SendAnswerUseCase {
   }
 
   async finishGameInTenSeconds(
-    game: Game,
+    gameInProgress: Game,
     questions: Question[],
   ): Promise<void> {
     console.log('Timer has started');
     setTimeout(async () => {
       // ответил ли второй игрок на все вопросы
+      const game = await this.gamesRepo.getGameById(gameInProgress.id);
       const incorrectAnswer = 'time expired';
       let playerId: string;
       if (game.playerFinishedFirst === PlayerOrder.first)
