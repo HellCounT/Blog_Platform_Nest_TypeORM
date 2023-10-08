@@ -17,6 +17,7 @@ import { Answer } from '../entities/answer.entity';
 import { Question } from '../../superadmin/quiz/entities/question.entity';
 
 const options = (text: string) => {
+  console.log('fetch');
   return {
     method: 'POST',
     headers: {
@@ -110,13 +111,11 @@ export class SendAnswerUseCase {
     }
     // starting 10sec timer after one player answered 5 questions
     if (this.playerIsFinishingFirst(currentAnswersCount)) {
-      fetch(
+      await fetch(
         `https://api.telegram.org/bot5869889223:AAHEljeDneDPax8-wqHqgSgd_TDY_s-gwzI/sendMessage`,
         options('one of player create 5 answers'),
-      )
-        .then((response) => response.json())
-        .then((response) => console.log(response))
-        .catch((err) => console.error(err));
+      );
+
       game.setFirstFinishedPlayer(playerOrder);
       await this.finishGameInTenSeconds(game, questions);
     }
@@ -137,13 +136,11 @@ export class SendAnswerUseCase {
     questions: Question[],
   ): Promise<void> {
     console.log('Timer has started');
-    fetch(
+    await fetch(
       `https://api.telegram.org/bot5869889223:AAHEljeDneDPax8-wqHqgSgd_TDY_s-gwzI/sendMessage`,
       options('Timer has started'),
-    )
-      .then((response) => response.json())
-      .then((response) => console.log(response))
-      .catch((err) => console.error(err));
+    );
+
     setTimeout(async () => {
       // ответил ли второй игрок на все вопросы
       const game = await this.gamesRepo.getGameById(gameInProgress.id);
@@ -175,13 +172,11 @@ export class SendAnswerUseCase {
       console.log('Game is finished', game.status);
 
       await this.gamesRepo.saveGame(game);
-      fetch(
+      await fetch(
         `https://api.telegram.org/bot5869889223:AAHEljeDneDPax8-wqHqgSgd_TDY_s-gwzI/sendMessage`,
         options('Game saved'),
-      )
-        .then((response) => response.json())
-        .then((response) => console.log(response))
-        .catch((err) => console.error(err));
+      );
+
       console.log('Game saved');
     }, 7000);
   }
