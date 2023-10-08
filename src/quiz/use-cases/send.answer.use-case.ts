@@ -142,15 +142,30 @@ export class SendAnswerUseCase {
     );
 
     setTimeout(async () => {
-      // ответил ли второй игрок на все вопросы
       const game = await this.gamesRepo.getGameById(gameInProgress.id);
+      await fetch(
+        `https://api.telegram.org/bot5869889223:AAHEljeDneDPax8-wqHqgSgd_TDY_s-gwzI/sendMessage`,
+        options(`cb => game = ${game.id}`),
+      );
       const incorrectAnswer = 'time expired';
       let playerId: string;
       if (game.playerFinishedFirst === PlayerOrder.first)
         playerId = game.secondPlayerUserId;
       else playerId = game.firstPlayerUserId;
+      await fetch(
+        `https://api.telegram.org/bot5869889223:AAHEljeDneDPax8-wqHqgSgd_TDY_s-gwzI/sendMessage`,
+        options(
+          `cb => playerFinishedFirst = ${
+            game.playerFinishedFirst === PlayerOrder.first
+          }`,
+        ),
+      );
       // пометка неотвеченных вопросов как неверные ответы
       const unansweredQuestionsCount = 5 - game.secondPlayerAnswersIds.length;
+      await fetch(
+        `https://api.telegram.org/bot5869889223:AAHEljeDneDPax8-wqHqgSgd_TDY_s-gwzI/sendMessage`,
+        options(`cb => unansweredQuestionsCount = ${unansweredQuestionsCount}`),
+      );
       for (let i = 0; i < unansweredQuestionsCount; i++) {
         await this.answersRepo.saveAnswer(
           incorrectAnswer,
@@ -163,6 +178,10 @@ export class SendAnswerUseCase {
       // завершение игры
       game.finishGame();
       // bonus point logic
+      await fetch(
+        `https://api.telegram.org/bot5869889223:AAHEljeDneDPax8-wqHqgSgd_TDY_s-gwzI/sendMessage`,
+        options(`cb => game after = ${JSON.stringify(game)}`),
+      );
       if (
         (await this.isFirstFinishedPlayerHasAtLeastOneCorrectAnswer(game)) &&
         game.status === GameStatus.finished
