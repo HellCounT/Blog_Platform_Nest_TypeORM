@@ -16,12 +16,17 @@ import {
 } from '../../helpers/auth';
 import {
   correctAnswer,
+  publishQuestionBody,
   questionForTest,
 } from '../../test-entities/quiz.test-entities';
 import { OutputPairGameDto } from '../../../src/quiz/dto/output.pair-game.dto';
 import { GameStatus } from '../../../src/base/application-helpers/statuses';
 
+const sleep = (seconds: number) =>
+  new Promise((r) => setTimeout(r, seconds * 1000));
+
 describe('Quiz Controller (e2e)', () => {
+  jest.setTimeout(30000);
   let nestApp: INestApplication;
   let app: any;
 
@@ -42,37 +47,37 @@ describe('Quiz Controller (e2e)', () => {
       .post(superAdminQuestionsPath)
       .auth(superAdminLogin, superAdminPassword)
       .send(questionForTest);
-    await request(app).post(
-      superAdminQuestionsPath + `/${question1.body.id}/publish`,
-    );
+    await request(app)
+      .post(superAdminQuestionsPath + `/${question1.body.id}/publish`)
+      .send(publishQuestionBody);
     const question2 = await request(app)
       .post(superAdminQuestionsPath)
       .auth(superAdminLogin, superAdminPassword)
       .send(questionForTest);
-    await request(app).post(
-      superAdminQuestionsPath + `/${question2.body.id}/publish`,
-    );
+    await request(app)
+      .post(superAdminQuestionsPath + `/${question2.body.id}/publish`)
+      .send(publishQuestionBody);
     const question3 = await request(app)
       .post(superAdminQuestionsPath)
       .auth(superAdminLogin, superAdminPassword)
       .send(questionForTest);
-    await request(app).post(
-      superAdminQuestionsPath + `/${question3.body.id}/publish`,
-    );
+    await request(app)
+      .post(superAdminQuestionsPath + `/${question3.body.id}/publish`)
+      .send(publishQuestionBody);
     const question4 = await request(app)
       .post(superAdminQuestionsPath)
       .auth(superAdminLogin, superAdminPassword)
       .send(questionForTest);
-    await request(app).post(
-      superAdminQuestionsPath + `/${question4.body.id}/publish`,
-    );
+    await request(app)
+      .post(superAdminQuestionsPath + `/${question4.body.id}/publish`)
+      .send(publishQuestionBody);
     const question5 = await request(app)
       .post(superAdminQuestionsPath)
       .auth(superAdminLogin, superAdminPassword)
       .send(questionForTest);
-    await request(app).post(
-      superAdminQuestionsPath + `/${question5.body.id}/publish`,
-    );
+    await request(app)
+      .post(superAdminQuestionsPath + `/${question5.body.id}/publish`)
+      .send(publishQuestionBody);
   });
 
   describe(`1. Tests for 10 seconds game ending:`, () => {
@@ -112,35 +117,36 @@ describe('Quiz Controller (e2e)', () => {
         .post(quizGameGiveAnswerPath)
         .set(authHeader, getBearerAccessToken(tokenPair1.accessToken))
         .send(correctAnswer);
-      setTimeout(async () => {
-        const response = await request(app)
-          .get(quizGamePath + `/${gameId}`)
-          .set(authHeader, getBearerAccessToken(tokenPair1.accessToken))
-          .expect(200);
-        expect(response.body).toEqual<OutputPairGameDto>({
-          id: gameId,
-          firstPlayerProgress: {
-            answers: expect.any(Array),
-            player: {
-              id: user1Id,
-              login: user1.login,
-            },
-            score: 6,
+
+      await sleep(11);
+
+      const response = await request(app)
+        .get(quizGamePath + `/${gameId}`)
+        .set(authHeader, getBearerAccessToken(tokenPair1.accessToken))
+        .expect(200);
+      expect(response.body).toEqual<OutputPairGameDto>({
+        id: gameId,
+        firstPlayerProgress: {
+          answers: expect.any(Array),
+          player: {
+            id: user1Id,
+            login: user1.login,
           },
-          secondPlayerProgress: {
-            answers: expect.any(Array),
-            player: {
-              id: user2Id,
-              login: user2.login,
-            },
-            score: 0,
+          score: 6,
+        },
+        secondPlayerProgress: {
+          answers: expect.any(Array),
+          player: {
+            id: user2Id,
+            login: user2.login,
           },
-          questions: expect.any(Array),
-          status: GameStatus.finished,
-          pairCreatedDate: expect.any(String),
-          startGameDate: expect.any(String),
-          finishGameDate: expect.any(String),
-        });
+          score: 0,
+        },
+        questions: expect.any(Array),
+        status: GameStatus.finished,
+        pairCreatedDate: expect.any(String),
+        startGameDate: expect.any(String),
+        finishGameDate: expect.any(String),
       });
     });
   });
