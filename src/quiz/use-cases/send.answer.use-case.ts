@@ -145,7 +145,7 @@ export class SendAnswerUseCase {
       console.log('Game is finished', game.status);
       await this.gamesRepo.saveGame(game);
       console.log('Game saved');
-    }, 10000);
+    }, 9000);
   }
 
   private playerIsFinishingFirst(
