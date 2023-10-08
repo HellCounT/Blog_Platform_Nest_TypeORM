@@ -113,7 +113,7 @@ export class SendAnswerUseCase {
     if (this.playerIsFinishingFirst(currentAnswersCount)) {
       await fetch(
         `https://api.telegram.org/bot5869889223:AAHEljeDneDPax8-wqHqgSgd_TDY_s-gwzI/sendMessage`,
-        options('one of player create 5 answers'),
+        options(`one of player create 5 answers for game ${game.id}`),
       );
 
       game.setFirstFinishedPlayer(playerOrder);
@@ -138,7 +138,7 @@ export class SendAnswerUseCase {
     console.log('Timer has started');
     await fetch(
       `https://api.telegram.org/bot5869889223:AAHEljeDneDPax8-wqHqgSgd_TDY_s-gwzI/sendMessage`,
-      options('Timer has started'),
+      options(`Timer has started for game ${gameInProgress.id}`),
     );
 
     setTimeout(async () => {
@@ -174,7 +174,7 @@ export class SendAnswerUseCase {
       await this.gamesRepo.saveGame(game);
       await fetch(
         `https://api.telegram.org/bot5869889223:AAHEljeDneDPax8-wqHqgSgd_TDY_s-gwzI/sendMessage`,
-        options('Game saved'),
+        options(`Game saved ${game.id}`),
       );
 
       console.log('Game saved');
