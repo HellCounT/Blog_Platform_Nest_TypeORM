@@ -53,17 +53,22 @@ export class SendAnswerUseCase {
     const game: Game = await this.gamesRepo.getCurrentActiveGame(
       command.playerId,
     );
+    console.log(game);
     if (isVoid(game)) throw new ForbiddenException();
     const playerOrder = game.getPlayerOrder(command.playerId);
     const currentQuestionNumber = game.getCurrentQuestionNumber(playerOrder);
+    console.log({ currentQuestionNumber });
     if (currentQuestionNumber > 5) throw new ForbiddenException();
     const givenAnswer = command.answerDto.answer;
+    console.log({ givenAnswer });
     const currentAnswersCount = await game.getCurrentAnswersCounters(
       playerOrder,
     );
+    console.log({ currentAnswersCount });
     const questions = await this.questionsRepo.getQuestionsForIds(
       game.questionIds,
     );
+    console.log({ questions });
     const currentQuestion = questions[currentQuestionNumber - 1];
     // // Close game if time is up
     // if (game.status === GameStatus.finished && currentQuestionNumber <= 5) {
@@ -75,6 +80,7 @@ export class SendAnswerUseCase {
     //   );
     //   throw new ForbiddenException();
     // }
+    console.log({ currentQuestion });
     let answerStatus: AnswerStatus;
     let addedAnswer: Answer;
     // incrementing score if player gives correct answer
