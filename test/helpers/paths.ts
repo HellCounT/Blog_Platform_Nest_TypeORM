@@ -1,5 +1,7 @@
 export const superAdminUsersPath = '/sa/users';
 export const superAdminBlogsPath = '/sa/blogs';
+export const superAdminQuestionsPath = '/sa/quiz/questions';
+export const quizGamePath = '/pair-game-quiz/pairs';
 
 export const authPath = '/auth';
 export const authLoginPath = authPath + '/login';
@@ -21,3 +23,6 @@ export const postsPath = '/posts';
 export const blogsPath = '/blogs';
 export const commentsPath = '/comments';
 export const securityPath = '/security/devices';
+
+export const quizGameGiveAnswerPath = quizGamePath + '/my-current/answers';
+export const quizGameCreateOrJoinPath = quizGamePath + '/connection';
