@@ -11,7 +11,6 @@ export const bloggerUsersPath = '/blogger/users';
 
 export const blogsPath = '/blogs';
 export const commentsPath = '/comments';
-export const securityPath = '/security/devices';
 
 export const quizGameGiveAnswerPath = quizGamePath + '/my-current/answers';
 export const quizGameCreateOrJoinPath = quizGamePath + '/connection';
