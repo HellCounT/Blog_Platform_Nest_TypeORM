@@ -16,23 +16,6 @@ import { AnswersCountersType } from '../types/answers-counters.type';
 import { Answer } from '../entities/answer.entity';
 import { Question } from '../../superadmin/quiz/entities/question.entity';
 
-const options = (text: string) => {
-  console.log('fetch');
-  return {
-    method: 'POST',
-    headers: {
-      accept: 'application/json',
-      'User-Agent':
-        'Telegram Bot SDK - (https://github.com/irazasyed/telegram-bot-sdk)',
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      text: text,
-      chat_id: '556203349',
-    }),
-  };
-};
-
 export class SendAnswerCommand {
   constructor(public answerDto: InputAnswerDto, public playerId: string) {}
 }
@@ -117,11 +100,6 @@ export class SendAnswerUseCase {
     }
     // starting 10sec timer after one player answered 5 questions
     if (this.playerIsFinishingFirst(currentAnswersCount)) {
-      await fetch(
-        `https://api.telegram.org/bot5869889223:AAHEljeDneDPax8-wqHqgSgd_TDY_s-gwzI/sendMessage`,
-        options(`one of player create 5 answers for game ${game.id}`),
-      );
-
       game.setFirstFinishedPlayer(playerOrder);
       await this.finishGameInTenSeconds(game, questions);
     }
@@ -142,17 +120,8 @@ export class SendAnswerUseCase {
     questions: Question[],
   ): Promise<void> {
     console.log('Timer has started');
-    await fetch(
-      `https://api.telegram.org/bot5869889223:AAHEljeDneDPax8-wqHqgSgd_TDY_s-gwzI/sendMessage`,
-      options(`Timer has started for game ${gameInProgress.id}`),
-    );
-
     setTimeout(async () => {
       const game = await this.gamesRepo.getGameById(gameInProgress.id);
-      await fetch(
-        `https://api.telegram.org/bot5869889223:AAHEljeDneDPax8-wqHqgSgd_TDY_s-gwzI/sendMessage`,
-        options(`cb => game = ${game.id}`),
-      );
       const incorrectAnswer = 'time expired';
       let playerId: string;
       if (game.playerFinishedFirst === PlayerOrder.first)
@@ -160,10 +129,6 @@ export class SendAnswerUseCase {
       else playerId = game.firstPlayerUserId;
       // пометка неотвеченных вопросов как неверные ответы
       const unansweredQuestionsCount = 5 - game.secondPlayerAnswersIds.length;
-      await fetch(
-        `https://api.telegram.org/bot5869889223:AAHEljeDneDPax8-wqHqgSgd_TDY_s-gwzI/sendMessage`,
-        options(`cb => unansweredQuestionsCount = ${unansweredQuestionsCount}`),
-      );
       for (let i = 0; i < unansweredQuestionsCount; i++) {
         await this.answersRepo.saveAnswer(
           incorrectAnswer,
@@ -176,10 +141,6 @@ export class SendAnswerUseCase {
       // завершение игры
       game.finishGame();
       // bonus point logic
-      await fetch(
-        `https://api.telegram.org/bot5869889223:AAHEljeDneDPax8-wqHqgSgd_TDY_s-gwzI/sendMessage`,
-        options(`cb => game after = ${JSON.stringify(game)}`),
-      );
       if (
         (await this.isFirstFinishedPlayerHasAtLeastOneCorrectAnswer(game)) &&
         game.status === GameStatus.finished
@@ -187,13 +148,7 @@ export class SendAnswerUseCase {
         game.incrementPlayerGameScore(game.playerFinishedFirst);
       }
       console.log('Game is finished', game.status);
-
       await this.gamesRepo.saveGame(game);
-      await fetch(
-        `https://api.telegram.org/bot5869889223:AAHEljeDneDPax8-wqHqgSgd_TDY_s-gwzI/sendMessage`,
-        options(`Game saved ${game.id}`),
-      );
-
       console.log('Game saved');
     }, 7000);
   }
