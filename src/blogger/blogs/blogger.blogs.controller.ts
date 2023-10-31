@@ -10,6 +10,7 @@ import {
   Query,
   Req,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { InputBlogCreateDto } from './dto/input.create-blog.dto';
@@ -28,6 +29,9 @@ import { CreatePostForBlogCommand } from './use-cases/create.post.for.blog.use-c
 import { InputUpdatePostDto } from './dto/input.update-post.dto';
 import { UpdatePostForBlogCommand } from './use-cases/update.post.for.blog.use-case';
 import { DeletePostCommand } from './use-cases/delete.post.use-case';
+import { OutputBlogImageUpdateDto } from './dto/output.blog-image-update.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { OutputPostImageUpdateDto } from './dto/output.post-image-update.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('blogger/blogs')
@@ -124,5 +128,31 @@ export class BloggerBlogsController {
       queryParams,
       req.user.userId,
     );
+  }
+  @Post(':blogId/images/wallpaper')
+  @UseInterceptors(FileInterceptor('file'))
+  @HttpCode(201)
+  async uploadBlogWallpaper(
+    @Param('blogId')
+    blogId: string,
+  ): Promise<OutputBlogImageUpdateDto> {
+    return;
+  }
+  @Post(':blogId/images/main')
+  @UseInterceptors(FileInterceptor('file'))
+  @HttpCode(201)
+  async uploadBlogMainImage(
+    @Param('blogId') blogId: string,
+  ): Promise<OutputBlogImageUpdateDto> {
+    return;
+  }
+  @Post(':blogId/posts/:postId/images/main')
+  @UseInterceptors(FileInterceptor('file'))
+  @HttpCode(201)
+  async uploadPostMainImage(
+    @Param('blogId') blogId: string,
+    @Param('postId') postId: string,
+  ): Promise<OutputPostImageUpdateDto> {
+    return;
   }
 }
