@@ -53,16 +53,6 @@ export class SendAnswerUseCase {
     );
     console.log({ questions });
     const currentQuestion = questions[currentQuestionNumber - 1];
-    // // Close game if time is up
-    // if (game.status === GameStatus.finished && currentQuestionNumber <= 5) {
-    //   await this.closeAllUnansweredQuestionsWhenGameIsFinished(
-    //     game,
-    //     currentQuestionNumber,
-    //     command.playerId,
-    //     questions,
-    //   );
-    //   throw new ForbiddenException();
-    // }
     console.log({ currentQuestion });
     let answerStatus: AnswerStatus;
     let addedAnswer: Answer;
@@ -187,23 +177,4 @@ export class SendAnswerUseCase {
       );
     return result.length >= 1;
   }
-
-  // private async closeAllUnansweredQuestionsWhenGameIsFinished(
-  //   game: Game,
-  //   currentQuestionNumber: number,
-  //   playerId: string,
-  //   questions: Question[],
-  // ): Promise<void> {
-  //   const incorrectAnswer = 'time expired';
-  //   for (let i = currentQuestionNumber; i <= 5; i++) {
-  //     await this.answersRepo.saveAnswer(
-  //       incorrectAnswer,
-  //       AnswerStatus.incorrect,
-  //       game.id,
-  //       playerId,
-  //       questions[i].id,
-  //     );
-  //   }
-  //   return;
-  // }
 }
