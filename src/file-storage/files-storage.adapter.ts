@@ -7,7 +7,6 @@ import { ConfigService } from '@nestjs/config';
 import { ConfigurationType } from '../configuration/configuration';
 import { Injectable } from '@nestjs/common';
 import { SaveFileResultType } from './save-file-result.type';
-import { ImageTypes } from '../base/application-helpers/image.types';
 
 @Injectable()
 export class S3StorageAdapter {
