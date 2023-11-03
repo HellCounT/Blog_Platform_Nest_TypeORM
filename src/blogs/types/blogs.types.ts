@@ -1,3 +1,5 @@
+import { OutputBlogImageDto } from '../../blogger/blogs/dto/output.blog-image.dto';
+
 export type BlogViewModelType = {
   id: string;
   name: string;
@@ -5,4 +7,5 @@ export type BlogViewModelType = {
   websiteUrl: string;
   createdAt: string;
   isMembership: boolean;
+  images: OutputBlogImageDto;
 };

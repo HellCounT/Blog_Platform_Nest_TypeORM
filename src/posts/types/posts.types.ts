@@ -1,3 +1,5 @@
+import { OutputPostImageDto } from '../../blogger/blogs/dto/output.post-image.dto';
+
 export type PostViewModelType = {
   id: string;
   title: string;
@@ -7,6 +9,7 @@ export type PostViewModelType = {
   blogName: string;
   createdAt: string;
   extendedLikesInfo: ExtendedLikesInfoViewModelType;
+  images: OutputPostImageDto;
 };
 
 export type LikesInfoViewModelType = {

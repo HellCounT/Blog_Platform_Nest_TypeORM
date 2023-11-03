@@ -49,6 +49,12 @@ export class BloggerBlogsQuery extends BlogsQuery {
       items: pageBlogs,
     };
   }
+  async getAllPostsForBlog(
+    q: QueryParserType,
+    userId,
+  ): Promise<PaginatorType<any>> {
+    return Promise.resolve(undefined);
+  }
   async getAllCommentsForBloggerPosts(
     q: QueryParserType,
     userId: string,

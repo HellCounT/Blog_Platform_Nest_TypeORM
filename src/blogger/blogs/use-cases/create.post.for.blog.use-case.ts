@@ -45,6 +45,9 @@ export class CreatePostForBlogUseCase {
         myStatus: 'None',
         newestLikes: [],
       },
+      images: {
+        main: [],
+      },
     };
   }
 }

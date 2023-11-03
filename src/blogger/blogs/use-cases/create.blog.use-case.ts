@@ -33,6 +33,10 @@ export class CreateBlogUseCase {
       websiteUrl: result.websiteUrl,
       createdAt: result.createdAt,
       isMembership: result.isMembership,
+      images: {
+        wallpaper: null,
+        main: [],
+      },
     };
   }
 }

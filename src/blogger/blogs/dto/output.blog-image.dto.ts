@@ -1,4 +1,4 @@
-export type OutputBlogImageUpdateDto = {
+export type OutputBlogImageDto = {
   wallpaper: PhotoSizeViewModel;
   main: PhotoSizeViewModel[];
 };

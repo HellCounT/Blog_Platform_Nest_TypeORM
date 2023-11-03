@@ -29,9 +29,9 @@ import { CreatePostForBlogCommand } from './use-cases/create.post.for.blog.use-c
 import { InputUpdatePostDto } from './dto/input.update-post.dto';
 import { UpdatePostForBlogCommand } from './use-cases/update.post.for.blog.use-case';
 import { DeletePostCommand } from './use-cases/delete.post.use-case';
-import { OutputBlogImageUpdateDto } from './dto/output.blog-image-update.dto';
+import { OutputBlogImageDto } from './dto/output.blog-image.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { OutputPostImageUpdateDto } from './dto/output.post-image-update.dto';
+import { OutputPostImageDto } from './dto/output.post-image.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('blogger/blogs')
@@ -75,6 +75,15 @@ export class BloggerBlogsController {
       new DeleteBlogCommand(blogId, req.user.userId),
     );
     return;
+  }
+  @Get(':blogId/posts')
+  @HttpCode(200)
+  async getAllPostsForBlog(@Query() query: QueryParserType, @Req() req) {
+    const queryParams = parseQueryPagination(query);
+    return await this.bloggerBlogsQueryRepo.getAllPostsForBlog(
+      queryParams,
+      req.user.userId,
+    );
   }
   @Post(':blogId/posts')
   @HttpCode(201)
@@ -133,9 +142,8 @@ export class BloggerBlogsController {
   @UseInterceptors(FileInterceptor('file'))
   @HttpCode(201)
   async uploadBlogWallpaper(
-    @Param('blogId')
-    blogId: string,
-  ): Promise<OutputBlogImageUpdateDto> {
+    @Param('blogId') blogId: string,
+  ): Promise<OutputBlogImageDto> {
     return;
   }
   @Post(':blogId/images/main')
@@ -143,7 +151,7 @@ export class BloggerBlogsController {
   @HttpCode(201)
   async uploadBlogMainImage(
     @Param('blogId') blogId: string,
-  ): Promise<OutputBlogImageUpdateDto> {
+  ): Promise<OutputBlogImageDto> {
     return;
   }
   @Post(':blogId/posts/:postId/images/main')
@@ -152,7 +160,7 @@ export class BloggerBlogsController {
   async uploadPostMainImage(
     @Param('blogId') blogId: string,
     @Param('postId') postId: string,
-  ): Promise<OutputPostImageUpdateDto> {
+  ): Promise<OutputPostImageDto> {
     return;
   }
 }
