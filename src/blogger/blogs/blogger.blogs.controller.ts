@@ -9,6 +9,7 @@ import {
   Put,
   Query,
   Req,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -142,6 +143,7 @@ export class BloggerBlogsController {
   @UseInterceptors(FileInterceptor('file'))
   @HttpCode(201)
   async uploadBlogWallpaper(
+    @UploadedFile() file,
     @Param('blogId') blogId: string,
   ): Promise<OutputBlogImageDto> {
     return;
@@ -150,6 +152,7 @@ export class BloggerBlogsController {
   @UseInterceptors(FileInterceptor('file'))
   @HttpCode(201)
   async uploadBlogMainImage(
+    @UploadedFile() file,
     @Param('blogId') blogId: string,
   ): Promise<OutputBlogImageDto> {
     return;
@@ -158,6 +161,7 @@ export class BloggerBlogsController {
   @UseInterceptors(FileInterceptor('file'))
   @HttpCode(201)
   async uploadPostMainImage(
+    @UploadedFile() file,
     @Param('blogId') blogId: string,
     @Param('postId') postId: string,
   ): Promise<OutputPostImageDto> {
