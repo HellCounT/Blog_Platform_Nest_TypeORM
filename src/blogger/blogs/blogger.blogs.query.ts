@@ -12,6 +12,7 @@ import { Comment } from '../../comments/entities/comment.entity';
 import { isVoid } from '../../base/application-helpers/void.check.helper';
 import { CommentLike } from '../../likes/entities/comment-like.entity';
 import { LikeStatus } from '../../base/application-helpers/statuses';
+import { PostViewModelType } from '../../posts/types/posts.types';
 
 @Injectable()
 export class BloggerBlogsQuery extends BlogsQuery {
@@ -52,8 +53,8 @@ export class BloggerBlogsQuery extends BlogsQuery {
   async getAllPostsForBlog(
     q: QueryParserType,
     userId,
-  ): Promise<PaginatorType<any>> {
-    return Promise.resolve(undefined);
+  ): Promise<PaginatorType<PostViewModelType>> {
+    return;
   }
   async getAllCommentsForBloggerPosts(
     q: QueryParserType,
