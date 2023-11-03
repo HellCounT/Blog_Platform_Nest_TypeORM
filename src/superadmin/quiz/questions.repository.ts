@@ -73,12 +73,12 @@ export class QuestionsRepository {
       return false;
     }
   }
-  async pickRandomQuestionsForGame(amount: number): Promise<Question[]> {
+  async pickFiveRandomQuestionsForGame(): Promise<Question[]> {
     return await this.questionRepo
       .createQueryBuilder('q')
       .select()
       .orderBy('RANDOM()')
-      .take(amount)
+      .take(5)
       .getMany();
   }
   async getQuestionsForIds(questionIds: string[]): Promise<Question[]> {

@@ -16,7 +16,10 @@ export type ConfigurationType = {
   EMAIL_LOGIN: string;
   EMAIL_PASSWORD: string;
   ENV: string;
-  QUIZ_QUESTIONS_AMOUNT;
+  S3_REGION: string;
+  S3_ENDPOINT: string;
+  S3_SECRET: string;
+  S3_ID: string;
 };
 
 export default (): ConfigurationType => ({
@@ -35,5 +38,8 @@ export default (): ConfigurationType => ({
   EMAIL_LOGIN: process.env.EMAIL_LOGIN,
   EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
   ENV: process.env.NODE_ENV,
-  QUIZ_QUESTIONS_AMOUNT: 5,
+  S3_REGION: process.env.S3_REGION,
+  S3_ENDPOINT: process.env.S3_ENDPOINT,
+  S3_SECRET: process.env.S3_SECRET,
+  S3_ID: process.env.S3_ID,
 });
