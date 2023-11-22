@@ -108,6 +108,8 @@ import { PlayersRepository } from './quiz/players.repository';
 import { GamesQuery } from './quiz/games.query';
 import { AnswersRepository } from './quiz/answers.repository';
 import { S3StorageAdapter } from './file-storage/files-storage.adapter';
+import { BlogImage } from './images/entities/blog-image.entity';
+import { PostMainImage } from './images/entities/post-main-image.entity';
 
 const entities = [
   User,
@@ -126,6 +128,8 @@ const entities = [
   Player,
   Question,
   Answer,
+  BlogImage,
+  PostMainImage,
 ];
 
 const controllers = [
