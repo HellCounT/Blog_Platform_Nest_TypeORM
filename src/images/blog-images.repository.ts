@@ -9,11 +9,12 @@ import { v4 as uuidv4 } from 'uuid';
 @Injectable()
 export class BlogImagesRepository {
   constructor(
-    @InjectRepository(BlogImage) protected blogImages: Repository<BlogImage>,
+    @InjectRepository(BlogImage)
+    protected blogImagesRepo: Repository<BlogImage>,
   ) {}
   async getWallpaperInfo(blogId: string): Promise<BlogImage> {
     try {
-      const wallpaper = await this.blogImages.findOne({
+      const wallpaper = await this.blogImagesRepo.findOne({
         where: {
           blogId: blogId,
           imageType: ImageTypes.wallpaper,
@@ -29,7 +30,7 @@ export class BlogImagesRepository {
   }
   async getMainImagesInfo(blogId: string): Promise<BlogImage[]> {
     try {
-      return await this.blogImages.findBy({
+      return await this.blogImagesRepo.findBy({
         blogId: blogId,
         imageType: ImageTypes.main,
       });
@@ -57,7 +58,7 @@ export class BlogImagesRepository {
         height,
         fileSize,
       );
-      await this.blogImages.save(newImage);
+      await this.blogImagesRepo.save(newImage);
       return newImage;
     } catch (e) {
       console.log(e);
