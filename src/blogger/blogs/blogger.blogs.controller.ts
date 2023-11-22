@@ -30,9 +30,11 @@ import { CreatePostForBlogCommand } from './use-cases/create.post.for.blog.use-c
 import { InputUpdatePostDto } from './dto/input.update-post.dto';
 import { UpdatePostForBlogCommand } from './use-cases/update.post.for.blog.use-case';
 import { DeletePostCommand } from './use-cases/delete.post.use-case';
-import { OutputBlogImageDto } from './dto/output.blog-image.dto';
+import { OutputBlogImageDto } from '../../blogs/dto/output.blog-image.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { OutputPostImageDto } from './dto/output.post-image.dto';
+import { OutputPostImageDto } from '../../blogs/dto/output.post-image.dto';
+import { PaginatorType } from '../../base/application-helpers/paginator.type';
+import { PostViewModelType } from '../../posts/types/posts.types';
 
 @UseGuards(JwtAuthGuard)
 @Controller('blogger/blogs')
@@ -79,7 +81,10 @@ export class BloggerBlogsController {
   }
   @Get(':blogId/posts')
   @HttpCode(200)
-  async getAllPostsForBlog(@Query() query: QueryParserType, @Req() req) {
+  async getAllPostsForBlog(
+    @Query() query: QueryParserType,
+    @Req() req,
+  ): Promise<PaginatorType<PostViewModelType>> {
     const queryParams = parseQueryPagination(query);
     return await this.bloggerBlogsQueryRepo.getAllPostsForBlog(
       queryParams,

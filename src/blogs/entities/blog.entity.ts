@@ -9,6 +9,7 @@ import {
 import { User } from '../../users/entities/user.entity';
 import { Post } from '../../posts/entities/post.entity';
 import { UserBannedByBlogger } from '../../blogger/users/users-banned-by-blogger/entities/user-banned-by-blogger.entity';
+import { BlogImage } from '../../images/entities/blog-image.entity';
 
 @Entity()
 export class Blog {
@@ -37,6 +38,8 @@ export class Blog {
   posts: Post[];
   @OneToMany(() => UserBannedByBlogger, (bb) => bb.blog)
   userBans: UserBannedByBlogger[];
+  @OneToMany(() => BlogImage, (bmi) => bmi.blog)
+  mainImages: BlogImage[];
   static instantiate(
     blogId: string,
     name: string,

@@ -10,6 +10,7 @@ import { Blog } from '../../blogs/entities/blog.entity';
 import { User } from '../../users/entities/user.entity';
 import { Comment } from '../../comments/entities/comment.entity';
 import { PostLike } from '../../likes/entities/post-like.entity';
+import { PostMainImage } from '../../images/entities/post-main-image.entity';
 
 @Entity()
 export class Post {
@@ -41,6 +42,8 @@ export class Post {
   comments: Comment[];
   @OneToMany(() => PostLike, (pl) => pl.post)
   likes: PostLike[];
+  @OneToMany(() => PostMainImage, (pmi) => pmi.post)
+  mainImages: PostMainImage[];
   static instantiate(
     postId: string,
     title: string,

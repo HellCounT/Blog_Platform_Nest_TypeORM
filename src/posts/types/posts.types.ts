@@ -1,4 +1,4 @@
-import { OutputPostImageDto } from '../../blogger/blogs/dto/output.post-image.dto';
+import { OutputPostImageDto } from '../../blogs/dto/output.post-image.dto';
 
 export type PostViewModelType = {
   id: string;

@@ -54,6 +54,7 @@ export class BloggerBlogsQuery extends BlogsQuery {
     q: QueryParserType,
     userId,
   ): Promise<PaginatorType<PostViewModelType>> {
+    const offsetSize = (q.pageNumber - 1) * q.pageSize;
     return;
   }
   async getAllCommentsForBloggerPosts(
