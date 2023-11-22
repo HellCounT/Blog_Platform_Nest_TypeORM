@@ -39,7 +39,7 @@ export class Blog {
   @OneToMany(() => UserBannedByBlogger, (bb) => bb.blog)
   userBans: UserBannedByBlogger[];
   @OneToMany(() => BlogImage, (bmi) => bmi.blog)
-  mainImages: BlogImage[];
+  images: BlogImage[];
   static instantiate(
     blogId: string,
     name: string,

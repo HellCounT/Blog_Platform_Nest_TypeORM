@@ -6,7 +6,7 @@ import { ImageTypes } from '../../base/application-helpers/image.types';
 export class BlogImage {
   @PrimaryColumn('uuid')
   id: string;
-  @ManyToOne(() => Blog, (b) => b.mainImages)
+  @ManyToOne(() => Blog, (b) => b.images)
   @JoinColumn()
   blog: Blog;
   @Column('uuid')
