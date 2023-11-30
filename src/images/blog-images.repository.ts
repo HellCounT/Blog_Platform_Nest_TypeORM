@@ -4,7 +4,6 @@ import { BlogImage } from './entities/blog-image.entity';
 import { Repository } from 'typeorm';
 import { ImageTypes } from '../base/application-helpers/image.types';
 import { isVoid } from '../base/application-helpers/void.check.helper';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class BlogImagesRepository {
@@ -40,6 +39,7 @@ export class BlogImagesRepository {
     }
   }
   async createImageInfo(
+    imageId: string,
     blogId: string,
     imageType: ImageTypes,
     url: string,
@@ -48,7 +48,6 @@ export class BlogImagesRepository {
     fileSize: number,
   ): Promise<BlogImage> {
     try {
-      const imageId = uuidv4();
       const newImage = BlogImage.instantiate(
         imageId,
         blogId,

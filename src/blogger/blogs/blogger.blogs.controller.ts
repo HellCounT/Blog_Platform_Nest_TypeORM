@@ -35,6 +35,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { OutputPostImageDto } from '../../blogs/dto/output.post-image.dto';
 import { PaginatorType } from '../../base/application-helpers/paginator.type';
 import { PostViewModelType } from '../../posts/types/posts.types';
+import { UploadBlogImageCommand } from './use-cases/upload.blog.image.use-case';
 
 @UseGuards(JwtAuthGuard)
 @Controller('blogger/blogs')
@@ -157,10 +158,20 @@ export class BloggerBlogsController {
   @UseInterceptors(FileInterceptor('file'))
   @HttpCode(201)
   async uploadBlogMainImage(
-    @UploadedFile() file,
+    @UploadedFile() file: Express.Multer.File,
     @Param('blogId') blogId: string,
+    @Req() req,
   ): Promise<OutputBlogImageDto> {
-    return;
+    const filename = file.originalname;
+    return this.commandBus.execute(
+      new UploadBlogImageCommand(
+        file.buffer,
+        file.size,
+        blogId,
+        filename,
+        req.user.userId,
+      ),
+    );
   }
   @Post(':blogId/posts/:postId/images/main')
   @UseInterceptors(FileInterceptor('file'))
