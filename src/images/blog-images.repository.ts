@@ -38,27 +38,9 @@ export class BlogImagesRepository {
       return null;
     }
   }
-  async createImageInfo(
-    imageId: string,
-    blogId: string,
-    imageType: ImageTypes,
-    url: string,
-    width: number,
-    height: number,
-    fileSize: number,
-  ): Promise<BlogImage> {
+  async save(blogImage: BlogImage): Promise<BlogImage> {
     try {
-      const newImage = BlogImage.instantiate(
-        imageId,
-        blogId,
-        imageType,
-        url,
-        width,
-        height,
-        fileSize,
-      );
-      await this.blogImagesRepo.save(newImage);
-      return newImage;
+      return this.blogImagesRepo.save(blogImage);
     } catch (e) {
       console.log(e);
       return null;

@@ -110,6 +110,7 @@ import { AnswersRepository } from './quiz/answers.repository';
 import { S3StorageAdapter } from './file-storage/files-storage.adapter';
 import { BlogImage } from './images/entities/blog-image.entity';
 import { PostMainImage } from './images/entities/post-main-image.entity';
+import { UploadBlogImageUseCase } from './blogger/blogs/use-cases/upload.blog.image.use-case';
 
 const entities = [
   User,
@@ -191,6 +192,7 @@ const useCases = [
   ChangePublishedStatusUseCase,
   JoinOrCreateGameUseCase,
   SendAnswerUseCase,
+  UploadBlogImageUseCase,
 ];
 
 const repositories = [

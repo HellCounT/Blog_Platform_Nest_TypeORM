@@ -36,6 +36,7 @@ import { OutputPostImageDto } from '../../blogs/dto/output.post-image.dto';
 import { PaginatorType } from '../../base/application-helpers/paginator.type';
 import { PostViewModelType } from '../../posts/types/posts.types';
 import { UploadBlogImageCommand } from './use-cases/upload.blog.image.use-case';
+import { ImageTypes } from '../../base/application-helpers/image.types';
 
 @UseGuards(JwtAuthGuard)
 @Controller('blogger/blogs')
@@ -170,6 +171,7 @@ export class BloggerBlogsController {
         blogId,
         filename,
         req.user.userId,
+        ImageTypes.main,
       ),
     );
   }
