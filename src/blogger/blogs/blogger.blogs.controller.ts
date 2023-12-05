@@ -152,8 +152,19 @@ export class BloggerBlogsController {
   async uploadBlogWallpaper(
     @UploadedFile() file,
     @Param('blogId') blogId: string,
+    @Req() req,
   ): Promise<OutputBlogImageDto> {
-    return;
+    const filename = file.originalname;
+    return this.commandBus.execute(
+      new UploadBlogImageCommand(
+        file.buffer,
+        file.size,
+        blogId,
+        filename,
+        req.user.userId,
+        ImageTypes.wallpaper,
+      ),
+    );
   }
   @Post(':blogId/images/main')
   @UseInterceptors(FileInterceptor('file'))

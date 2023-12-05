@@ -13,6 +13,10 @@ import { getFileExtension } from '../../../base/application-helpers/get.file.ext
 import { allowedImageFileExtensions } from '../../../base/application-helpers/allowed.image.file.extensions';
 import sharp from 'sharp';
 import { BlogImagesRepository } from '../../../images/blog-images.repository';
+import {
+  OutputBlogImageDto,
+  PhotoSizeViewModel,
+} from '../../../blogs/dto/output.blog-image.dto';
 
 export class UploadBlogImageCommand {
   constructor(
@@ -32,7 +36,7 @@ export class UploadBlogImageUseCase {
     protected blogsRepo: BlogsRepository,
     protected blogImagesRepo: BlogImagesRepository,
   ) {}
-  async execute(command: UploadBlogImageCommand): Promise<BlogImage> {
+  async execute(command: UploadBlogImageCommand): Promise<OutputBlogImageDto> {
     const blog = await this.blogsRepo.getBlogById(command.blogId);
     if (!blog) throw new NotFoundException();
     if (blog.ownerId !== command.userId) throw new ForbiddenException();
@@ -59,7 +63,21 @@ export class UploadBlogImageUseCase {
           metadata.height,
           command.imageFileSize,
         );
-        return await this.blogImagesRepo.save(wallpaper);
+        await this.blogImagesRepo.save(wallpaper);
+        const blogMainImages = await this.blogImagesRepo.getMainImagesInfo(
+          blog.id,
+        );
+        const mappedBlogMainImages: PhotoSizeViewModel[] =
+          this.mapBlogMainImagesToViewModel(blogMainImages);
+        return {
+          wallpaper: {
+            url: wallpaper.url,
+            width: wallpaper.width,
+            height: wallpaper.height,
+            fileSize: wallpaper.fileSize,
+          },
+          main: mappedBlogMainImages,
+        };
       } catch (e) {
         console.log(e);
         return null;
@@ -79,11 +97,38 @@ export class UploadBlogImageUseCase {
           metadata.height,
           command.imageFileSize,
         );
-        return await this.blogImagesRepo.save(mainImage);
+        await this.blogImagesRepo.save(mainImage);
+        const blogMainImages = await this.blogImagesRepo.getMainImagesInfo(
+          blog.id,
+        );
+        const mappedBlogMainImages: PhotoSizeViewModel[] =
+          this.mapBlogMainImagesToViewModel(blogMainImages);
+        const wallpaper = await this.blogImagesRepo.getWallpaperInfo(blog.id);
+        return {
+          wallpaper: {
+            url: wallpaper.url,
+            width: wallpaper.width,
+            height: wallpaper.height,
+            fileSize: wallpaper.fileSize,
+          },
+          main: mappedBlogMainImages,
+        };
       } catch (e) {
         console.log(e);
         return null;
       }
     }
+  }
+  private mapBlogMainImagesToViewModel(
+    blogMainImages: BlogImage[],
+  ): PhotoSizeViewModel[] {
+    return blogMainImages.map((i) => {
+      return {
+        url: i.url,
+        width: i.width,
+        height: i.height,
+        fileSize: i.fileSize,
+      };
+    });
   }
 }
