@@ -112,6 +112,7 @@ import { BlogImage } from './images/entities/blog-image.entity';
 import { PostMainImage } from './images/entities/post-main-image.entity';
 import { UploadBlogImageUseCase } from './blogger/blogs/use-cases/upload.blog.image.use-case';
 import { BlogImagesRepository } from './images/blog-images.repository';
+import { UploadPostImageUseCase } from './blogger/blogs/use-cases/upload.post.image.use-case';
 
 const entities = [
   User,
@@ -194,6 +195,7 @@ const useCases = [
   JoinOrCreateGameUseCase,
   SendAnswerUseCase,
   UploadBlogImageUseCase,
+  UploadPostImageUseCase,
 ];
 
 const repositories = [

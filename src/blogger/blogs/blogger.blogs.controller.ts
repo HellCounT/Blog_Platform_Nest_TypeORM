@@ -37,6 +37,7 @@ import { PaginatorType } from '../../base/application-helpers/paginator.type';
 import { PostViewModelType } from '../../posts/types/posts.types';
 import { UploadBlogImageCommand } from './use-cases/upload.blog.image.use-case';
 import { ImageTypes } from '../../base/application-helpers/image.types';
+import { UploadPostImageCommand } from './use-cases/upload.post.image.use-case';
 
 @UseGuards(JwtAuthGuard)
 @Controller('blogger/blogs')
@@ -193,7 +194,18 @@ export class BloggerBlogsController {
     @UploadedFile() file,
     @Param('blogId') blogId: string,
     @Param('postId') postId: string,
+    @Req() req,
   ): Promise<OutputPostImageDto> {
-    return;
+    const filename = file.originalname;
+    return this.commandBus.execute(
+      new UploadPostImageCommand(
+        file.buffer,
+        file.size,
+        blogId,
+        postId,
+        filename,
+        req.user.userId,
+      ),
+    );
   }
 }
