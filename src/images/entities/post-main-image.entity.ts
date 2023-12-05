@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Post } from '../../posts/entities/post.entity';
+import { PostMainImageSizes } from '../../base/application-helpers/post.main.image.types';
 
 @Entity()
 export class PostMainImage {
@@ -10,6 +11,8 @@ export class PostMainImage {
   post: Post;
   @Column('uuid')
   postId: string;
+  @Column('varchar')
+  imageSize: PostMainImageSizes;
   @Column('varchar')
   url: string;
   @Column('varchar')
@@ -23,6 +26,7 @@ export class PostMainImage {
   static instantiate(
     imageId: string,
     postId: string,
+    imageSize: PostMainImageSizes,
     url: string,
     width: number,
     height: number,
@@ -31,6 +35,7 @@ export class PostMainImage {
     const postMainImage = new PostMainImage();
     postMainImage.id = imageId;
     postMainImage.postId = postId;
+    postMainImage.imageSize = imageSize;
     postMainImage.url = url;
     postMainImage.width = width;
     postMainImage.height = height;
