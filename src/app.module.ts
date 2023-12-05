@@ -111,6 +111,7 @@ import { S3StorageAdapter } from './file-storage/files-storage.adapter';
 import { BlogImage } from './images/entities/blog-image.entity';
 import { PostMainImage } from './images/entities/post-main-image.entity';
 import { UploadBlogImageUseCase } from './blogger/blogs/use-cases/upload.blog.image.use-case';
+import { BlogImagesRepository } from './images/blog-images.repository';
 
 const entities = [
   User,
@@ -209,6 +210,7 @@ const repositories = [
   GamesRepository,
   PlayersRepository,
   AnswersRepository,
+  BlogImagesRepository,
 ];
 
 const query = [
