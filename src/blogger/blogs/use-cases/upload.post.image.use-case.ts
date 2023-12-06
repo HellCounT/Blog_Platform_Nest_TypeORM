@@ -15,6 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { PostMainImage } from '../../../images/entities/post-main-image.entity';
 import { PostMainImageSizes } from '../../../base/application-helpers/post.main.image.types';
 import { PostMainImagesRepository } from '../../../images/post-main-images.repository';
+import { PhotoSizeViewModel } from '../../../blogs/dto/output.blog-image.dto';
 
 export class UploadPostImageCommand {
   constructor(
@@ -110,9 +111,31 @@ export class UploadPostImageUseCase {
       await this.postMainImagesRepo.save(originalImage);
       await this.postMainImagesRepo.save(middleImage);
       await this.postMainImagesRepo.save(smallImage);
+      const createdPostMainImages: PostMainImage[] = [
+        originalImage,
+        middleImage,
+        smallImage,
+      ];
+      const mappedPostMainImages: PhotoSizeViewModel[] =
+        this.mapPostMainImagesToViewModel(createdPostMainImages);
+      return {
+        main: mappedPostMainImages,
+      };
     } catch (e) {
       console.log(e);
       return null;
     }
+  }
+  private mapPostMainImagesToViewModel(
+    postMainImages: PostMainImage[],
+  ): PhotoSizeViewModel[] {
+    return postMainImages.map((i) => {
+      return {
+        url: i.url,
+        width: i.width,
+        height: i.height,
+        fileSize: i.fileSize,
+      };
+    });
   }
 }
