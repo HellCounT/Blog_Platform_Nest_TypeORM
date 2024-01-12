@@ -13,6 +13,8 @@ import { isVoid } from '../../base/application-helpers/void.check.helper';
 import { CommentLike } from '../../likes/entities/comment-like.entity';
 import { LikeStatus } from '../../base/application-helpers/statuses';
 import { PostViewModelType } from '../../posts/types/posts.types';
+import { BlogImage } from '../../images/entities/blog-image.entity';
+import { PostMainImage } from '../../images/entities/post-main-image.entity';
 
 @Injectable()
 export class BloggerBlogsQuery extends BlogsQuery {
@@ -22,6 +24,10 @@ export class BloggerBlogsQuery extends BlogsQuery {
     @InjectRepository(Comment) protected commentsRepo: Repository<Comment>,
     @InjectRepository(CommentLike)
     protected commentLikeRepo: Repository<CommentLike>,
+    @InjectRepository(BlogImage)
+    protected blogImagesRepo: Repository<BlogImage>,
+    @InjectRepository(PostMainImage)
+    protected postMainImagesRepo: Repository<PostMainImage>,
   ) {
     super(blogsRepo);
   }
