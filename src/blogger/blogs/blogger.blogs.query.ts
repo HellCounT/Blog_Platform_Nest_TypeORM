@@ -29,7 +29,7 @@ export class BloggerBlogsQuery extends BlogsQuery {
     @InjectRepository(PostMainImage)
     protected postMainImagesRepo: Repository<PostMainImage>,
   ) {
-    super(blogsRepo);
+    super(blogsRepo, blogImagesRepo);
   }
   async getAllBlogsForBlogger(
     q: QueryParserType,

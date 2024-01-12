@@ -5,10 +5,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { Blog } from './entities/blog.entity';
 import { PaginatorType } from '../base/application-helpers/paginator.type';
+import { BlogImage } from '../images/entities/blog-image.entity';
+import { ImageTypes } from '../base/application-helpers/image.types';
+import { PhotoSizeViewModel } from './dto/output.blog-image.dto';
 
 @Injectable()
 export class BlogsQuery {
-  constructor(@InjectRepository(Blog) protected blogsRepo: Repository<Blog>) {}
+  constructor(
+    @InjectRepository(Blog) protected blogsRepo: Repository<Blog>,
+    @InjectRepository(BlogImage)
+    protected blogImagesRepo: Repository<BlogImage>,
+  ) {}
   async viewAllBlogs(
     q: QueryParserType,
   ): Promise<PaginatorType<BlogViewModelType>> {
@@ -32,13 +39,18 @@ export class BlogsQuery {
         },
       },
     });
-    const pageBlogs = reqPageDbBlogs.map((b) => this._mapBlogToViewType(b));
+    if (allBlogsCount === 0) return null;
+    const items = [];
+    for await (const b of reqPageDbBlogs) {
+      const blog = await this._mapBlogToViewType(b);
+      items.push(blog);
+    }
     return {
       pagesCount: Math.ceil(allBlogsCount / q.pageSize),
       page: q.pageNumber,
       pageSize: q.pageSize,
       totalCount: allBlogsCount,
-      items: pageBlogs,
+      items: items,
     };
   }
   async findBlogById(blogId: string): Promise<BlogViewModelType> {
@@ -49,15 +61,34 @@ export class BlogsQuery {
     if (foundBlog) return this._mapBlogToViewType(foundBlog);
     else throw new NotFoundException();
   }
-  //todo: async mapping (adding images)
-  async _mapBlogToViewType(blog: Blog): BlogViewModelType {
-    return await {
+  async _mapBlogToViewType(blog: Blog): Promise<BlogViewModelType> {
+    const wallpaper = await this.blogImagesRepo.findOneBy({
+      blogId: blog.id,
+      imageType: ImageTypes.wallpaper,
+    });
+    const mainImages = await this.blogImagesRepo.findBy({
+      blogId: blog.id,
+      imageType: ImageTypes.main,
+    });
+    return {
       id: blog.id,
       name: blog.name,
       description: blog.description,
       websiteUrl: blog.websiteUrl,
       createdAt: blog.createdAt,
       isMembership: blog.isMembership,
+      images: {
+        wallpaper: this._mapImageToPhotoSizeViewModel(wallpaper),
+        main: mainImages.map((m) => this._mapImageToPhotoSizeViewModel(m)),
+      },
+    };
+  }
+  _mapImageToPhotoSizeViewModel(image: BlogImage): PhotoSizeViewModel {
+    return {
+      url: image.url,
+      width: image.width,
+      height: image.height,
+      fileSize: image.fileSize,
     };
   }
 }
