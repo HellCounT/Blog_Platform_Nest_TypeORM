@@ -50,8 +50,8 @@ export class BlogsQuery {
     else throw new NotFoundException();
   }
   //todo: async mapping (adding images)
-  _mapBlogToViewType(blog: Blog): BlogViewModelType {
-    return {
+  async _mapBlogToViewType(blog: Blog): BlogViewModelType {
+    return await {
       id: blog.id,
       name: blog.name,
       description: blog.description,
