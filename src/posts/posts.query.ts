@@ -12,6 +12,9 @@ import { PostLike } from '../likes/entities/post-like.entity';
 import { PaginatorType } from '../base/application-helpers/paginator.type';
 import { emptyPaginatorStub } from '../base/application-helpers/empty.paginator.stub';
 import { LikeStatus } from '../base/application-helpers/statuses';
+import { PostMainImage } from '../images/entities/post-main-image.entity';
+import { BlogImage } from '../images/entities/blog-image.entity';
+import { PhotoSizeViewModel } from '../blogs/dto/output.blog-image.dto';
 
 @Injectable()
 export class PostsQuery {
@@ -20,6 +23,8 @@ export class PostsQuery {
     @InjectRepository(Blog) protected blogsRepo: Repository<Blog>,
     @InjectRepository(PostLike) protected postLikeRepo: Repository<PostLike>,
     @InjectDataSource() protected dataSource: DataSource,
+    @InjectRepository(PostMainImage)
+    protected postMainImagesRepo: Repository<PostMainImage>,
   ) {}
   async viewAllPosts(
     q: QueryParserType,
@@ -207,6 +212,9 @@ export class PostsQuery {
         login: l.user.login,
       };
     });
+    const postMainImages = await this.postMainImagesRepo.findBy({
+      postId: post.id,
+    });
     return {
       id: post.id,
       title: post.title,
@@ -220,6 +228,9 @@ export class PostsQuery {
         dislikesCount: post.dislikesCount,
         myStatus: userLike?.likeStatus || LikeStatus.none,
         newestLikes: mappedLikes,
+      },
+      images: {
+        main: postMainImages.map((m) => this._mapImageToPhotoSizeViewModel(m)),
       },
     };
   }
@@ -238,6 +249,9 @@ export class PostsQuery {
         login: l.user.login,
       };
     });
+    const postMainImages = await this.postMainImagesRepo.findBy({
+      postId: post.id,
+    });
     return {
       id: post.id,
       title: post.title,
@@ -252,6 +266,17 @@ export class PostsQuery {
         myStatus: userLike?.likeStatus || LikeStatus.none,
         newestLikes: mappedLikes,
       },
+      images: {
+        main: postMainImages.map((m) => this._mapImageToPhotoSizeViewModel(m)),
+      },
+    };
+  }
+  _mapImageToPhotoSizeViewModel(image: PostMainImage): PhotoSizeViewModel {
+    return {
+      url: image.url,
+      width: image.width,
+      height: image.height,
+      fileSize: image.fileSize,
     };
   }
 }
