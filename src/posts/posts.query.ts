@@ -13,7 +13,6 @@ import { PaginatorType } from '../base/application-helpers/paginator.type';
 import { emptyPaginatorStub } from '../base/application-helpers/empty.paginator.stub';
 import { LikeStatus } from '../base/application-helpers/statuses';
 import { PostMainImage } from '../images/entities/post-main-image.entity';
-import { BlogImage } from '../images/entities/blog-image.entity';
 import { PhotoSizeViewModel } from '../blogs/dto/output.blog-image.dto';
 
 @Injectable()
