@@ -47,13 +47,17 @@ export class BloggerBlogsQuery extends BlogsQuery {
       .limit(q.pageSize)
       .offset(offsetSize)
       .getManyAndCount();
-    const pageBlogs = reqPageDbBlogs.map((b) => this._mapBlogToViewType(b));
+    const items = [];
+    for await (const b of reqPageDbBlogs) {
+      const blog = await this._mapBlogToViewType(b);
+      items.push(blog);
+    }
     return {
       pagesCount: Math.ceil(allBlogsCount / q.pageSize),
       page: q.pageNumber,
       pageSize: q.pageSize,
       totalCount: allBlogsCount,
-      items: pageBlogs,
+      items: items,
     };
   }
   //todo: Complete method
