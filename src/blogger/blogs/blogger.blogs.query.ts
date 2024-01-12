@@ -56,6 +56,7 @@ export class BloggerBlogsQuery extends BlogsQuery {
       items: pageBlogs,
     };
   }
+  //todo: Complete method
   async getAllPostsForBlog(
     q: QueryParserType,
     userId,

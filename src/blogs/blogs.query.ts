@@ -49,6 +49,7 @@ export class BlogsQuery {
     if (foundBlog) return this._mapBlogToViewType(foundBlog);
     else throw new NotFoundException();
   }
+  //todo: async mapping (adding images)
   _mapBlogToViewType(blog: Blog): BlogViewModelType {
     return {
       id: blog.id,
