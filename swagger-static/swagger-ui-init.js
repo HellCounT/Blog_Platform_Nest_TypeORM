@@ -727,6 +727,24 @@ window.onload = function() {
         }
       },
       "/blogger/blogs/{blogId}/posts": {
+        "get": {
+          "operationId": "BloggerBlogsController_getAllPostsForBlog",
+          "parameters": [
+            {
+              "name": "blogId",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          }
+        },
         "post": {
           "operationId": "BloggerBlogsController_createPostForBlog",
           "parameters": [
@@ -826,6 +844,74 @@ window.onload = function() {
           "parameters": [],
           "responses": {
             "200": {
+              "description": ""
+            }
+          }
+        }
+      },
+      "/blogger/blogs/{blogId}/images/wallpaper": {
+        "post": {
+          "operationId": "BloggerBlogsController_uploadBlogWallpaper",
+          "parameters": [
+            {
+              "name": "blogId",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": ""
+            }
+          }
+        }
+      },
+      "/blogger/blogs/{blogId}/images/main": {
+        "post": {
+          "operationId": "BloggerBlogsController_uploadBlogMainImage",
+          "parameters": [
+            {
+              "name": "blogId",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": ""
+            }
+          }
+        }
+      },
+      "/blogger/blogs/{blogId}/posts/{postId}/images/main": {
+        "post": {
+          "operationId": "BloggerBlogsController_uploadPostMainImage",
+          "parameters": [
+            {
+              "name": "blogId",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "postId",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
               "description": ""
             }
           }

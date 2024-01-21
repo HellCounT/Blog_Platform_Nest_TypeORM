@@ -113,6 +113,7 @@ import { PostMainImage } from './images/entities/post-main-image.entity';
 import { UploadBlogImageUseCase } from './blogger/blogs/use-cases/upload.blog.image.use-case';
 import { BlogImagesRepository } from './images/blog-images.repository';
 import { UploadPostImageUseCase } from './blogger/blogs/use-cases/upload.post.image.use-case';
+import { PostMainImagesRepository } from './images/post-main-images.repository';
 
 const entities = [
   User,
@@ -213,6 +214,7 @@ const repositories = [
   PlayersRepository,
   AnswersRepository,
   BlogImagesRepository,
+  PostMainImagesRepository,
 ];
 
 const query = [
