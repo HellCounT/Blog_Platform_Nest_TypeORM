@@ -85,11 +85,13 @@ export class BloggerBlogsController {
   @Get(':blogId/posts')
   @HttpCode(200)
   async getAllPostsForBlog(
+    @Param('blogId') blogId: string,
     @Query() query: QueryParserType,
     @Req() req,
   ): Promise<PaginatorType<PostViewModelType>> {
     const queryParams = parseQueryPagination(query);
     return await this.bloggerBlogsQueryRepo.getAllPostsForBlog(
+      blogId,
       queryParams,
       req.user.userId,
     );

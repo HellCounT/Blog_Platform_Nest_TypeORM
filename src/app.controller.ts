@@ -29,6 +29,8 @@ export class AppController {
       this.dataSource.query(`DELETE FROM "player"`),
       this.dataSource.query(`DELETE FROM "question"`),
       this.dataSource.query(`DELETE FROM "answer"`),
+      this.dataSource.query(`DELETE FROM "blog_image"`),
+      this.dataSource.query(`DELETE FROM "post_main_image"`),
     ]);
     return;
   }
