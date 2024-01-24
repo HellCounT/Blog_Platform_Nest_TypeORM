@@ -26,7 +26,6 @@ export class S3StorageAdapter {
   }
 
   async uploadImage(key: string, buffer: Buffer): Promise<SaveFileResultType> {
-    //todo: в юзкейсе формировать ключ через перебор по типам изображений
     const bucketParams = {
       Bucket: this.bucketName,
       Key: key,
