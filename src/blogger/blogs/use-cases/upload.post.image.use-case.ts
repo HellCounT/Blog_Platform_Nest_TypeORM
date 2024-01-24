@@ -44,7 +44,7 @@ export class UploadPostImageUseCase {
     if (!allowedImageFileExtensions.includes(fileExtension))
       throw new BadRequestException();
     const maxFileSize = 100 * 1024;
-    if (command.imageFileSize > maxFileSize) throw new ForbiddenException();
+    if (command.imageFileSize > maxFileSize) throw new BadRequestException();
     const metadata = await sharp(command.imageBuffer).metadata();
     if (metadata.width !== 940 || metadata.height !== 432)
       throw new BadRequestException();

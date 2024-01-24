@@ -1,1 +1,1 @@
-export const allowedImageFileExtensions = ['.png', '.jpg', '.jpeg'];
+export const allowedImageFileExtensions = ['png', 'jpg', 'jpeg'];

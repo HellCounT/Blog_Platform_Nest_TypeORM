@@ -41,16 +41,21 @@ export class UploadBlogImageUseCase {
     if (!blog) throw new NotFoundException();
     if (blog.ownerId !== command.userId) throw new ForbiddenException();
     const fileExtension = getFileExtension(command.filename);
-    if (!allowedImageFileExtensions.includes(fileExtension))
+    console.log(fileExtension);
+    if (!allowedImageFileExtensions.includes(fileExtension)) {
+      console.log('error in file extension validation');
       throw new BadRequestException();
+    }
     const maxFileSize = 100 * 1024;
-    if (command.imageFileSize > maxFileSize) throw new ForbiddenException();
+    if (command.imageFileSize > maxFileSize) throw new BadRequestException();
     const metadata = await sharp(command.imageBuffer).metadata();
     const imageId = uuidv4();
     // wallpaper
     if (command.blogImageType === ImageTypes.wallpaper) {
-      if (metadata.width !== 1028 || metadata.height !== 312)
+      if (metadata.width !== 1028 || metadata.height !== 312) {
+        console.log('error in image size validation');
         throw new BadRequestException();
+      }
       try {
         const key = `${command.blogId}/images/wallpaper/${command.filename}`;
         await this.s3StorageAdapter.uploadImage(key, command.imageBuffer);
@@ -83,8 +88,10 @@ export class UploadBlogImageUseCase {
         return null;
       } // main
     } else {
-      if (metadata.width !== 156 || metadata.height !== 156)
+      if (metadata.width !== 156 || metadata.height !== 156) {
+        console.log('error in image size validation');
         throw new BadRequestException();
+      }
       try {
         const key = `${command.blogId}/images/main/${command.filename}`;
         await this.s3StorageAdapter.uploadImage(key, command.imageBuffer);
