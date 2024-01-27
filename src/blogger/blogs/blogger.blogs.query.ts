@@ -299,9 +299,9 @@ export class BloggerBlogsQuery extends BlogsQuery {
   ): PhotoSizeViewModel {
     return {
       url: image.url,
-      width: image.width,
-      height: image.height,
-      fileSize: image.fileSize,
+      width: +image.width,
+      height: +image.height,
+      fileSize: +image.fileSize,
     };
   }
 }
