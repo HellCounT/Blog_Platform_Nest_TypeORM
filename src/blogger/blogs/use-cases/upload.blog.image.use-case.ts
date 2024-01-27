@@ -111,6 +111,7 @@ export class UploadBlogImageUseCase {
         const mappedBlogMainImages: PhotoSizeViewModel[] =
           this.mapBlogMainImagesToViewModel(blogMainImages);
         const wallpaper = await this.blogImagesRepo.getWallpaperInfo(blog.id);
+        console.log('wallpaper: ', wallpaper);
         return {
           wallpaper: {
             url: wallpaper.url,
@@ -132,9 +133,9 @@ export class UploadBlogImageUseCase {
     return blogMainImages.map((i) => {
       return {
         url: i.url,
-        width: i.width,
-        height: i.height,
-        fileSize: i.fileSize,
+        width: +i.width,
+        height: +i.height,
+        fileSize: +i.fileSize,
       };
     });
   }

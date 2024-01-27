@@ -6,7 +6,7 @@ import { ImageTypes } from '../../base/application-helpers/image.types';
 export class BlogImage {
   @PrimaryColumn('uuid')
   id: string;
-  @ManyToOne(() => Blog, (b) => b.images)
+  @ManyToOne(() => Blog, (b) => b.images, { onDelete: 'CASCADE' })
   @JoinColumn()
   blog: Blog;
   @Column('uuid')
@@ -15,11 +15,11 @@ export class BlogImage {
   imageType: ImageTypes;
   @Column('varchar')
   url: string;
-  @Column('varchar')
+  @Column('integer')
   width: number;
-  @Column('varchar')
+  @Column('integer')
   height: number;
-  @Column('varchar')
+  @Column('integer')
   fileSize: number;
   @Column('timestamp')
   uploadedAt: Date;

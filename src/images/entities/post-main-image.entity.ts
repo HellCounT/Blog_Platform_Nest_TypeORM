@@ -6,7 +6,7 @@ import { PostMainImageSizes } from '../../base/application-helpers/post.main.ima
 export class PostMainImage {
   @PrimaryColumn('uuid')
   id: string;
-  @ManyToOne(() => Post, (p) => p.mainImages)
+  @ManyToOne(() => Post, (p) => p.mainImages, { onDelete: 'CASCADE' })
   @JoinColumn()
   post: Post;
   @Column('uuid')
@@ -15,11 +15,11 @@ export class PostMainImage {
   imageSize: PostMainImageSizes;
   @Column('varchar')
   url: string;
-  @Column('varchar')
+  @Column('integer')
   width: number;
-  @Column('varchar')
+  @Column('integer')
   height: number;
-  @Column('varchar')
+  @Column('integer')
   fileSize: number;
   @Column('timestamp')
   uploadedAt: Date;
