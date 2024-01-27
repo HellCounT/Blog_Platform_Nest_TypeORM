@@ -80,7 +80,7 @@ export class BlogsController {
     @Param('postId') postId: string,
     @Param('filename') filename: string,
   ): Promise<Buffer> {
-    const key = `blogs/${blogId}/posts/${postId}/images/main/${filename}`;
+    const key = `blogs/${blogId}/posts/${postId}/images/${filename}`;
     return this.blogsQueryRepo.getImageFile(key);
   }
 }
