@@ -57,7 +57,7 @@ export class UploadBlogImageUseCase {
         throw new BadRequestException();
       }
       try {
-        const key = `${command.blogId}/images/wallpaper/${command.filename}`;
+        const key = `blogs/${command.blogId}/images/wallpaper/${command.filename}`;
         await this.s3StorageAdapter.uploadImage(key, command.imageBuffer);
         const wallpaper = BlogImage.instantiate(
           imageId,
@@ -93,7 +93,7 @@ export class UploadBlogImageUseCase {
         throw new BadRequestException();
       }
       try {
-        const key = `${command.blogId}/images/main/${command.filename}`;
+        const key = `blogs/${command.blogId}/images/main/${command.filename}`;
         await this.s3StorageAdapter.uploadImage(key, command.imageBuffer);
         const mainImage = BlogImage.instantiate(
           imageId,

@@ -56,9 +56,9 @@ export class UploadPostImageUseCase {
       const originalImageId = uuidv4();
       const middleImageId = uuidv4();
       const smallImageId = uuidv4();
-      const originalImageKey = `${command.blogId}/posts/${command.postId}/images/${command.filename}`;
-      const middleImageKey = `${command.blogId}/posts/${command.postId}/images/${command.filename}_middle`;
-      const smallImageKey = `${command.blogId}/posts/${command.postId}/images/${command.filename}_small`;
+      const originalImageKey = `blogs/${command.blogId}/posts/${command.postId}/images/${command.filename}`;
+      const middleImageKey = `blogs/${command.blogId}/posts/${command.postId}/images/${command.filename}_middle`;
+      const smallImageKey = `blogs/${command.blogId}/posts/${command.postId}/images/${command.filename}_small`;
       const middleImageBuffer = await sharp(command.imageBuffer)
         .resize({
           width: middleWidth,
