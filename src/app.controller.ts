@@ -2,12 +2,14 @@ import { Controller, Delete, Get, HttpCode } from '@nestjs/common';
 import { AppService } from './app.service';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { S3StorageAdapter } from './file-storage/files-storage.adapter';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
     @InjectDataSource() private dataSource: DataSource,
+    private readonly s3: S3StorageAdapter,
   ) {}
 
   @Get()
@@ -31,6 +33,7 @@ export class AppController {
       this.dataSource.query(`DELETE FROM "answer"`),
       this.dataSource.query(`DELETE FROM "blog_image"`),
       this.dataSource.query(`DELETE FROM "post_main_image"`),
+      this.s3.deleteAllImages(),
     ]);
     return;
   }

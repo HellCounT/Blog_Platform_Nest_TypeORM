@@ -1,4 +1,5 @@
 import {
+  DeleteObjectCommand,
   PutObjectCommand,
   PutObjectCommandOutput,
   S3Client,
@@ -43,6 +44,20 @@ export class S3StorageAdapter {
         url: key,
         fileId: uploadResult.ETag,
       };
+    } catch (exception) {
+      console.error(exception);
+      throw exception;
+    }
+  }
+
+  async deleteAllImages() {
+    const bucketParams = {
+      Bucket: this.bucketName,
+      Key: 'blogs',
+    };
+    try {
+      await this.s3Client.send(new DeleteObjectCommand(bucketParams));
+      return;
     } catch (exception) {
       console.error(exception);
       throw exception;
