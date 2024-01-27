@@ -21,6 +21,7 @@ import { BlogImage } from '../../images/entities/blog-image.entity';
 import { PostMainImage } from '../../images/entities/post-main-image.entity';
 import { PostLike } from '../../likes/entities/post-like.entity';
 import { PhotoSizeViewModel } from '../../blogs/dto/output.blog-image.dto';
+import { S3StorageAdapter } from '../../file-storage/files-storage.adapter';
 
 @Injectable()
 export class BloggerBlogsQuery extends BlogsQuery {
@@ -35,8 +36,9 @@ export class BloggerBlogsQuery extends BlogsQuery {
     @InjectRepository(PostMainImage)
     protected postMainImagesRepo: Repository<PostMainImage>,
     @InjectRepository(PostLike) protected postLikeRepo: Repository<PostLike>,
+    protected readonly s3: S3StorageAdapter,
   ) {
-    super(blogsRepo, blogImagesRepo);
+    super(blogsRepo, blogImagesRepo, s3);
   }
   async getAllBlogsForBlogger(
     q: QueryParserType,

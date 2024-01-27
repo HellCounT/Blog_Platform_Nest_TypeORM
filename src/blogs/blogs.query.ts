@@ -8,6 +8,7 @@ import { PaginatorType } from '../base/application-helpers/paginator.type';
 import { BlogImage } from '../images/entities/blog-image.entity';
 import { ImageTypes } from '../base/application-helpers/image.types';
 import { PhotoSizeViewModel } from './dto/output.blog-image.dto';
+import { S3StorageAdapter } from '../file-storage/files-storage.adapter';
 
 @Injectable()
 export class BlogsQuery {
@@ -15,6 +16,7 @@ export class BlogsQuery {
     @InjectRepository(Blog) protected blogsRepo: Repository<Blog>,
     @InjectRepository(BlogImage)
     protected blogImagesRepo: Repository<BlogImage>,
+    protected readonly s3: S3StorageAdapter,
   ) {}
   async viewAllBlogs(
     q: QueryParserType,
@@ -91,5 +93,9 @@ export class BlogsQuery {
       height: +image.height,
       fileSize: +image.fileSize,
     };
+  }
+
+  async getImageFile(key: string) {
+    return this.s3.getImage(key);
   }
 }
