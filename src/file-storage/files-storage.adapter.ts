@@ -59,7 +59,7 @@ export class S3StorageAdapter {
     };
     try {
       const data = await this.s3Client.send(new GetObjectCommand(bucketParams));
-      return Buffer.from(await data.Body.transformToString());
+      return Buffer.from(await data.Body.transformToString('binary'));
     } catch (e) {
       throw new Error(`Could not retrieve file from S3: ${e.message}`);
     }
