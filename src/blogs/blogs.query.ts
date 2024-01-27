@@ -84,6 +84,7 @@ export class BlogsQuery {
     };
   }
   _mapImageToPhotoSizeViewModel(image: BlogImage): PhotoSizeViewModel {
+    if (!image) return null;
     return {
       url: image.url,
       width: +image.width,
