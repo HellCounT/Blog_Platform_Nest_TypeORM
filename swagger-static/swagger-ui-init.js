@@ -252,6 +252,17 @@ window.onload = function() {
           }
         }
       },
+      "/blogs/{blogId}": {
+        "get": {
+          "operationId": "BlogsController_getBlogWallpaper",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          }
+        }
+      },
       "/posts": {
         "get": {
           "operationId": "PostsController_getAllPosts",

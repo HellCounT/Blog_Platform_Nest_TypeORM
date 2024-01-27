@@ -1,5 +1,8 @@
 import {
   DeleteObjectCommand,
+  DeleteObjectCommandOutput,
+  GetObjectCommand,
+  ListObjectsCommand,
   PutObjectCommand,
   PutObjectCommandOutput,
   S3Client,
@@ -49,18 +52,37 @@ export class S3StorageAdapter {
       throw exception;
     }
   }
-
-  async deleteAllImages() {
+  async getImage(key: string): Promise<Buffer> {
     const bucketParams = {
       Bucket: this.bucketName,
-      Key: 'blogs',
+      Key: key,
     };
     try {
-      await this.s3Client.send(new DeleteObjectCommand(bucketParams));
-      return;
-    } catch (exception) {
-      console.error(exception);
-      throw exception;
+      const data = await this.s3Client.send(new GetObjectCommand(bucketParams));
+      return Buffer.from(await data.Body.transformToString());
+    } catch (e) {
+      throw new Error(`Could not retrieve file from S3: ${e.message}`);
     }
+  }
+  async deleteAllImages() {
+    const DeletePromises: Promise<DeleteObjectCommandOutput>[] = [];
+    const { Contents } = await this.s3Client.send(
+      new ListObjectsCommand({
+        Bucket: this.bucketName,
+        Prefix: 'blogs',
+      }),
+    );
+    if (!Contents) return;
+    Contents.forEach(({ Key }) => {
+      DeletePromises.push(
+        this.s3Client.send(
+          new DeleteObjectCommand({
+            Bucket: this.bucketName,
+            Key,
+          }),
+        ),
+      );
+    });
+    await Promise.all(DeletePromises);
   }
 }

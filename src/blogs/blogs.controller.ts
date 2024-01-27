@@ -55,4 +55,7 @@ export class BlogsController {
       req.user.userId,
     );
   }
+  @Get(`:blogId/`)
+  @HttpCode(200)
+  async getBlogWallpaper() {}
 }
