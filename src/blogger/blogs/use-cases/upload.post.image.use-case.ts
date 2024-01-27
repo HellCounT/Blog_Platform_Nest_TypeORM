@@ -116,7 +116,7 @@ export class UploadPostImageUseCase {
         middleImage,
         smallImage,
       ];
-      console.log('created main images: ', createdPostMainImages);
+      console.log('created main images for post: ', createdPostMainImages);
       const mappedPostMainImages: PhotoSizeViewModel[] =
         this.mapPostMainImagesToViewModel(createdPostMainImages);
       return {
