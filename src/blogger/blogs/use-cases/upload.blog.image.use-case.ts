@@ -108,10 +108,10 @@ export class UploadBlogImageUseCase {
         const blogMainImages = await this.blogImagesRepo.getMainImagesInfo(
           blog.id,
         );
+        console.log('created main images for post: ', blogMainImages);
         const mappedBlogMainImages: PhotoSizeViewModel[] =
           this.mapBlogMainImagesToViewModel(blogMainImages);
         const wallpaper = await this.blogImagesRepo.getWallpaperInfo(blog.id);
-        console.log('wallpaper: ', wallpaper);
         return {
           wallpaper: {
             url: wallpaper.url,
