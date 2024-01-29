@@ -3,6 +3,11 @@ export type OutputBlogImageDto = {
   main: PhotoSizeViewModel[];
 };
 
+export type OutputUpdateBlogImageDto = {
+  wallpaper: PhotoSizeViewModel;
+  main: PhotoSizeViewModel;
+};
+
 export type PhotoSizeViewModel = {
   url: string;
   width: number;

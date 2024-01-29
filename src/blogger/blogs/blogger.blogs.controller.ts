@@ -30,7 +30,10 @@ import { CreatePostForBlogCommand } from './use-cases/create.post.for.blog.use-c
 import { InputUpdatePostDto } from './dto/input.update-post.dto';
 import { UpdatePostForBlogCommand } from './use-cases/update.post.for.blog.use-case';
 import { DeletePostCommand } from './use-cases/delete.post.use-case';
-import { OutputBlogImageDto } from '../../blogs/dto/output.blog-image.dto';
+import {
+  OutputBlogImageDto,
+  OutputUpdateBlogImageDto,
+} from '../../blogs/dto/output.blog-image.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { OutputPostImageDto } from '../../blogs/dto/output.post-image.dto';
 import { PaginatorType } from '../../base/application-helpers/paginator.type';
@@ -156,7 +159,7 @@ export class BloggerBlogsController {
     @UploadedFile() file,
     @Param('blogId') blogId: string,
     @Req() req,
-  ): Promise<OutputBlogImageDto> {
+  ): Promise<OutputUpdateBlogImageDto> {
     const filename = file.originalname;
     return this.commandBus.execute(
       new UploadBlogImageCommand(
@@ -176,7 +179,7 @@ export class BloggerBlogsController {
     @UploadedFile() file: Express.Multer.File,
     @Param('blogId') blogId: string,
     @Req() req,
-  ): Promise<OutputBlogImageDto> {
+  ): Promise<OutputUpdateBlogImageDto> {
     const filename = file.originalname;
     return this.commandBus.execute(
       new UploadBlogImageCommand(
