@@ -192,7 +192,7 @@ export class BloggerBlogsController {
       ),
     );
     console.log(result);
-    res.status(201).send(result);
+    res.send(result);
   }
   @Post(':blogId/posts/:postId/images/main')
   @UseInterceptors(FileInterceptor('file'))
