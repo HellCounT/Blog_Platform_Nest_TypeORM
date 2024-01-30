@@ -9,7 +9,7 @@ import {
   Put,
   Query,
   Req,
-  Res,
+  // Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -39,7 +39,7 @@ import { PostViewModelType } from '../../posts/types/posts.types';
 import { UploadBlogImageCommand } from './use-cases/upload.blog.image.use-case';
 import { ImageTypes } from '../../base/application-helpers/image.types';
 import { UploadPostImageCommand } from './use-cases/upload.post.image.use-case';
-import { Response } from 'express';
+// import { Response } from 'express';
 
 @UseGuards(JwtAuthGuard)
 @Controller('blogger/blogs')
@@ -178,7 +178,7 @@ export class BloggerBlogsController {
     @UploadedFile() file: Express.Multer.File,
     @Param('blogId') blogId: string,
     @Req() req,
-    @Res({ passthrough: true }) res: Response,
+    // @Res({ passthrough: true }) res: Response,
   ) {
     const filename = file.originalname;
     const result = await this.commandBus.execute(
@@ -192,7 +192,8 @@ export class BloggerBlogsController {
       ),
     );
     console.log(result);
-    res.send(result);
+    return result;
+    // res.send(result);
   }
   @Post(':blogId/posts/:postId/images/main')
   @UseInterceptors(FileInterceptor('file'))
