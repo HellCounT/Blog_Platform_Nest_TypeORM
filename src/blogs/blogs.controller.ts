@@ -55,32 +55,32 @@ export class BlogsController {
       req.user.userId,
     );
   }
-  @Get(`:blogId/images/wallpaper/:filename`)
-  @HttpCode(200)
-  async getBlogWallpaper(
-    @Param('blogId') blogId: string,
-    @Param('filename') filename: string,
-  ): Promise<Buffer> {
-    const key = `blogs/${blogId}/images/wallpaper/${filename}`;
-    return this.blogsQueryRepo.getImageFile(key);
-  }
-  @Get(`:blogId/images/main/:filename`)
-  @HttpCode(200)
-  async getBlogMainImage(
-    @Param('blogId') blogId: string,
-    @Param('filename') filename: string,
-  ): Promise<Buffer> {
-    const key = `blogs/${blogId}/images/main/${filename}`;
-    return this.blogsQueryRepo.getImageFile(key);
-  }
-  @Get(`:blogId/posts/:postId/images/:filename`)
-  @HttpCode(200)
-  async getPostMainImage(
-    @Param('blogId') blogId: string,
-    @Param('postId') postId: string,
-    @Param('filename') filename: string,
-  ): Promise<Buffer> {
-    const key = `blogs/${blogId}/posts/${postId}/images/${filename}`;
-    return this.blogsQueryRepo.getImageFile(key);
-  }
+  // @Get(`:blogId/images/wallpaper/:filename`)
+  // @HttpCode(200)
+  // async getBlogWallpaper(
+  //   @Param('blogId') blogId: string,
+  //   @Param('filename') filename: string,
+  // ): Promise<Buffer> {
+  //   const key = `blogs/${blogId}/images/wallpaper/${filename}`;
+  //   return this.blogsQueryRepo.getImageFile(key);
+  // }
+  // @Get(`:blogId/images/main/:filename`)
+  // @HttpCode(200)
+  // async getBlogMainImage(
+  //   @Param('blogId') blogId: string,
+  //   @Param('filename') filename: string,
+  // ): Promise<Buffer> {
+  //   const key = `blogs/${blogId}/images/main/${filename}`;
+  //   return this.blogsQueryRepo.getImageFile(key);
+  // }
+  // @Get(`:blogId/posts/:postId/images/:filename`)
+  // @HttpCode(200)
+  // async getPostMainImage(
+  //   @Param('blogId') blogId: string,
+  //   @Param('postId') postId: string,
+  //   @Param('filename') filename: string,
+  // ): Promise<Buffer> {
+  //   const key = `blogs/${blogId}/posts/${postId}/images/${filename}`;
+  //   return this.blogsQueryRepo.getImageFile(key);
+  // }
 }

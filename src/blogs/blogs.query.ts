@@ -95,7 +95,7 @@ export class BlogsQuery {
     };
   }
 
-  async getImageFile(key: string) {
-    return this.s3.getImage(key);
-  }
+  // async getImageFile(key: string) {
+  //   return this.s3.getImage(key);
+  // }
 }

@@ -1,7 +1,7 @@
 import {
   DeleteObjectCommand,
   DeleteObjectCommandOutput,
-  GetObjectCommand,
+  //GetObjectCommand,
   ListObjectsCommand,
   PutObjectCommand,
   PutObjectCommandOutput,
@@ -52,18 +52,18 @@ export class S3StorageAdapter {
       throw exception;
     }
   }
-  async getImage(key: string): Promise<Buffer> {
-    const bucketParams = {
-      Bucket: this.bucketName,
-      Key: key,
-    };
-    try {
-      const data = await this.s3Client.send(new GetObjectCommand(bucketParams));
-      return Buffer.from(await data.Body.transformToString('binary'));
-    } catch (e) {
-      throw new Error(`Could not retrieve file from S3: ${e.message}`);
-    }
-  }
+  // async getImage(key: string): Promise<Buffer> {
+  //   const bucketParams = {
+  //     Bucket: this.bucketName,
+  //     Key: key,
+  //   };
+  //   try {
+  //     const data = await this.s3Client.send(new GetObjectCommand(bucketParams));
+  //     return Buffer.from(await data.Body.transformToString('binary'));
+  //   } catch (e) {
+  //     throw new Error(`Could not retrieve file from S3: ${e.message}`);
+  //   }
+  // }
   async deleteAllImages() {
     const DeletePromises: Promise<DeleteObjectCommandOutput>[] = [];
     const { Contents } = await this.s3Client.send(

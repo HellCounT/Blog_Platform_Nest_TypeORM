@@ -9,16 +9,16 @@ export class PostMainImagesRepository {
     @InjectRepository(PostMainImage)
     protected postMainImagesRepo: Repository<PostMainImage>,
   ) {}
-  async getMainImagesInfo(postId: string): Promise<PostMainImage[]> {
-    try {
-      return await this.postMainImagesRepo.findBy({
-        postId: postId,
-      });
-    } catch (e) {
-      console.log(e);
-      return null;
-    }
-  }
+  // async getMainImagesInfo(postId: string): Promise<PostMainImage[]> {
+  //   try {
+  //     return await this.postMainImagesRepo.findBy({
+  //       postId: postId,
+  //     });
+  //   } catch (e) {
+  //     console.log(e);
+  //     return null;
+  //   }
+  // }
   async save(postMainImage: PostMainImage): Promise<PostMainImage> {
     try {
       return this.postMainImagesRepo.save(postMainImage);
