@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpCode,
   Param,
   Post,
   Put,
@@ -178,7 +177,7 @@ export class BloggerBlogsController {
     @Req() req,
   ): Promise<OutputBlogImageDto> {
     const filename = file.originalname;
-    return this.commandBus.execute(
+    return await this.commandBus.execute(
       new UploadBlogImageCommand(
         file.buffer,
         file.size,
