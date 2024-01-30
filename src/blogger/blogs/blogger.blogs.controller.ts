@@ -9,6 +9,7 @@ import {
   Put,
   Query,
   Req,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -176,9 +177,10 @@ export class BloggerBlogsController {
     @UploadedFile() file: Express.Multer.File,
     @Param('blogId') blogId: string,
     @Req() req,
-  ): Promise<OutputBlogImageDto> {
+    @Res({ passthrough: true }) res,
+  ) {
     const filename = file.originalname;
-    return await this.commandBus.execute(
+    const result = await this.commandBus.execute(
       new UploadBlogImageCommand(
         file.buffer,
         file.size,
@@ -188,6 +190,7 @@ export class BloggerBlogsController {
         ImageTypes.main,
       ),
     );
+    res.send(result);
   }
   @Post(':blogId/posts/:postId/images/main')
   @UseInterceptors(FileInterceptor('file'))
