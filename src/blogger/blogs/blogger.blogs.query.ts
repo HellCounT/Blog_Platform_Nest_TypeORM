@@ -22,6 +22,8 @@ import { PostMainImage } from '../../images/entities/post-main-image.entity';
 import { PostLike } from '../../likes/entities/post-like.entity';
 import { PhotoSizeViewModel } from '../../blogs/dto/output.blog-image.dto';
 import { S3StorageAdapter } from '../../file-storage/files-storage.adapter';
+import { ConfigService } from '@nestjs/config';
+import { ConfigurationType } from '../../configuration/configuration';
 
 @Injectable()
 export class BloggerBlogsQuery extends BlogsQuery {
@@ -37,8 +39,9 @@ export class BloggerBlogsQuery extends BlogsQuery {
     protected postMainImagesRepo: Repository<PostMainImage>,
     @InjectRepository(PostLike) protected postLikeRepo: Repository<PostLike>,
     protected readonly s3: S3StorageAdapter,
+    protected readonly configService: ConfigService<ConfigurationType>,
   ) {
-    super(blogsRepo, blogImagesRepo, s3);
+    super(blogsRepo, blogImagesRepo, s3, configService);
   }
   async getAllBlogsForBlogger(
     q: QueryParserType,
@@ -300,7 +303,7 @@ export class BloggerBlogsQuery extends BlogsQuery {
     image: PostMainImage,
   ): PhotoSizeViewModel {
     return {
-      url: image.url,
+      url: this.configService.get('S3_BASEURL') + image.url,
       width: +image.width,
       height: +image.height,
       fileSize: +image.fileSize,

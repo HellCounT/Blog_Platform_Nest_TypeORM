@@ -9,6 +9,8 @@ import { BlogImage } from '../images/entities/blog-image.entity';
 import { ImageTypes } from '../base/application-helpers/image.types';
 import { PhotoSizeViewModel } from './dto/output.blog-image.dto';
 import { S3StorageAdapter } from '../file-storage/files-storage.adapter';
+import { ConfigService } from '@nestjs/config';
+import { ConfigurationType } from '../configuration/configuration';
 
 @Injectable()
 export class BlogsQuery {
@@ -17,6 +19,7 @@ export class BlogsQuery {
     @InjectRepository(BlogImage)
     protected blogImagesRepo: Repository<BlogImage>,
     protected readonly s3: S3StorageAdapter,
+    protected readonly configService: ConfigService<ConfigurationType>,
   ) {}
   async viewAllBlogs(
     q: QueryParserType,
@@ -88,7 +91,7 @@ export class BlogsQuery {
   _mapImageToPhotoSizeViewModel(image: BlogImage): PhotoSizeViewModel {
     if (!image) return null;
     return {
-      url: image.url,
+      url: this.configService.get('S3_BASEURL') + image.url,
       width: +image.width,
       height: +image.height,
       fileSize: +image.fileSize,

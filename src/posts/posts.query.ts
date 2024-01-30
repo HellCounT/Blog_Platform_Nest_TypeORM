@@ -14,6 +14,8 @@ import { emptyPaginatorStub } from '../base/application-helpers/empty.paginator.
 import { LikeStatus } from '../base/application-helpers/statuses';
 import { PostMainImage } from '../images/entities/post-main-image.entity';
 import { PhotoSizeViewModel } from '../blogs/dto/output.blog-image.dto';
+import { ConfigService } from '@nestjs/config';
+import { ConfigurationType } from '../configuration/configuration';
 
 @Injectable()
 export class PostsQuery {
@@ -24,6 +26,7 @@ export class PostsQuery {
     @InjectDataSource() protected dataSource: DataSource,
     @InjectRepository(PostMainImage)
     protected postMainImagesRepo: Repository<PostMainImage>,
+    protected readonly configService: ConfigService<ConfigurationType>,
   ) {}
   async viewAllPosts(
     q: QueryParserType,
@@ -272,7 +275,7 @@ export class PostsQuery {
   }
   _mapImageToPhotoSizeViewModel(image: PostMainImage): PhotoSizeViewModel {
     return {
-      url: image.url,
+      url: this.configService.get('S3_BASEURL') + image.url,
       width: +image.width,
       height: +image.height,
       fileSize: +image.fileSize,
