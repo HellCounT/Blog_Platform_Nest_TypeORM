@@ -112,6 +112,15 @@ export class UploadBlogImageUseCase {
           this.mapBlogMainImagesToViewModel(blogMainImages);
         console.log('mapped blog images: ', mappedBlogMainImages);
         const wallpaper = await this.blogImagesRepo.getWallpaperInfo(blog.id);
+        console.log('blog main image update result: ', {
+          wallpaper: {
+            url: wallpaper.url,
+            width: wallpaper.width,
+            height: wallpaper.height,
+            fileSize: wallpaper.fileSize,
+          },
+          main: mappedBlogMainImages,
+        });
         return {
           wallpaper: {
             url: wallpaper.url,
