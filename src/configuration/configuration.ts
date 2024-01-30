@@ -20,6 +20,7 @@ export type ConfigurationType = {
   S3_ENDPOINT: string;
   S3_SECRET: string;
   S3_ID: string;
+  S3_BASEURL: string;
 };
 
 export default (): ConfigurationType => ({
@@ -42,4 +43,5 @@ export default (): ConfigurationType => ({
   S3_ENDPOINT: process.env.S3_ENDPOINT,
   S3_SECRET: process.env.S3_SECRET,
   S3_ID: process.env.S3_ID,
+  S3_BASEURL: process.env.S3_BASEURL,
 });
