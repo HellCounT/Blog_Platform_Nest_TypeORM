@@ -16,6 +16,8 @@ import { PostMainImage } from '../../../images/entities/post-main-image.entity';
 import { PostMainImageSizes } from '../../../base/application-helpers/post.main.image.types';
 import { PostMainImagesRepository } from '../../../images/post-main-images.repository';
 import { PhotoSizeViewModel } from '../../../blogs/dto/output.blog-image.dto';
+import { ConfigService } from '@nestjs/config';
+import { ConfigurationType } from '../../../configuration/configuration';
 
 export class UploadPostImageCommand {
   constructor(
@@ -34,6 +36,7 @@ export class UploadPostImageUseCase {
     protected blogsRepo: BlogsRepository,
     protected postsRepo: PostsRepository,
     protected postMainImagesRepo: PostMainImagesRepository,
+    protected readonly configService: ConfigService<ConfigurationType>,
   ) {}
   async execute(command: UploadPostImageCommand): Promise<OutputPostImageDto> {
     const blog = await this.blogsRepo.getBlogById(command.blogId);
@@ -131,7 +134,7 @@ export class UploadPostImageUseCase {
   ): PhotoSizeViewModel[] {
     return postMainImages.map((i) => {
       return {
-        url: i.url,
+        url: this.configService.get('S3_BASEURL') + i.url,
         width: i.width,
         height: i.height,
         fileSize: i.fileSize,

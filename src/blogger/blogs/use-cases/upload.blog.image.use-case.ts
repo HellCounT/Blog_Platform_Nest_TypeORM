@@ -17,6 +17,8 @@ import {
   OutputBlogImageDto,
   PhotoSizeViewModel,
 } from '../../../blogs/dto/output.blog-image.dto';
+import { ConfigService } from '@nestjs/config';
+import { ConfigurationType } from '../../../configuration/configuration';
 
 export class UploadBlogImageCommand {
   constructor(
@@ -35,6 +37,7 @@ export class UploadBlogImageUseCase {
     protected s3StorageAdapter: S3StorageAdapter,
     protected blogsRepo: BlogsRepository,
     protected blogImagesRepo: BlogImagesRepository,
+    protected readonly configService: ConfigService<ConfigurationType>,
   ) {}
   async execute(command: UploadBlogImageCommand): Promise<OutputBlogImageDto> {
     const blog = await this.blogsRepo.getBlogById(command.blogId);
@@ -76,7 +79,7 @@ export class UploadBlogImageUseCase {
           this.mapBlogMainImagesToViewModel(blogMainImages);
         return {
           wallpaper: {
-            url: wallpaper.url,
+            url: this.configService.get('S3_BASEURL') + wallpaper.url,
             width: wallpaper.width,
             height: wallpaper.height,
             fileSize: wallpaper.fileSize,
@@ -114,7 +117,7 @@ export class UploadBlogImageUseCase {
         const wallpaper = await this.blogImagesRepo.getWallpaperInfo(blog.id);
         console.log('blog main image update result: ', {
           wallpaper: {
-            url: wallpaper.url,
+            url: this.configService.get('S3_BASEURL') + wallpaper.url,
             width: wallpaper.width,
             height: wallpaper.height,
             fileSize: wallpaper.fileSize,
@@ -123,7 +126,7 @@ export class UploadBlogImageUseCase {
         });
         return {
           wallpaper: {
-            url: wallpaper.url,
+            url: this.configService.get('S3_BASEURL') + wallpaper.url,
             width: wallpaper.width,
             height: wallpaper.height,
             fileSize: wallpaper.fileSize,
@@ -141,7 +144,7 @@ export class UploadBlogImageUseCase {
   ): PhotoSizeViewModel[] {
     return blogMainImages.map((i) => {
       return {
-        url: i.url,
+        url: this.configService.get('S3_BASEURL') + i.url,
         width: +i.width,
         height: +i.height,
         fileSize: +i.fileSize,
