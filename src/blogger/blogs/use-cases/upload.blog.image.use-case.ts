@@ -115,22 +115,24 @@ export class UploadBlogImageUseCase {
           this.mapBlogMainImagesToViewModel(blogMainImages);
         console.log('mapped blog images: ', mappedBlogMainImages);
         const wallpaper = await this.blogImagesRepo.getWallpaperInfo(blog.id);
-        console.log('blog main image update result: ', {
-          wallpaper: {
-            url: this.configService.get('S3_BASEURL') + wallpaper.url,
-            width: wallpaper.width,
-            height: wallpaper.height,
-            fileSize: wallpaper.fileSize,
-          },
-          main: mappedBlogMainImages,
-        });
+        // console.log('blog main image update result: ', {
+        //   wallpaper: {
+        //     url: this.configService.get('S3_BASEURL') + wallpaper.url,
+        //     width: wallpaper.width,
+        //     height: wallpaper.height,
+        //     fileSize: wallpaper.fileSize,
+        //   },
+        //   main: mappedBlogMainImages,
+        // });
         return {
-          wallpaper: {
-            url: this.configService.get('S3_BASEURL') + wallpaper.url,
-            width: wallpaper.width,
-            height: wallpaper.height,
-            fileSize: wallpaper.fileSize,
-          },
+          wallpaper: wallpaper
+            ? {
+                url: this.configService.get('S3_BASEURL') + wallpaper.url,
+                width: wallpaper.width,
+                height: wallpaper.height,
+                fileSize: wallpaper.fileSize,
+              }
+            : null,
           main: mappedBlogMainImages,
         };
       } catch (e) {
