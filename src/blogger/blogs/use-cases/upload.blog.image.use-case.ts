@@ -44,9 +44,7 @@ export class UploadBlogImageUseCase {
     if (!blog) throw new NotFoundException();
     if (blog.ownerId !== command.userId) throw new ForbiddenException();
     const fileExtension = getFileExtension(command.filename);
-    console.log(fileExtension);
     if (!allowedImageFileExtensions.includes(fileExtension)) {
-      console.log('error in file extension validation');
       throw new BadRequestException();
     }
     const maxFileSize = 100 * 1024;
@@ -56,7 +54,6 @@ export class UploadBlogImageUseCase {
     // wallpaper
     if (command.blogImageType === ImageTypes.wallpaper) {
       if (metadata.width !== 1028 || metadata.height !== 312) {
-        console.log('error in image size validation');
         throw new BadRequestException();
       }
       try {
@@ -92,7 +89,6 @@ export class UploadBlogImageUseCase {
       } // main
     } else {
       if (metadata.width !== 156 || metadata.height !== 156) {
-        console.log('error in image size validation');
         throw new BadRequestException();
       }
       try {
@@ -113,17 +109,7 @@ export class UploadBlogImageUseCase {
         );
         const mappedBlogMainImages: PhotoSizeViewModel[] =
           this.mapBlogMainImagesToViewModel(blogMainImages);
-        console.log('mapped blog images: ', mappedBlogMainImages);
         const wallpaper = await this.blogImagesRepo.getWallpaperInfo(blog.id);
-        // console.log('blog main image update result: ', {
-        //   wallpaper: {
-        //     url: this.configService.get('S3_BASEURL') + wallpaper.url,
-        //     width: wallpaper.width,
-        //     height: wallpaper.height,
-        //     fileSize: wallpaper.fileSize,
-        //   },
-        //   main: mappedBlogMainImages,
-        // });
         return {
           wallpaper: wallpaper
             ? {
