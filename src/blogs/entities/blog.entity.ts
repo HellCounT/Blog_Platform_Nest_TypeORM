@@ -10,6 +10,7 @@ import { User } from '../../users/entities/user.entity';
 import { Post } from '../../posts/entities/post.entity';
 import { UserBannedByBlogger } from '../../blogger/users/users-banned-by-blogger/entities/user-banned-by-blogger.entity';
 import { BlogImage } from '../../images/entities/blog-image.entity';
+import { Subscription } from '../../integrations/telegram/entities/subscription.entity';
 
 @Entity()
 export class Blog {
@@ -40,6 +41,8 @@ export class Blog {
   userBans: UserBannedByBlogger[];
   @OneToMany(() => BlogImage, (bmi) => bmi.blog)
   images: BlogImage[];
+  @OneToMany(() => Subscription, (s) => s.blog)
+  subscriptions: Subscription[];
   static instantiate(
     blogId: string,
     name: string,

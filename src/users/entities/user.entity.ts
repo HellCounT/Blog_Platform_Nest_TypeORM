@@ -18,6 +18,7 @@ import { CommentLike } from '../../likes/entities/comment-like.entity';
 import { PostLike } from '../../likes/entities/post-like.entity';
 import { UserBannedByBlogger } from '../../blogger/users/users-banned-by-blogger/entities/user-banned-by-blogger.entity';
 import { Player } from '../../quiz/entities/player.entity';
+import { Subscription } from '../../integrations/telegram/entities/subscription.entity';
 
 @Entity()
 export class User {
@@ -56,4 +57,6 @@ export class User {
   @OneToOne(() => Player, (p) => p.user)
   @JoinColumn()
   player: Player;
+  @OneToMany(() => Subscription, (s) => s.user)
+  subscriptions: Subscription[];
 }
