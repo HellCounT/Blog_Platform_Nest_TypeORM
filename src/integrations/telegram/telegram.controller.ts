@@ -5,6 +5,7 @@ import { CommandBus } from '@nestjs/cqrs';
 @Controller('integrations/telegram')
 export class TelegramController {
   constructor(protected commandBus: CommandBus) {}
+  // TODO: Develop methods
   @UseGuards(JwtAuthGuard)
   @Get('auth-bot-link')
   @HttpCode(200)

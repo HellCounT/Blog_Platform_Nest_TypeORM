@@ -268,7 +268,6 @@ export class GamesQuery {
     }
     return items;
   }
-  //todo: Finish request. Implement sorting from query
   async getTopPlayers(
     q: TopPlayersQueryParserType,
   ): Promise<PaginatorType<OutputTopPlayersDto>> {

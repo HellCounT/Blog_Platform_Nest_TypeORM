@@ -116,7 +116,6 @@ export const parseGameQueryPagination = (query): GamesQueryParserType => {
   );
   return queryGamesParamsParser;
 };
-//todo: complete parseTopPlayersQueryPagination
 export const parseTopPlayersQueryPagination = (
   query,
 ): TopPlayersQueryParserType => {

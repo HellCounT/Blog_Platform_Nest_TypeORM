@@ -1,9 +1,11 @@
 import {
   Controller,
+  Delete,
   Get,
   HttpCode,
   NotFoundException,
   Param,
+  Post,
   Query,
   Req,
   UseGuards,
@@ -18,6 +20,7 @@ import { GuestGuard } from '../auth/guards/guest.guard';
 import { PaginatorType } from '../base/application-helpers/paginator.type';
 import { BlogViewModelType } from './types/blogs.types';
 import { PostViewModelType } from '../posts/types/posts.types';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('blogs')
 export class BlogsController {
@@ -83,4 +86,13 @@ export class BlogsController {
   //   const key = `blogs/${blogId}/posts/${postId}/images/${filename}`;
   //   return this.blogsQueryRepo.getImageFile(key);
   // }
+  // TODO: Develop methods
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/subscription')
+  @HttpCode(204)
+  async subscribe(@Param('id') id: string, @Req() req) {}
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id/subscription')
+  @HttpCode(204)
+  async usubscribe(@Param('id') id: string, @Req() req) {}
 }
