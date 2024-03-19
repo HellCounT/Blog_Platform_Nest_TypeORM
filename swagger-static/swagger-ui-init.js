@@ -252,20 +252,12 @@ window.onload = function() {
           }
         }
       },
-      "/blogs/{blogId}/images/wallpaper/{filename}": {
-        "get": {
-          "operationId": "BlogsController_getBlogWallpaper",
+      "/blogs/{id}/subscription": {
+        "post": {
+          "operationId": "BlogsController_subscribe",
           "parameters": [
             {
-              "name": "blogId",
-              "required": true,
-              "in": "path",
-              "schema": {
-                "type": "string"
-              }
-            },
-            {
-              "name": "filename",
+              "name": "id",
               "required": true,
               "in": "path",
               "schema": {
@@ -274,26 +266,16 @@ window.onload = function() {
             }
           ],
           "responses": {
-            "200": {
+            "204": {
               "description": ""
             }
           }
-        }
-      },
-      "/blogs/{blogId}/images/main/{filename}": {
-        "get": {
-          "operationId": "BlogsController_getBlogMainImage",
+        },
+        "delete": {
+          "operationId": "BlogsController_usubscribe",
           "parameters": [
             {
-              "name": "blogId",
-              "required": true,
-              "in": "path",
-              "schema": {
-                "type": "string"
-              }
-            },
-            {
-              "name": "filename",
+              "name": "id",
               "required": true,
               "in": "path",
               "schema": {
@@ -302,43 +284,7 @@ window.onload = function() {
             }
           ],
           "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
-      "/blogs/{blogId}/posts/{postId}/images/{filename}": {
-        "get": {
-          "operationId": "BlogsController_getPostMainImage",
-          "parameters": [
-            {
-              "name": "blogId",
-              "required": true,
-              "in": "path",
-              "schema": {
-                "type": "string"
-              }
-            },
-            {
-              "name": "postId",
-              "required": true,
-              "in": "path",
-              "schema": {
-                "type": "string"
-              }
-            },
-            {
-              "name": "filename",
-              "required": true,
-              "in": "path",
-              "schema": {
-                "type": "string"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
+            "204": {
               "description": ""
             }
           }
@@ -1258,6 +1204,28 @@ window.onload = function() {
           "parameters": [],
           "responses": {
             "200": {
+              "description": ""
+            }
+          }
+        }
+      },
+      "/integrations/telegram/auth-bot-link": {
+        "get": {
+          "operationId": "TelegramController_getAuthBotLink",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          }
+        }
+      },
+      "/integrations/telegram/webhook": {
+        "post": {
+          "operationId": "TelegramController_setWebhook",
+          "parameters": [],
+          "responses": {
+            "204": {
               "description": ""
             }
           }
