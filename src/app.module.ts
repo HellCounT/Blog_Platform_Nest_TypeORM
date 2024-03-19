@@ -117,6 +117,7 @@ import { PostMainImagesRepository } from './images/post-main-images.repository';
 import { TelegramAdapter } from './integrations/telegram/adapters/telegram-adapter';
 import { TelegramController } from './integrations/telegram/telegram.controller';
 import { Subscription } from './integrations/telegram/entities/subscription.entity';
+import { Axios } from 'axios';
 
 const entities = [
   User,
@@ -243,7 +244,13 @@ const constraints = [
   BlogExistsConstraint,
 ];
 
-const adapters = [JwtAdapter, EmailManager, S3StorageAdapter, TelegramAdapter];
+const adapters = [
+  JwtAdapter,
+  EmailManager,
+  S3StorageAdapter,
+  TelegramAdapter,
+  Axios,
+];
 
 @Module({
   imports: [

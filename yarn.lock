@@ -1783,6 +1783,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nestjs/axios@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "@nestjs/axios@npm:3.0.2"
+  peerDependencies:
+    "@nestjs/common": ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
+    axios: ^1.3.1
+    rxjs: ^6.0.0 || ^7.0.0
+  checksum: 7eaa7101fee31dca590ff58c8f5926ddcf6bf3670dabb45dc797b0f4052a6df7f1d31161124b79caa40cc035c009c2ea7bc28484830d846a7066a599c57cb451
+  languageName: node
+  linkType: hard
+
 "@nestjs/cli@npm:^9.0.0":
   version: 9.2.0
   resolution: "@nestjs/cli@npm:9.2.0"
@@ -3837,6 +3848,7 @@ __metadata:
   resolution: "blogplatform_typeorm@workspace:."
   dependencies:
     "@aws-sdk/client-s3": "npm:^3.441.0"
+    "@nestjs/axios": "npm:^3.0.2"
     "@nestjs/cli": "npm:^9.0.0"
     "@nestjs/common": "npm:^9.0.0"
     "@nestjs/config": "npm:^2.3.1"

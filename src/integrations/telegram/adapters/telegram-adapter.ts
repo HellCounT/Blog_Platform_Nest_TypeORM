@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios, { AxiosInstance } from 'axios';
+import axios, { Axios } from 'axios';
 
 @Injectable()
 export class TelegramAdapter {
   constructor(
     protected readonly configService: ConfigService,
-    private axiosInstance: AxiosInstance,
+    protected axiosInstance: Axios,
   ) {
     const token = this.configService.get('TELEGRAM_TOKEN');
     this.axiosInstance = axios.create({
