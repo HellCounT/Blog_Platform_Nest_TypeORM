@@ -114,6 +114,9 @@ import { UploadBlogImageUseCase } from './blogger/blogs/use-cases/upload.blog.im
 import { BlogImagesRepository } from './images/blog-images.repository';
 import { UploadPostImageUseCase } from './blogger/blogs/use-cases/upload.post.image.use-case';
 import { PostMainImagesRepository } from './images/post-main-images.repository';
+import { TelegramAdapter } from './integrations/telegram/adapters/telegram-adapter';
+import { TelegramController } from './integrations/telegram/telegram.controller';
+import { Subscription } from './integrations/telegram/entities/subscription.entity';
 
 const entities = [
   User,
@@ -134,6 +137,7 @@ const entities = [
   Answer,
   BlogImage,
   PostMainImage,
+  Subscription,
 ];
 
 const controllers = [
@@ -149,6 +153,7 @@ const controllers = [
   BloggerUsersController,
   SuperAdminQuestionsController,
   QuizGameController,
+  TelegramController,
 ];
 
 const services = [
@@ -238,7 +243,7 @@ const constraints = [
   BlogExistsConstraint,
 ];
 
-const adapters = [JwtAdapter, EmailManager, S3StorageAdapter];
+const adapters = [JwtAdapter, EmailManager, S3StorageAdapter, TelegramAdapter];
 
 @Module({
   imports: [

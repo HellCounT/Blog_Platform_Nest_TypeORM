@@ -92,5 +92,6 @@ export async function bootstrap() {
   // END OF USELESS SWAGGER SHIT
 
   await app.listen(port);
+  console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();
