@@ -21,6 +21,7 @@ export type ConfigurationType = {
   S3_SECRET: string;
   S3_ID: string;
   S3_BASEURL: string;
+  TELEGRAM_TOKEN: string;
 };
 
 export default (): ConfigurationType => ({
@@ -44,4 +45,5 @@ export default (): ConfigurationType => ({
   S3_SECRET: process.env.S3_SECRET,
   S3_ID: process.env.S3_ID,
   S3_BASEURL: process.env.S3_BASEURL,
+  TELEGRAM_TOKEN: process.env.TELEGRAM_TOKEN,
 });
